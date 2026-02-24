@@ -311,13 +311,17 @@ export default function PlanningPage() {
     
     setProcessing(true);
     try {
-      await axios.post(`${API}/appointments/${editingAppointment.id}/checkout`, {
+      const res = await axios.post(`${API}/appointments/${editingAppointment.id}/checkout`, {
         payment_method: paymentMethod,
         discount_type: discountType,
         discount_value: discountType !== 'none' ? parseFloat(discountValue) || 0 : 0,
         total_paid: calculateFinalAmount()
       });
-      toast.success('Pagamento registrato con successo!');
+      const pointsEarned = res.data.loyalty_points_earned || 0;
+      const msg = pointsEarned > 0
+        ? `Pagamento registrato! +${pointsEarned} punti fedeltà`
+        : 'Pagamento registrato con successo!';
+      toast.success(msg);
       setEditDialogOpen(false);
       setEditingAppointment(null);
       setCheckoutMode(false);
