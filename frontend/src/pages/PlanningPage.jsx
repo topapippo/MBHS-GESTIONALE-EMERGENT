@@ -120,8 +120,11 @@ export default function PlanningPage() {
   const handleSlotClick = (time, operatorId) => {
     setSelectedSlot(time);
     setSelectedOperator(operatorId);
+    setClientSearch('');
+    setShowClientDropdown(false);
     setFormData({
       ...formData,
+      client_id: '',
       time: time,
       operator_id: operatorId || ''
     });
