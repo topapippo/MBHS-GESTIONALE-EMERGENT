@@ -76,7 +76,7 @@ export default function Layout({ children }) {
       {/* Logo */}
       <div className="p-4 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="MBHS Salon" className="w-12 h-12 rounded-lg object-contain" />
+          <img src="/logo.png?v=2" alt="MBHS Salon" className="w-12 h-12 rounded-lg object-cover" />
           <div>
             <h1 className="font-bold text-xl text-[#0F172A]">MBHS SALON</h1>
             <p className="text-xs text-[#334155] font-semibold">{user?.name}</p>
