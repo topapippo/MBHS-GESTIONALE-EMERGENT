@@ -1478,13 +1478,19 @@ async def get_client_history(client_id: str, current_user: dict = Depends(get_cu
     total_spent = sum(p.get("total_paid", 0) for p in payments)
     total_visits = len([a for a in appointments if a.get("status") == "completed"])
     
+    # Get loyalty info
+    loyalty = await get_or_create_loyalty(client_id, current_user["id"])
+    
     return {
         "client": client,
         "appointments": appointments,
         "payments": payments,
         "total_spent": total_spent,
         "total_visits": total_visits,
-        "last_visit": appointments[0]["date"] if appointments else None
+        "last_visit": appointments[0]["date"] if appointments else None,
+        "loyalty_points": loyalty["points"],
+        "loyalty_total_earned": loyalty["total_points_earned"],
+        "active_rewards": [r for r in loyalty.get("active_rewards", []) if not r.get("redeemed")]
     }
 
 # ============== PUBLIC BOOKING API (no auth required) ==============
