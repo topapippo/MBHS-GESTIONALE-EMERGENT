@@ -158,6 +158,66 @@ export default function PlanningPage() {
     }));
   };
 
+  // Search handler
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    if (query.length < 2) {
+      setSearchResults({ clients: [], appointments: [] });
+      return;
+    }
+    
+    setSearching(true);
+    try {
+      const res = await axios.get(`${API}/clients/search/appointments?query=${encodeURIComponent(query)}`);
+      setSearchResults(res.data);
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const highlightClient = (clientId) => {
+    setHighlightedClientId(clientId);
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults({ clients: [], appointments: [] });
+    
+    // Auto-clear highlight after 5 seconds
+    setTimeout(() => setHighlightedClientId(null), 5000);
+  };
+
+  const clearHighlight = () => {
+    setHighlightedClientId(null);
+  };
+
+  // Recurring appointments handler
+  const openRecurringDialog = (apt) => {
+    setSelectedAppointment(apt);
+    setRecurringData({ repeat_weeks: 3, repeat_count: 4 });
+    setRecurringDialogOpen(true);
+  };
+
+  const handleCreateRecurring = async () => {
+    if (!selectedAppointment) return;
+    
+    setCreatingRecurring(true);
+    try {
+      const res = await axios.post(`${API}/appointments/recurring`, {
+        appointment_id: selectedAppointment.id,
+        repeat_weeks: recurringData.repeat_weeks,
+        repeat_count: recurringData.repeat_count
+      });
+      toast.success(`Creati ${res.data.created} appuntamenti ricorrenti!`);
+      setRecurringDialogOpen(false);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Errore nella creazione');
+    } finally {
+      setCreatingRecurring(false);
+    }
+  };
+
   // Calculate appointment position and height
   const getAppointmentStyle = (apt) => {
     const [startHour, startMin] = apt.time.split(':').map(Number);
