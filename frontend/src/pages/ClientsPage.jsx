@@ -470,6 +470,78 @@ export default function ClientsPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Import Excel Dialog */}
+        <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="font-playfair text-2xl text-[#44403C] flex items-center gap-2">
+                <FileSpreadsheet className="w-6 h-6 text-[#C58970]" />
+                Importa Clienti da Excel
+              </DialogTitle>
+              <DialogDescription>
+                Anteprima dei clienti da importare. Verifica i dati prima di confermare.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4">
+              {importPreview.length > 0 ? (
+                <>
+                  <div className="max-h-[300px] overflow-y-auto border border-[#E6CCB2]/30 rounded-lg">
+                    <table className="w-full text-sm">
+                      <thead className="bg-[#FAFAF9] sticky top-0">
+                        <tr>
+                          <th className="text-left p-3 font-medium text-[#44403C]">Nome</th>
+                          <th className="text-left p-3 font-medium text-[#44403C]">Telefono</th>
+                          <th className="text-left p-3 font-medium text-[#44403C]">Note</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {importPreview.map((client, idx) => (
+                          <tr key={idx} className="border-t border-[#E6CCB2]/20 hover:bg-[#FAF5F2]">
+                            <td className="p-3 text-[#44403C]">{client.name}</td>
+                            <td className="p-3 text-[#78716C]">{client.phone || '-'}</td>
+                            <td className="p-3 text-[#78716C] text-xs max-w-[200px] truncate">{client.notes || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-sm text-[#78716C] mt-3">
+                    Totale: <span className="font-medium text-[#44403C]">{importPreview.length}</span> clienti da importare
+                  </p>
+                </>
+              ) : (
+                <p className="text-center text-[#78716C] py-8">Nessun cliente trovato nel file</p>
+              )}
+            </div>
+            <DialogFooter className="mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setImportDialogOpen(false)}
+                className="border-[#E6CCB2]"
+              >
+                Annulla
+              </Button>
+              <Button
+                onClick={handleImport}
+                disabled={importing || importPreview.length === 0}
+                className="bg-[#C58970] hover:bg-[#B07860] text-white"
+              >
+                {importing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Importando...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Importa {importPreview.length} Clienti
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
