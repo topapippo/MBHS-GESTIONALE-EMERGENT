@@ -442,6 +442,15 @@ class HairSalonAPITester:
             return False
         return self.run_test("Delete Service", "DELETE", f"services/{self.service_id}", 200)
 
+    def test_export_stats_pdf(self):
+        """Test PDF export functionality"""
+        return self.run_test(
+            "Export Stats PDF", 
+            "GET", 
+            "stats/export-pdf?start_date=2025-01-01&end_date=2025-01-31", 
+            200
+        )
+
 def main():
     """Run all tests"""
     print("🚀 Starting Hair Salon API Tests...")
