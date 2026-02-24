@@ -22,6 +22,7 @@ import PrepaidCardsPage from "./pages/PrepaidCardsPage";
 import ReportIncassiPage from "./pages/ReportIncassiPage";
 import BackupPage from "./pages/BackupPage";
 import BookingPage from "./pages/BookingPage";
+import LoyaltyPage from "./pages/LoyaltyPage";
 import LoginPage from "./pages/LoginPage";
 
 // Offline indicator component
@@ -187,6 +188,16 @@ export default function App() {
 
           {/* PRENOTAZIONE ONLINE (pubblica) */}
           <Route path="/prenota" element={<BookingPage />} />
+
+          {/* PROGRAMMA FEDELTÀ */}
+          <Route
+            path="/loyalty"
+            element={
+              <ProtectedRoute>
+                <LoyaltyPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* STORICO */}
           <Route
