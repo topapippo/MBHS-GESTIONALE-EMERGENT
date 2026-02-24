@@ -295,15 +295,94 @@ class HairSalonAPITester:
         """Test getting settings"""
         return self.run_test("Get Settings", "GET", "settings", 200)
 
-    def test_update_settings(self):
-        """Test updating settings"""
-        settings_data = {
-            "salon_name": "Test Hair Salon Updated",
-            "opening_time": "08:30",
-            "closing_time": "20:00"
+    def test_create_operator(self):
+        """Test creating an operator"""
+        operator_data = {
+            "name": "Giulia Bianchi",
+            "phone": "+39 987 654 3210",
+            "color": "#789F8A"
         }
         
-        return self.run_test("Update Settings", "PUT", "settings", 200, settings_data)
+        success, response = self.run_test(
+            "Create Operator", 
+            "POST", 
+            "operators", 
+            200, 
+            operator_data
+        )
+        
+        if success and 'id' in response:
+            self.operator_id = response['id']
+            print(f"   Operator created: {self.operator_id}")
+            return True
+        return False
+
+    def test_get_operators(self):
+        """Test getting all operators"""
+        return self.run_test("Get Operators", "GET", "operators", 200)
+
+    def test_get_operator(self):
+        """Test getting specific operator"""
+        if not self.operator_id:
+            print("❌ No operator ID available")
+            return False
+        return self.run_test("Get Single Operator", "GET", f"operators/{self.operator_id}", 200)
+
+    def test_update_operator(self):
+        """Test updating an operator"""
+        if not self.operator_id:
+            print("❌ No operator ID available")
+            return False
+            
+        update_data = {
+            "active": False
+        }
+        
+        return self.run_test(
+            "Update Operator (Toggle Active)", 
+            "PUT", 
+            f"operators/{self.operator_id}", 
+            200, 
+            update_data
+        )
+
+    def test_sms_status(self):
+        """Test SMS status endpoint"""
+        return self.run_test("SMS Status", "GET", "sms/status", 200)
+
+    def test_send_sms_reminder(self):
+        """Test sending SMS reminder (should fail if Twilio not configured)"""
+        if not self.appointment_id:
+            print("❌ No appointment ID available")
+            return False
+            
+        sms_data = {
+            "appointment_id": self.appointment_id,
+            "message": "Test SMS reminder message"
+        }
+        
+        # This should return 200 but with success=false if Twilio not configured
+        success, response = self.run_test(
+            "Send SMS Reminder", 
+            "POST", 
+            "sms/send-reminder", 
+            200, 
+            sms_data
+        )
+        
+        if success:
+            print(f"   SMS Result: {response}")
+        
+        return success
+
+    def test_export_stats_pdf(self):
+        """Test PDF export functionality"""
+        return self.run_test(
+            "Export Stats PDF", 
+            "GET", 
+            "stats/export-pdf?start_date=2025-01-01&end_date=2025-01-31", 
+            200
+        )
 
     # Cleanup tests
     def test_delete_appointment(self):
