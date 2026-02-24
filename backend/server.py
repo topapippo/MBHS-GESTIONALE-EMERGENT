@@ -154,20 +154,22 @@ class AppointmentResponse(BaseModel):
     id: str
     client_id: str
     client_name: str
-    client_phone: str
+    client_phone: Optional[str] = ""
     service_ids: List[str]
     services: List[dict]
-    operator_id: Optional[str]
-    operator_name: Optional[str]
-    operator_color: Optional[str]
+    operator_id: Optional[str] = None
+    operator_name: Optional[str] = None
+    operator_color: Optional[str] = None
     date: str
     time: str
     end_time: str
     total_duration: int
     total_price: float
     status: str
-    notes: str
-    sms_sent: bool
+    notes: Optional[str] = ""
+    sms_sent: Optional[bool] = False
+    source: Optional[str] = "manual"
+    paid: Optional[bool] = False
     created_at: str
 
 class AppointmentUpdate(BaseModel):
