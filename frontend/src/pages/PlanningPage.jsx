@@ -542,7 +542,7 @@ export default function PlanningPage() {
                               time.endsWith(':00') ? 'bg-white' : 'bg-[#FAFAF9]/50'
                             } ${
                               !isSlotOccupied(time, col.id) 
-                                ? 'hover:bg-[#C58970]/10 cursor-pointer' 
+                                ? 'hover:bg-[#C58970]/20 cursor-pointer' 
                                 : ''
                             }`}
                           />
@@ -557,7 +557,7 @@ export default function PlanningPage() {
                               key={apt.id}
                               data-testid={`planning-apt-${apt.id}`}
                               onClick={() => openEditDialog(apt)}
-                              className={`absolute left-1 right-1 rounded-lg p-2 text-white text-xs overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] transition-all ${
+                              className={`absolute left-1 right-1 rounded-lg p-2 text-white overflow-hidden shadow-lg cursor-pointer hover:scale-[1.02] hover:shadow-xl transition-all border-l-4 border-white/50 ${
                                 isHighlighted ? 'ring-4 ring-yellow-400 ring-offset-2 z-20' : ''
                               }`}
                               style={{
