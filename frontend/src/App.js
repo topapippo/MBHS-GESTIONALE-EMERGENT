@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
+import { useEffect, useState } from "react";
 
 // CONTEXT LOGIN
 import { AuthProvider } from "./context/AuthContext";
@@ -20,9 +21,42 @@ import PlanningPage from "./pages/PlanningPage";
 import PrepaidCardsPage from "./pages/PrepaidCardsPage";
 import LoginPage from "./pages/LoginPage";
 
+// Offline indicator component
+function OfflineIndicator() {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast.success('Connessione ripristinata!');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.warning('Sei offline. I dati potrebbero non essere aggiornati.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  if (isOnline) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 bg-amber-500 text-white text-center py-2 text-sm z-50 font-medium">
+      Modalità Offline - I dati mostrati potrebbero non essere aggiornati
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
+      <OfflineIndicator />
       <BrowserRouter basename="/">
         <Routes>
           {/* LOGIN (non protetto) */}
