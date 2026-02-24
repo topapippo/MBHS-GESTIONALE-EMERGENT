@@ -70,12 +70,12 @@ export default function Layout({ children }) {
   const SidebarContent = ({ mobile = false }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-4 border-b border-[#E6CCB2]/30">
+      <div className="p-4 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="MBHS Salon" className="w-12 h-12 rounded-lg object-contain" />
           <div>
-            <h1 className="font-bold text-xl text-[#44403C]">MBHS SALON</h1>
-            <p className="text-xs text-[#78716C] font-manrope">{user?.name}</p>
+            <h1 className="font-bold text-xl text-[#0F172A]">MBHS SALON</h1>
+            <p className="text-xs text-[#334155] font-semibold">{user?.name}</p>
           </div>
         </div>
       </div>
