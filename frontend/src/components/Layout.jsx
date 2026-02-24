@@ -30,9 +30,11 @@ const navItems = [
   { path: '/month', label: 'Mese', icon: CalendarRange },
   { path: '/clients', label: 'Clienti', icon: Users },
   { path: '/cards', label: 'Card / Abbonamenti', icon: CreditCard },
+  { path: '/incassi', label: 'Report Incassi', icon: Euro },
   { path: '/services', label: 'Servizi', icon: Scissors },
   { path: '/operators', label: 'Operatori', icon: UserCircle },
   { path: '/stats', label: 'Statistiche', icon: BarChart3 },
+  { path: '/backup', label: 'Backup Dati', icon: Database },
   { path: '/history', label: 'Storico', icon: History },
   { path: '/settings', label: 'Impostazioni', icon: Settings },
 ];
