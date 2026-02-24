@@ -57,29 +57,23 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left - Image */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 bg-cover bg-center relative"
-        style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1762343040706-b74ea936c1c0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwyfHx3b21hbiUyMGZhc2hpb24lMjBoYWlyc3R5bGUlMjBwb3J0cmFpdCUyMGVsZWdhbnR8ZW58MHx8fHwxNzcxOTA2MTA4fDA&ixlib=rb-4.1.0&q=85')` 
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0EA5E9]/20 to-transparent" />
-        <div className="absolute bottom-12 left-12 text-white">
-          <h2 className="font-playfair text-4xl font-medium mb-2">Gestisci il tuo salone</h2>
-          <p className="font-manrope text-lg opacity-90">Con eleganza e semplicità</p>
+      {/* Left - Logo */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0EA5E9] to-[#0284C7] relative items-center justify-center">
+        <div className="text-center">
+          <img src="/logo.png?v=2" alt="MBHS Salon" className="w-48 h-48 mx-auto mb-8 rounded-2xl shadow-2xl" />
+          <h2 className="font-playfair text-4xl font-bold text-white mb-2">MBHS SALON</h2>
+          <p className="font-manrope text-xl text-blue-100">Gestisci il tuo salone</p>
+          <p className="font-manrope text-lg text-blue-200 mt-1">Con eleganza e semplicità</p>
         </div>
       </div>
 
       {/* Right - Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-[#F8FAFC]">
         <div className="w-full max-w-md">
-          {/* Logo */}
+          {/* Logo Mobile */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#0EA5E9]/10 mb-4">
-              <Scissors className="w-8 h-8 text-[#0EA5E9]" strokeWidth={1.5} />
-            </div>
-            <h1 className="font-playfair text-3xl font-medium text-[#0F172A]">Salone Manager</h1>
+            <img src="/logo.png?v=2" alt="MBHS Salon" className="w-20 h-20 mx-auto mb-4 rounded-xl shadow-lg lg:hidden" />
+            <h1 className="font-playfair text-3xl font-bold text-[#0F172A]">MBHS SALON</h1>
             <p className="text-[#334155] mt-2 font-manrope">Il gestionale per il tuo salone</p>
           </div>
 
