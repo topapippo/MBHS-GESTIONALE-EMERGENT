@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft, ChevronRight, Plus, Clock, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, Loader2, Search, X, Repeat, Check } from 'lucide-react';
 import { format, addDays, subDays } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -62,6 +62,19 @@ export default function PlanningPage() {
     time: '09:00',
     notes: ''
   });
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState({ clients: [], appointments: [] });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [highlightedClientId, setHighlightedClientId] = useState(null);
+
+  // Recurring appointment state
+  const [recurringDialogOpen, setRecurringDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [recurringData, setRecurringData] = useState({ repeat_weeks: 3, repeat_count: 4 });
+  const [creatingRecurring, setCreatingRecurring] = useState(false);
 
   useEffect(() => {
     fetchData();
