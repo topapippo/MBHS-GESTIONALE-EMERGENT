@@ -1495,7 +1495,6 @@ async def get_public_operators():
         {"_id": 0, "user_id": 0}
     ).to_list(50)
     return operators
-    return operators
 
 class PublicBookingRequest(BaseModel):
     client_name: str
