@@ -791,6 +791,286 @@ async def delete_appointment(appointment_id: str, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Appuntamento non trovato")
     return {"message": "Appuntamento eliminato"}
 
+# ============== RECURRING APPOINTMENTS ==============
+
+@api_router.post("/appointments/recurring")
+async def create_recurring_appointments(data: RecurringAppointmentCreate, current_user: dict = Depends(get_current_user)):
+    """Create recurring appointments based on an existing appointment"""
+    # Get original appointment
+    original = await db.appointments.find_one(
+        {"id": data.appointment_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not original:
+        raise HTTPException(status_code=404, detail="Appuntamento non trovato")
+    
+    created_appointments = []
+    original_date = datetime.strptime(original["date"], "%Y-%m-%d")
+    
+    for i in range(1, data.repeat_count + 1):
+        new_date = original_date + timedelta(weeks=data.repeat_weeks * i)
+        
+        appointment_id = str(uuid.uuid4())
+        appointment_doc = {
+            "id": appointment_id,
+            "user_id": current_user["id"],
+            "client_id": original["client_id"],
+            "client_name": original["client_name"],
+            "client_phone": original.get("client_phone", ""),
+            "service_ids": original["service_ids"],
+            "services": original["services"],
+            "operator_id": original.get("operator_id"),
+            "operator_name": original.get("operator_name"),
+            "operator_color": original.get("operator_color"),
+            "date": new_date.strftime("%Y-%m-%d"),
+            "time": original["time"],
+            "end_time": original["end_time"],
+            "total_duration": original["total_duration"],
+            "total_price": original["total_price"],
+            "status": "scheduled",
+            "notes": original.get("notes", ""),
+            "sms_sent": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.appointments.insert_one(appointment_doc)
+        created_appointments.append({
+            "id": appointment_id,
+            "date": appointment_doc["date"],
+            "time": appointment_doc["time"]
+        })
+    
+    return {
+        "created": len(created_appointments),
+        "appointments": created_appointments
+    }
+
+# ============== CLIENT SEARCH (for Planning) ==============
+
+@api_router.get("/clients/search/appointments")
+async def search_client_appointments(
+    query: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Search clients and return their upcoming appointments"""
+    # Find matching clients
+    clients = await db.clients.find(
+        {
+            "user_id": current_user["id"],
+            "name": {"$regex": query, "$options": "i"}
+        },
+        {"_id": 0}
+    ).to_list(20)
+    
+    if not clients:
+        return {"clients": [], "appointments": []}
+    
+    client_ids = [c["id"] for c in clients]
+    
+    # Get upcoming appointments for these clients
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    appointments = await db.appointments.find(
+        {
+            "user_id": current_user["id"],
+            "client_id": {"$in": client_ids},
+            "date": {"$gte": today},
+            "status": {"$ne": "cancelled"}
+        },
+        {"_id": 0, "user_id": 0}
+    ).sort([("date", 1), ("time", 1)]).to_list(50)
+    
+    return {
+        "clients": [{"id": c["id"], "name": c["name"], "phone": c.get("phone", "")} for c in clients],
+        "appointments": appointments
+    }
+
+# ============== PREPAID CARDS / SUBSCRIPTIONS ==============
+
+@api_router.post("/cards", response_model=PrepaidCardResponse)
+async def create_prepaid_card(data: PrepaidCardCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new prepaid card or subscription for a client"""
+    # Verify client exists
+    client = await db.clients.find_one(
+        {"id": data.client_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Cliente non trovato")
+    
+    card_id = str(uuid.uuid4())
+    card_doc = {
+        "id": card_id,
+        "user_id": current_user["id"],
+        "client_id": data.client_id,
+        "client_name": client["name"],
+        "card_type": data.card_type,
+        "name": data.name,
+        "total_value": data.total_value,
+        "remaining_value": data.total_value,
+        "total_services": data.total_services,
+        "used_services": 0,
+        "valid_until": data.valid_until,
+        "notes": data.notes or "",
+        "active": True,
+        "transactions": [],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.cards.insert_one(card_doc)
+    
+    return PrepaidCardResponse(**{k: v for k, v in card_doc.items() if k != "user_id"})
+
+@api_router.get("/cards", response_model=List[PrepaidCardResponse])
+async def get_cards(
+    client_id: Optional[str] = None,
+    active_only: bool = True,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all prepaid cards, optionally filtered by client"""
+    query = {"user_id": current_user["id"]}
+    if client_id:
+        query["client_id"] = client_id
+    if active_only:
+        query["active"] = True
+    
+    cards = await db.cards.find(query, {"_id": 0, "user_id": 0}).sort("created_at", -1).to_list(500)
+    return cards
+
+@api_router.get("/cards/{card_id}", response_model=PrepaidCardResponse)
+async def get_card(card_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific card"""
+    card = await db.cards.find_one(
+        {"id": card_id, "user_id": current_user["id"]},
+        {"_id": 0, "user_id": 0}
+    )
+    if not card:
+        raise HTTPException(status_code=404, detail="Card non trovata")
+    return card
+
+@api_router.put("/cards/{card_id}", response_model=PrepaidCardResponse)
+async def update_card(card_id: str, data: PrepaidCardUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a prepaid card"""
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Nessun dato da aggiornare")
+    
+    result = await db.cards.update_one(
+        {"id": card_id, "user_id": current_user["id"]},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Card non trovata")
+    
+    card = await db.cards.find_one({"id": card_id}, {"_id": 0, "user_id": 0})
+    return card
+
+@api_router.delete("/cards/{card_id}")
+async def delete_card(card_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a prepaid card"""
+    result = await db.cards.delete_one({"id": card_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Card non trovata")
+    return {"message": "Card eliminata"}
+
+@api_router.post("/cards/{card_id}/use")
+async def use_card(card_id: str, data: CardTransaction, current_user: dict = Depends(get_current_user)):
+    """Deduct amount from a prepaid card (used when completing an appointment)"""
+    card = await db.cards.find_one(
+        {"id": card_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not card:
+        raise HTTPException(status_code=404, detail="Card non trovata")
+    
+    if not card["active"]:
+        raise HTTPException(status_code=400, detail="Card non attiva")
+    
+    # Check validity
+    if card.get("valid_until"):
+        if datetime.strptime(card["valid_until"], "%Y-%m-%d").date() < datetime.now(timezone.utc).date():
+            raise HTTPException(status_code=400, detail="Card scaduta")
+    
+    # Check remaining value
+    if card["remaining_value"] < data.amount:
+        raise HTTPException(status_code=400, detail=f"Credito insufficiente. Disponibile: €{card['remaining_value']:.2f}")
+    
+    # Create transaction
+    transaction = {
+        "id": str(uuid.uuid4()),
+        "amount": data.amount,
+        "appointment_id": data.appointment_id,
+        "description": data.description or f"Utilizzo card - €{data.amount:.2f}",
+        "date": datetime.now(timezone.utc).isoformat()
+    }
+    
+    new_remaining = card["remaining_value"] - data.amount
+    new_used_services = card["used_services"] + 1
+    
+    # Check if card is exhausted
+    is_exhausted = new_remaining <= 0
+    if card.get("total_services"):
+        is_exhausted = is_exhausted or new_used_services >= card["total_services"]
+    
+    await db.cards.update_one(
+        {"id": card_id},
+        {
+            "$set": {
+                "remaining_value": new_remaining,
+                "used_services": new_used_services,
+                "active": not is_exhausted
+            },
+            "$push": {"transactions": transaction}
+        }
+    )
+    
+    return {
+        "success": True,
+        "transaction": transaction,
+        "remaining_value": new_remaining,
+        "used_services": new_used_services,
+        "card_active": not is_exhausted
+    }
+
+@api_router.post("/cards/{card_id}/recharge")
+async def recharge_card(card_id: str, amount: float, current_user: dict = Depends(get_current_user)):
+    """Add credit to a prepaid card"""
+    card = await db.cards.find_one(
+        {"id": card_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not card:
+        raise HTTPException(status_code=404, detail="Card non trovata")
+    
+    transaction = {
+        "id": str(uuid.uuid4()),
+        "amount": -amount,  # Negative = recharge
+        "appointment_id": None,
+        "description": f"Ricarica - €{amount:.2f}",
+        "date": datetime.now(timezone.utc).isoformat()
+    }
+    
+    new_remaining = card["remaining_value"] + amount
+    new_total = card["total_value"] + amount
+    
+    await db.cards.update_one(
+        {"id": card_id},
+        {
+            "$set": {
+                "remaining_value": new_remaining,
+                "total_value": new_total,
+                "active": True
+            },
+            "$push": {"transactions": transaction}
+        }
+    )
+    
+    return {
+        "success": True,
+        "new_remaining": new_remaining,
+        "new_total": new_total
+    }
+
 # ============== SMS ROUTES ==============
 
 @api_router.post("/sms/send-reminder")
