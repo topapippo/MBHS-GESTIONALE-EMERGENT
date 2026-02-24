@@ -338,7 +338,7 @@ export default function PlanningPage() {
 
   // Create columns: one for unassigned + one per operator
   const columns = [
-    { id: null, name: 'Non assegnato', color: '#78716C' },
+    { id: null, name: 'Non assegnato', color: '#334155' },
     ...operators.map(op => ({ id: op.id, name: op.name, color: op.color }))
   ];
 
@@ -348,8 +348,8 @@ export default function PlanningPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-playfair text-4xl font-bold text-[#44403C]">Planning</h1>
-            <p className="text-[#C58970] mt-1 font-semibold text-lg">
+            <h1 className="font-playfair text-4xl font-bold text-[#0F172A]">Planning</h1>
+            <p className="text-[#0EA5E9] mt-1 font-semibold text-lg">
               {format(selectedDate, "EEEE d MMMM yyyy", { locale: it })}
             </p>
           </div>
@@ -358,13 +358,13 @@ export default function PlanningPage() {
             <div className="relative">
               <div className="flex items-center">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#C58970]" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#0EA5E9]" />
                   <Input
                     placeholder="Cerca cliente..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     onFocus={() => setSearchOpen(true)}
-                    className="pl-9 w-48 md:w-56 bg-white border-2 border-[#C58970]/50 focus:border-[#C58970] font-medium"
+                    className="pl-9 w-48 md:w-56 bg-white border-2 border-[#0EA5E9]/50 focus:border-[#0EA5E9] font-medium"
                     data-testid="search-client-input"
                   />
                   {searchQuery && (
@@ -385,13 +385,13 @@ export default function PlanningPage() {
               
               {/* Search Results Dropdown */}
               {searchOpen && searchQuery.length >= 2 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E6CCB2] rounded-lg shadow-lg z-50 max-h-80 overflow-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E2E8F0] rounded-lg shadow-lg z-50 max-h-80 overflow-auto">
                   {searching ? (
                     <div className="p-4 text-center">
-                      <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#C58970]" />
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#0EA5E9]" />
                     </div>
                   ) : searchResults.clients.length === 0 ? (
-                    <div className="p-4 text-center text-[#78716C] text-sm">
+                    <div className="p-4 text-center text-[#334155] text-sm">
                       Nessun cliente trovato
                     </div>
                   ) : (
@@ -399,24 +399,24 @@ export default function PlanningPage() {
                       {searchResults.clients.map((client) => {
                         const clientApts = searchResults.appointments.filter(a => a.client_id === client.id);
                         return (
-                          <div key={client.id} className="border-b border-[#E6CCB2]/30 last:border-0">
+                          <div key={client.id} className="border-b border-[#E2E8F0]/30 last:border-0">
                             <button
-                              className="w-full px-4 py-2 text-left hover:bg-[#FAFAF9] flex items-center justify-between"
+                              className="w-full px-4 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between"
                               onClick={() => highlightClient(client.id)}
                               data-testid={`search-result-${client.id}`}
                             >
                               <div>
-                                <p className="font-medium text-[#44403C]">{client.name}</p>
-                                <p className="text-xs text-[#78716C]">{client.phone}</p>
+                                <p className="font-medium text-[#0F172A]">{client.name}</p>
+                                <p className="text-xs text-[#334155]">{client.phone}</p>
                               </div>
-                              <span className="text-xs bg-[#C58970]/10 text-[#C58970] px-2 py-1 rounded">
+                              <span className="text-xs bg-[#0EA5E9]/10 text-[#0EA5E9] px-2 py-1 rounded">
                                 {clientApts.length} app.
                               </span>
                             </button>
                             {clientApts.slice(0, 3).map((apt) => (
                               <div
                                 key={apt.id}
-                                className="px-4 py-1 pl-8 text-xs text-[#78716C] bg-[#FAFAF9]/50"
+                                className="px-4 py-1 pl-8 text-xs text-[#334155] bg-[#F8FAFC]/50"
                               >
                                 {apt.date} {apt.time} - {apt.services?.map(s => s.name).join(', ')}
                               </div>
@@ -432,8 +432,8 @@ export default function PlanningPage() {
 
             {/* Highlighted client indicator */}
             {highlightedClientId && (
-              <div className="flex items-center gap-2 bg-[#C58970]/10 px-3 py-1.5 rounded-lg">
-                <span className="text-sm text-[#C58970] font-medium">
+              <div className="flex items-center gap-2 bg-[#0EA5E9]/10 px-3 py-1.5 rounded-lg">
+                <span className="text-sm text-[#0EA5E9] font-medium">
                   Filtro attivo
                 </span>
                 <Button
@@ -442,7 +442,7 @@ export default function PlanningPage() {
                   className="h-5 w-5"
                   onClick={clearHighlight}
                 >
-                  <X className="w-3 h-3 text-[#C58970]" />
+                  <X className="w-3 h-3 text-[#0EA5E9]" />
                 </Button>
               </div>
             )}
@@ -452,14 +452,14 @@ export default function PlanningPage() {
               variant="outline"
               size="icon"
               onClick={() => setSelectedDate(subDays(selectedDate, 1))}
-              className="border-[#E6CCB2]"
+              className="border-[#E2E8F0]"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <Button
               variant="outline"
               onClick={() => setSelectedDate(new Date())}
-              className="border-[#E6CCB2] text-[#44403C]"
+              className="border-[#E2E8F0] text-[#0F172A]"
             >
               Oggi
             </Button>
@@ -467,7 +467,7 @@ export default function PlanningPage() {
               variant="outline"
               size="icon"
               onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-              className="border-[#E6CCB2]"
+              className="border-[#E2E8F0]"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -478,24 +478,24 @@ export default function PlanningPage() {
         {loading ? (
           <Skeleton className="h-[600px] w-full" />
         ) : (
-          <Card className="bg-white border-[#E6CCB2]/30 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] overflow-hidden">
+          <Card className="bg-white border-[#E2E8F0]/30 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] overflow-hidden">
             <CardContent className="p-0">
               {/* Header with operator names */}
-              <div className="flex border-b-2 border-[#C58970]/40 bg-gradient-to-r from-[#C58970]/10 to-[#E6CCB2]/20 sticky top-0 z-10">
-                <div className="w-16 flex-shrink-0 p-2 border-r-2 border-[#C58970]/30">
-                  <Clock className="w-5 h-5 text-[#C58970] mx-auto" />
+              <div className="flex border-b-2 border-[#0EA5E9]/40 bg-gradient-to-r from-[#0EA5E9]/10 to-[#E2E8F0]/20 sticky top-0 z-10">
+                <div className="w-16 flex-shrink-0 p-2 border-r-2 border-[#0EA5E9]/30">
+                  <Clock className="w-5 h-5 text-[#0EA5E9] mx-auto" />
                 </div>
                 {columns.map((col) => (
                   <div
                     key={col.id || 'unassigned'}
-                    className="flex-1 min-w-[150px] p-3 border-r-2 border-[#C58970]/30 last:border-r-0"
+                    className="flex-1 min-w-[150px] p-3 border-r-2 border-[#0EA5E9]/30 last:border-r-0"
                   >
                     <div className="flex items-center gap-2">
                       <div
                         className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
                         style={{ backgroundColor: col.color }}
                       />
-                      <span className="font-bold text-[#44403C] text-sm truncate">
+                      <span className="font-bold text-[#0F172A] text-sm truncate">
                         {col.name}
                       </span>
                     </div>
@@ -511,12 +511,12 @@ export default function PlanningPage() {
               >
                 <div className="flex relative">
                   {/* Time column */}
-                  <div className="w-16 flex-shrink-0 bg-gradient-to-b from-[#FAFAF9] to-white">
+                  <div className="w-16 flex-shrink-0 bg-gradient-to-b from-[#F8FAFC] to-white">
                     {TIME_SLOTS.map((time, idx) => (
                       <div
                         key={time}
-                        className={`h-12 flex items-center justify-center border-b border-[#E6CCB2]/30 ${
-                          time.endsWith(':00') ? 'font-bold text-sm text-[#44403C] bg-[#E6CCB2]/20' : 'text-xs text-[#78716C]'
+                        className={`h-12 flex items-center justify-center border-b border-[#E2E8F0]/30 ${
+                          time.endsWith(':00') ? 'font-bold text-sm text-[#0F172A] bg-[#E2E8F0]/20' : 'text-xs text-[#334155]'
                         }`}
                       >
                         {time.endsWith(':00') || time.endsWith(':30') ? time : ''}
@@ -531,18 +531,18 @@ export default function PlanningPage() {
                     return (
                       <div
                         key={col.id || 'unassigned'}
-                        className="flex-1 min-w-[150px] relative border-r border-[#E6CCB2]/20 last:border-r-0"
+                        className="flex-1 min-w-[150px] relative border-r border-[#E2E8F0]/20 last:border-r-0"
                       >
                         {/* Time slot backgrounds */}
                         {TIME_SLOTS.map((time) => (
                           <div
                             key={time}
                             onClick={() => !isSlotOccupied(time, col.id) && handleSlotClick(time, col.id)}
-                            className={`h-12 border-b border-[#E6CCB2]/20 transition-colors ${
-                              time.endsWith(':00') ? 'bg-white' : 'bg-[#FAFAF9]/50'
+                            className={`h-12 border-b border-[#E2E8F0]/20 transition-colors ${
+                              time.endsWith(':00') ? 'bg-white' : 'bg-[#F8FAFC]/50'
                             } ${
                               !isSlotOccupied(time, col.id) 
-                                ? 'hover:bg-[#C58970]/20 cursor-pointer' 
+                                ? 'hover:bg-[#0EA5E9]/20 cursor-pointer' 
                                 : ''
                             }`}
                           />
@@ -604,7 +604,7 @@ export default function PlanningPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="font-playfair text-2xl text-[#44403C]">
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A]">
                 Nuovo Appuntamento
               </DialogTitle>
               <DialogDescription>
@@ -613,7 +613,7 @@ export default function PlanningPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label className="text-[#44403C] font-semibold">Cliente</Label>
+                <Label className="text-[#0F172A] font-semibold">Cliente</Label>
                 <div className="relative">
                   <Input
                     type="text"
@@ -628,11 +628,11 @@ export default function PlanningPage() {
                       }
                     }}
                     onFocus={() => setShowClientDropdown(true)}
-                    className="bg-white border-2 border-[#E6CCB2] text-[#44403C] font-medium"
+                    className="bg-white border-2 border-[#E2E8F0] text-[#0F172A] font-medium"
                     data-testid="search-client-dialog"
                   />
                   {showClientDropdown && clientSearch.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-[#C58970] rounded-lg shadow-xl max-h-48 overflow-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-[#0EA5E9] rounded-lg shadow-xl max-h-48 overflow-auto">
                       {clients
                         .filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
                         .slice(0, 20)
@@ -640,8 +640,8 @@ export default function PlanningPage() {
                           <button
                             key={client.id}
                             type="button"
-                            className={`w-full px-3 py-2 text-left hover:bg-[#C58970]/20 text-sm font-medium border-b border-[#E6CCB2]/30 last:border-0 ${
-                              formData.client_id === client.id ? 'bg-[#C58970]/20 text-[#C58970]' : 'text-[#44403C]'
+                            className={`w-full px-3 py-2 text-left hover:bg-[#0EA5E9]/20 text-sm font-medium border-b border-[#E2E8F0]/30 last:border-0 ${
+                              formData.client_id === client.id ? 'bg-[#0EA5E9]/20 text-[#0EA5E9]' : 'text-[#0F172A]'
                             }`}
                             onClick={() => handleClientSelect(client.id, client.name)}
                           >
@@ -649,7 +649,7 @@ export default function PlanningPage() {
                           </button>
                         ))}
                       {clients.filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
-                        <div className="px-3 py-2 text-sm text-[#78716C]">Nessun cliente trovato</div>
+                        <div className="px-3 py-2 text-sm text-[#334155]">Nessun cliente trovato</div>
                       )}
                     </div>
                   )}
@@ -734,8 +734,8 @@ export default function PlanningPage() {
                       variant="outline"
                       className={`justify-start h-auto py-2 px-3 ${
                         formData.service_ids.includes(service.id)
-                          ? 'bg-[#C58970]/10 border-[#C58970] text-[#C58970]'
-                          : 'border-[#E6CCB2]'
+                          ? 'bg-[#0EA5E9]/10 border-[#0EA5E9] text-[#0EA5E9]'
+                          : 'border-[#E2E8F0]'
                       }`}
                       onClick={() => toggleService(service.id)}
                     >
@@ -754,7 +754,7 @@ export default function PlanningPage() {
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Note aggiuntive..."
-                  className="bg-[#FAFAF9]"
+                  className="bg-[#F8FAFC]"
                 />
               </div>
 
@@ -762,7 +762,7 @@ export default function PlanningPage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-[#C58970] hover:bg-[#B07860] text-white"
+                  className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
                   data-testid="save-appointment-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salva Appuntamento'}
@@ -776,7 +776,7 @@ export default function PlanningPage() {
         <Dialog open={recurringDialogOpen} onOpenChange={setRecurringDialogOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
-              <DialogTitle className="font-playfair text-2xl text-[#44403C]">
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A]">
                 Ripeti Appuntamento
               </DialogTitle>
               <DialogDescription>
@@ -789,11 +789,11 @@ export default function PlanningPage() {
             </DialogHeader>
             <div className="space-y-4 mt-4">
               {selectedAppointment && (
-                <div className="p-4 bg-[#FAFAF9] rounded-lg">
-                  <p className="text-sm font-medium text-[#44403C]">
+                <div className="p-4 bg-[#F8FAFC] rounded-lg">
+                  <p className="text-sm font-medium text-[#0F172A]">
                     Servizi: {selectedAppointment.services.map(s => s.name).join(', ')}
                   </p>
-                  <p className="text-xs text-[#78716C] mt-1">
+                  <p className="text-xs text-[#334155] mt-1">
                     {selectedAppointment.operator_name || 'Non assegnato'}
                   </p>
                 </div>
@@ -838,9 +838,9 @@ export default function PlanningPage() {
                 </Select>
               </div>
 
-              <div className="p-3 bg-[#C58970]/10 rounded-lg">
-                <p className="text-sm text-[#44403C]">
-                  <Check className="w-4 h-4 inline mr-1 text-[#C58970]" />
+              <div className="p-3 bg-[#0EA5E9]/10 rounded-lg">
+                <p className="text-sm text-[#0F172A]">
+                  <Check className="w-4 h-4 inline mr-1 text-[#0EA5E9]" />
                   Verranno creati <strong>{recurringData.repeat_count}</strong> nuovi appuntamenti, 
                   uno ogni <strong>{recurringData.repeat_weeks}</strong> settimane
                 </p>
@@ -851,14 +851,14 @@ export default function PlanningPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setRecurringDialogOpen(false)}
-                  className="border-[#E6CCB2]"
+                  className="border-[#E2E8F0]"
                 >
                   Annulla
                 </Button>
                 <Button
                   onClick={handleCreateRecurring}
                   disabled={creatingRecurring}
-                  className="bg-[#C58970] hover:bg-[#B07860] text-white"
+                  className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
                   data-testid="create-recurring-btn"
                 >
                   {creatingRecurring ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Crea Appuntamenti'}
@@ -872,7 +872,7 @@ export default function PlanningPage() {
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent className="sm:max-w-[550px]">
             <DialogHeader>
-              <DialogTitle className="font-playfair text-2xl text-[#44403C]">
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A]">
                 Modifica Appuntamento
               </DialogTitle>
               <DialogDescription>
@@ -900,12 +900,12 @@ export default function PlanningPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[#44403C] font-semibold">Orario</Label>
+                  <Label className="text-[#0F172A] font-semibold">Orario</Label>
                   <Select
                     value={formData.time}
                     onValueChange={(val) => setFormData({ ...formData, time: val })}
                   >
-                    <SelectTrigger className="border-2 border-[#E6CCB2]">
+                    <SelectTrigger className="border-2 border-[#E2E8F0]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px]">
@@ -919,12 +919,12 @@ export default function PlanningPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[#44403C] font-semibold">Operatore</Label>
+                  <Label className="text-[#0F172A] font-semibold">Operatore</Label>
                   <Select
                     value={formData.operator_id || "none"}
                     onValueChange={(val) => setFormData({ ...formData, operator_id: val === "none" ? "" : val })}
                   >
-                    <SelectTrigger className="border-2 border-[#E6CCB2]">
+                    <SelectTrigger className="border-2 border-[#E2E8F0]">
                       <SelectValue placeholder="Seleziona..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -946,7 +946,7 @@ export default function PlanningPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[#44403C] font-semibold">Servizi</Label>
+                <Label className="text-[#0F172A] font-semibold">Servizi</Label>
                 <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
                   {services.map((service) => (
                     <Button
@@ -955,8 +955,8 @@ export default function PlanningPage() {
                       variant="outline"
                       className={`justify-start h-auto py-2 px-3 ${
                         formData.service_ids.includes(service.id)
-                          ? 'bg-[#C58970]/20 border-2 border-[#C58970] text-[#C58970] font-semibold'
-                          : 'border-2 border-[#E6CCB2] text-[#44403C]'
+                          ? 'bg-[#0EA5E9]/20 border-2 border-[#0EA5E9] text-[#0EA5E9] font-semibold'
+                          : 'border-2 border-[#E2E8F0] text-[#0F172A]'
                       }`}
                       onClick={() => toggleService(service.id)}
                     >
@@ -970,12 +970,12 @@ export default function PlanningPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[#44403C] font-semibold">Note appuntamento</Label>
+                <Label className="text-[#0F172A] font-semibold">Note appuntamento</Label>
                 <Input
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Note aggiuntive..."
-                  className="bg-white border-2 border-[#E6CCB2]"
+                  className="bg-white border-2 border-[#E2E8F0]"
                 />
               </div>
 
@@ -997,14 +997,14 @@ export default function PlanningPage() {
                     setEditDialogOpen(false);
                     setEditingAppointment(null);
                   }}
-                  className="border-[#E6CCB2]"
+                  className="border-[#E2E8F0]"
                 >
                   Annulla
                 </Button>
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-[#C58970] hover:bg-[#B07860] text-white font-semibold"
+                  className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold"
                   data-testid="update-appointment-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Edit3 className="w-4 h-4 mr-1" /> Salva</>}
