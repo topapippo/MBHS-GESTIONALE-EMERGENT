@@ -96,6 +96,16 @@ export default function App() {
             }
           />
 
+          {/* OPERATORI */}
+          <Route
+            path="/operators"
+            element={
+              <ProtectedRoute>
+                <OperatorsPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* STORICO */}
           <Route
             path="/history"
