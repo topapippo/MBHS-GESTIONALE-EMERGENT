@@ -313,6 +313,17 @@ export default function ClientsPage() {
                   className="bg-[#FAFAF9] border-transparent focus:border-[#C58970] min-h-[80px]"
                 />
               </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[#FAFAF9]">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-[#78716C]" />
+                  <Label className="font-normal">Promemoria SMS</Label>
+                </div>
+                <Switch
+                  checked={formData.sms_reminder}
+                  onCheckedChange={(checked) => setFormData({ ...formData, sms_reminder: checked })}
+                  className="data-[state=checked]:bg-[#789F8A]"
+                />
+              </div>
               <DialogFooter>
                 <Button
                   type="submit"
