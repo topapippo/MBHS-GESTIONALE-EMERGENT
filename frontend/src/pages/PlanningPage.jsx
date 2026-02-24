@@ -99,8 +99,13 @@ export default function PlanningPage() {
   const [loyaltyAlertOpen, setLoyaltyAlertOpen] = useState(false);
   const [loyaltyAlertData, setLoyaltyAlertData] = useState(null);
 
+  // Reminder notifications
+  const [pendingRemindersCount, setPendingRemindersCount] = useState(0);
+  const [inactiveClientsCount, setInactiveClientsCount] = useState(0);
+
   useEffect(() => {
     fetchData();
+    fetchReminderCounts();
   }, [selectedDate]);
 
   useEffect(() => {
