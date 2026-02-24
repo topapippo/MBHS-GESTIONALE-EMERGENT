@@ -1158,6 +1158,14 @@ export default function PlanningPage() {
                       <span>TOTALE:</span>
                       <span className="text-green-600">€{calculateFinalAmount().toFixed(2)}</span>
                     </div>
+                    {calculateFinalAmount() >= 10 && (
+                      <div className="flex items-center gap-1.5 text-sm text-amber-600 pt-1" data-testid="loyalty-points-preview">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        <span className="font-semibold">
+                          +{Math.floor(calculateFinalAmount() / 10)} punti fedeltà
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Checkout Actions */}
