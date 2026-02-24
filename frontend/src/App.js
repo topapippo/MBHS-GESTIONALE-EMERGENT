@@ -15,6 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 import MonthlyView from "./pages/MonthlyView";
 import WeeklyView from "./pages/WeeklyView";
 import AppointmentsPage from "./pages/AppointmentsPage";
+import OperatorsPage from "./pages/OperatorsPage";
 import LoginPage from "./pages/LoginPage";
 
 export default function App() {
