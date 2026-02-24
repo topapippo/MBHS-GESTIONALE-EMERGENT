@@ -165,6 +165,29 @@ export default function App() {
             }
           />
 
+          {/* REPORT INCASSI */}
+          <Route
+            path="/incassi"
+            element={
+              <ProtectedRoute>
+                <ReportIncassiPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* BACKUP */}
+          <Route
+            path="/backup"
+            element={
+              <ProtectedRoute>
+                <BackupPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* PRENOTAZIONE ONLINE (pubblica) */}
+          <Route path="/prenota" element={<BookingPage />} />
+
           {/* STORICO */}
           <Route
             path="/history"
