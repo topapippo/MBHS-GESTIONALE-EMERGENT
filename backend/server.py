@@ -791,6 +791,86 @@ async def delete_appointment(appointment_id: str, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Appuntamento non trovato")
     return {"message": "Appuntamento eliminato"}
 
+# ============== APPOINTMENT CHECKOUT ==============
+
+class CheckoutData(BaseModel):
+    payment_method: str = "cash"  # cash, card, transfer, prepaid
+    discount_type: str = "none"   # none, percent, fixed
+    discount_value: float = 0
+    total_paid: float
+
+@api_router.post("/appointments/{appointment_id}/checkout")
+async def checkout_appointment(appointment_id: str, data: CheckoutData, current_user: dict = Depends(get_current_user)):
+    """Process payment for an appointment"""
+    appointment = await db.appointments.find_one(
+        {"id": appointment_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appuntamento non trovato")
+    
+    # Create payment record
+    payment_id = str(uuid.uuid4())
+    payment_doc = {
+        "id": payment_id,
+        "user_id": current_user["id"],
+        "appointment_id": appointment_id,
+        "client_id": appointment["client_id"],
+        "client_name": appointment["client_name"],
+        "services": appointment["services"],
+        "original_amount": appointment["total_price"],
+        "discount_type": data.discount_type,
+        "discount_value": data.discount_value,
+        "total_paid": data.total_paid,
+        "payment_method": data.payment_method,
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.payments.insert_one(payment_doc)
+    
+    # Update appointment status
+    await db.appointments.update_one(
+        {"id": appointment_id},
+        {"$set": {
+            "status": "completed",
+            "paid": True,
+            "payment_id": payment_id,
+            "payment_method": data.payment_method,
+            "amount_paid": data.total_paid
+        }}
+    )
+    
+    # If using prepaid card, deduct from card
+    if data.payment_method == "prepaid":
+        # Find client's active prepaid card
+        card = await db.cards.find_one({
+            "client_id": appointment["client_id"],
+            "user_id": current_user["id"],
+            "active": True,
+            "remaining_value": {"$gte": data.total_paid}
+        })
+        if card:
+            new_remaining = card["remaining_value"] - data.total_paid
+            transaction = {
+                "date": datetime.now(timezone.utc).isoformat(),
+                "description": f"Servizi: {', '.join([s['name'] for s in appointment['services']])}",
+                "amount": data.total_paid
+            }
+            await db.cards.update_one(
+                {"id": card["id"]},
+                {
+                    "$set": {"remaining_value": new_remaining},
+                    "$push": {"transactions": transaction}
+                }
+            )
+    
+    return {
+        "success": True,
+        "payment_id": payment_id,
+        "message": "Pagamento registrato con successo"
+    }
+
 # ============== RECURRING APPOINTMENTS ==============
 
 @api_router.post("/appointments/recurring")
