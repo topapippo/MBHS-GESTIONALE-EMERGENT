@@ -270,7 +270,101 @@ export default function PlanningPage() {
               {format(selectedDate, "EEEE d MMMM yyyy", { locale: it })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Search Bar */}
+            <div className="relative">
+              <div className="flex items-center">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#78716C]" />
+                  <Input
+                    placeholder="Cerca cliente..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onFocus={() => setSearchOpen(true)}
+                    className="pl-9 w-48 md:w-56 bg-white border-[#E6CCB2] focus:border-[#C58970]"
+                    data-testid="search-client-input"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSearchResults({ clients: [], appointments: [] });
+                      }}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+              
+              {/* Search Results Dropdown */}
+              {searchOpen && searchQuery.length >= 2 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E6CCB2] rounded-lg shadow-lg z-50 max-h-80 overflow-auto">
+                  {searching ? (
+                    <div className="p-4 text-center">
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#C58970]" />
+                    </div>
+                  ) : searchResults.clients.length === 0 ? (
+                    <div className="p-4 text-center text-[#78716C] text-sm">
+                      Nessun cliente trovato
+                    </div>
+                  ) : (
+                    <div className="py-2">
+                      {searchResults.clients.map((client) => {
+                        const clientApts = searchResults.appointments.filter(a => a.client_id === client.id);
+                        return (
+                          <div key={client.id} className="border-b border-[#E6CCB2]/30 last:border-0">
+                            <button
+                              className="w-full px-4 py-2 text-left hover:bg-[#FAFAF9] flex items-center justify-between"
+                              onClick={() => highlightClient(client.id)}
+                              data-testid={`search-result-${client.id}`}
+                            >
+                              <div>
+                                <p className="font-medium text-[#44403C]">{client.name}</p>
+                                <p className="text-xs text-[#78716C]">{client.phone}</p>
+                              </div>
+                              <span className="text-xs bg-[#C58970]/10 text-[#C58970] px-2 py-1 rounded">
+                                {clientApts.length} app.
+                              </span>
+                            </button>
+                            {clientApts.slice(0, 3).map((apt) => (
+                              <div
+                                key={apt.id}
+                                className="px-4 py-1 pl-8 text-xs text-[#78716C] bg-[#FAFAF9]/50"
+                              >
+                                {apt.date} {apt.time} - {apt.services?.map(s => s.name).join(', ')}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Highlighted client indicator */}
+            {highlightedClientId && (
+              <div className="flex items-center gap-2 bg-[#C58970]/10 px-3 py-1.5 rounded-lg">
+                <span className="text-sm text-[#C58970] font-medium">
+                  Filtro attivo
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5"
+                  onClick={clearHighlight}
+                >
+                  <X className="w-3 h-3 text-[#C58970]" />
+                </Button>
+              </div>
+            )}
+
+            {/* Date Navigation */}
             <Button
               variant="outline"
               size="icon"
