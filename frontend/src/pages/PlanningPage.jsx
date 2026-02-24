@@ -281,6 +281,63 @@ export default function PlanningPage() {
     }
   };
 
+  // Calculate total for appointment
+  const calculateTotal = () => {
+    if (!editingAppointment) return 0;
+    const servicesTotal = editingAppointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+    return servicesTotal;
+  };
+
+  // Calculate discount
+  const calculateDiscount = () => {
+    const total = calculateTotal();
+    if (discountType === 'none' || !discountValue) return 0;
+    
+    const value = parseFloat(discountValue) || 0;
+    if (discountType === 'percent') {
+      return (total * value) / 100;
+    }
+    return value; // fixed amount
+  };
+
+  // Calculate final amount
+  const calculateFinalAmount = () => {
+    return Math.max(0, calculateTotal() - calculateDiscount());
+  };
+
+  // Process payment
+  const handleCheckout = async () => {
+    if (!editingAppointment) return;
+    
+    setProcessing(true);
+    try {
+      await axios.post(`${API}/appointments/${editingAppointment.id}/checkout`, {
+        payment_method: paymentMethod,
+        discount_type: discountType,
+        discount_value: discountType !== 'none' ? parseFloat(discountValue) || 0 : 0,
+        total_paid: calculateFinalAmount()
+      });
+      toast.success('Pagamento registrato con successo!');
+      setEditDialogOpen(false);
+      setEditingAppointment(null);
+      setCheckoutMode(false);
+      resetCheckout();
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Errore nel pagamento');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Reset checkout state
+  const resetCheckout = () => {
+    setCheckoutMode(false);
+    setPaymentMethod('cash');
+    setDiscountType('none');
+    setDiscountValue('');
+  };
+
   // Recurring appointments handler
   const openRecurringDialog = (apt) => {
     setSelectedAppointment(apt);
