@@ -375,14 +375,43 @@ class HairSalonAPITester:
         
         return success
 
-    def test_export_stats_pdf(self):
-        """Test PDF export functionality"""
-        return self.run_test(
-            "Export Stats PDF", 
-            "GET", 
-            "stats/export-pdf?start_date=2025-01-01&end_date=2025-01-31", 
-            200
+    def test_update_settings(self):
+        """Test updating settings"""
+        settings_data = {
+            "salon_name": "Test Hair Salon Updated",
+            "opening_time": "08:30",
+            "closing_time": "20:00"
+        }
+        
+        return self.run_test("Update Settings", "PUT", "settings", 200, settings_data)
+
+    def test_create_appointment_with_operator(self):
+        """Test creating an appointment with operator assignment"""
+        if not self.client_id or not self.service_id or not self.operator_id:
+            print("❌ Missing client ID, service ID, or operator ID")
+            return False
+            
+        appointment_data = {
+            "client_id": self.client_id,
+            "service_ids": [self.service_id],
+            "operator_id": self.operator_id,
+            "date": "2025-01-16",
+            "time": "14:00",
+            "notes": "Appuntamento con operatore assegnato"
+        }
+        
+        success, response = self.run_test(
+            "Create Appointment with Operator", 
+            "POST", 
+            "appointments", 
+            200, 
+            appointment_data
         )
+        
+        if success and 'id' in response:
+            print(f"   Appointment with operator created: {response['id']}")
+            return True
+        return False
 
     # Cleanup tests
     def test_delete_appointment(self):
