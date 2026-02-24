@@ -95,6 +95,10 @@ export default function PlanningPage() {
   const [discountValue, setDiscountValue] = useState('');
   const [processing, setProcessing] = useState(false);
 
+  // Loyalty WhatsApp notification
+  const [loyaltyAlertOpen, setLoyaltyAlertOpen] = useState(false);
+  const [loyaltyAlertData, setLoyaltyAlertData] = useState(null);
+
   useEffect(() => {
     fetchData();
   }, [selectedDate]);
