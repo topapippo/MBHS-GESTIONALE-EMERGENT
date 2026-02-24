@@ -891,7 +891,10 @@ async def checkout_appointment(appointment_id: str, data: CheckoutData, current_
     return {
         "success": True,
         "payment_id": payment_id,
-        "message": "Pagamento registrato con successo"
+        "message": "Pagamento registrato con successo",
+        "loyalty_points_earned": await award_loyalty_points(
+            appointment["client_id"], current_user["id"], data.total_paid, appointment_id
+        )
     }
 
 # ============== RECURRING APPOINTMENTS ==============
