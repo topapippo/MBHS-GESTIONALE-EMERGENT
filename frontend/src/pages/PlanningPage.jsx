@@ -468,24 +468,42 @@ export default function PlanningPage() {
                         {/* Appointments overlay */}
                         {colAppointments.map((apt) => {
                           const style = getAppointmentStyle(apt);
+                          const isHighlighted = highlightedClientId && apt.client_id === highlightedClientId;
                           return (
                             <div
                               key={apt.id}
                               data-testid={`planning-apt-${apt.id}`}
-                              className="absolute left-1 right-1 rounded-lg p-2 text-white text-xs overflow-hidden shadow-md cursor-pointer hover:opacity-90 transition-opacity"
+                              className={`absolute left-1 right-1 rounded-lg p-2 text-white text-xs overflow-hidden shadow-md cursor-pointer hover:opacity-90 transition-all ${
+                                isHighlighted ? 'ring-4 ring-yellow-400 ring-offset-2 z-20' : ''
+                              }`}
                               style={{
                                 ...style,
                                 backgroundColor: apt.operator_color || col.color,
                               }}
                               title={`${apt.client_name} - ${apt.services.map(s => s.name).join(', ')}`}
                             >
-                              <p className="font-semibold truncate">{apt.client_name}</p>
-                              <p className="text-white/80 truncate text-[10px]">
-                                {apt.time} - {apt.end_time}
-                              </p>
-                              <p className="text-white/70 truncate text-[10px]">
-                                {apt.services.map(s => s.name).join(', ')}
-                              </p>
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold truncate">{apt.client_name}</p>
+                                  <p className="text-white/80 truncate text-[10px]">
+                                    {apt.time} - {apt.end_time}
+                                  </p>
+                                  <p className="text-white/70 truncate text-[10px]">
+                                    {apt.services.map(s => s.name).join(', ')}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openRecurringDialog(apt);
+                                  }}
+                                  className="ml-1 p-1 rounded hover:bg-white/20 transition-colors flex-shrink-0"
+                                  title="Ripeti appuntamento"
+                                  data-testid={`repeat-btn-${apt.id}`}
+                                >
+                                  <Repeat className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
