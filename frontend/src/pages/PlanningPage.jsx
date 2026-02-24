@@ -613,25 +613,26 @@ export default function PlanningPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label>Cliente</Label>
+                <Label className="text-[#44403C] font-semibold">Cliente</Label>
                 <div className="relative">
                   <Input
                     type="text"
-                    placeholder="Cerca cliente..."
+                    placeholder="Digita nome cliente..."
                     value={clientSearch}
                     onChange={(e) => {
                       setClientSearch(e.target.value);
                       setShowClientDropdown(true);
                       if (!e.target.value) {
                         setFormData({ ...formData, client_id: '' });
+                        setSelectedClientInfo(null);
                       }
                     }}
                     onFocus={() => setShowClientDropdown(true)}
-                    className="bg-[#FAFAF9]"
+                    className="bg-white border-2 border-[#E6CCB2] text-[#44403C] font-medium"
                     data-testid="search-client-dialog"
                   />
                   {showClientDropdown && clientSearch.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-[#E6CCB2] rounded-lg shadow-lg max-h-48 overflow-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-[#C58970] rounded-lg shadow-xl max-h-48 overflow-auto">
                       {clients
                         .filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
                         .slice(0, 20)
@@ -639,14 +640,10 @@ export default function PlanningPage() {
                           <button
                             key={client.id}
                             type="button"
-                            className={`w-full px-3 py-2 text-left hover:bg-[#FAFAF9] text-sm ${
-                              formData.client_id === client.id ? 'bg-[#C58970]/10 text-[#C58970]' : ''
+                            className={`w-full px-3 py-2 text-left hover:bg-[#C58970]/20 text-sm font-medium border-b border-[#E6CCB2]/30 last:border-0 ${
+                              formData.client_id === client.id ? 'bg-[#C58970]/20 text-[#C58970]' : 'text-[#44403C]'
                             }`}
-                            onClick={() => {
-                              setFormData({ ...formData, client_id: client.id });
-                              setClientSearch(client.name);
-                              setShowClientDropdown(false);
-                            }}
+                            onClick={() => handleClientSelect(client.id, client.name)}
                           >
                             {client.name}
                           </button>
@@ -658,6 +655,27 @@ export default function PlanningPage() {
                   )}
                 </div>
               </div>
+
+              {/* Client Info Card */}
+              {selectedClientInfo && (
+                <div className="p-3 bg-[#FEF3C7] border-2 border-[#F59E0B] rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <User className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-bold text-[#92400E]">{selectedClientInfo.name}</p>
+                      {selectedClientInfo.phone && (
+                        <p className="text-sm text-[#92400E]">Tel: {selectedClientInfo.phone}</p>
+                      )}
+                      {selectedClientInfo.notes && (
+                        <p className="text-sm text-[#92400E] mt-1 whitespace-pre-wrap">{selectedClientInfo.notes}</p>
+                      )}
+                      {!selectedClientInfo.notes && (
+                        <p className="text-sm text-[#92400E]/60 italic">Nessuna nota</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
