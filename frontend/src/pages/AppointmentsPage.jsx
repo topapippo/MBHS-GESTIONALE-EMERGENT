@@ -230,9 +230,9 @@ export default function AppointmentsPage() {
                       <SelectTrigger data-testid="select-time">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-[200px]">
                         {timeSlots.map((time) => (
-                          <SelectItem key={time} value={time}>
+                          <SelectItem key={time} value={time} data-testid={`time-option-${time.replace(':', '-')}`}>
                             {time}
                           </SelectItem>
                         ))}
