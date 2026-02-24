@@ -70,11 +70,14 @@ export default function Layout({ children }) {
   const SidebarContent = ({ mobile = false }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-6 border-b border-[#E6CCB2]/30">
-        <h1 className="font-playfair text-2xl font-medium text-[#44403C]">
-          {user?.salon_name || 'Il Mio Salone'}
-        </h1>
-        <p className="text-sm text-[#78716C] mt-1 font-manrope">{user?.name}</p>
+      <div className="p-4 border-b border-[#E6CCB2]/30">
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="MBHS Salon" className="w-12 h-12 rounded-lg object-contain" />
+          <div>
+            <h1 className="font-bold text-xl text-[#44403C]">MBHS SALON</h1>
+            <p className="text-xs text-[#78716C] font-manrope">{user?.name}</p>
+          </div>
+        </div>
       </div>
 
       {/* Navigation */}
