@@ -24,7 +24,7 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Card Prepagate / Abbonamenti
 - Ricerca Rapida Cliente nel Planning
 - Appuntamenti Ricorrenti
-- Checkout in-appointment con metodi pagamento (Contanti, Carta, Bonifico, Prepagata) e sconti
+- Checkout in-appointment con metodi pagamento e sconti
 
 #### Import Dati
 - Import clienti da Excel (161 clienti)
@@ -33,12 +33,10 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 
 #### PWA & Offline
 - Progressive Web App installabile
-- Icona personalizzata
 - Service Worker per funzionalità offline
-- Indicatore offline
 
 #### Prenotazione Online
-- Pagina pubblica /prenota per prenotazioni clienti
+- Pagina pubblica /prenota con logo
 - Controllo sovrapposizione orari
 
 #### Report & Backup
@@ -54,34 +52,22 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Anteprima punti nel checkout
 - Riscatto e utilizzo premi
 - Aggiunta manuale punti
+- **Notifica WhatsApp automatica** quando il cliente raggiunge 5 o 10 punti (popup dopo checkout con messaggio personalizzato)
 
 #### Branding
 - Logo MBHS SALON su login, booking, sidebar
-- Schema colori blue palette
 
 ## Architettura Tecnica
-
-### Frontend: React 18, React Router, Tailwind CSS, Shadcn/UI, Axios, date-fns
-### Backend: FastAPI (Python), MongoDB, JWT, Twilio
-### PWA: Service Workers, Web App Manifest
+- Frontend: React 18, React Router, Tailwind CSS, Shadcn/UI, Axios, date-fns
+- Backend: FastAPI (Python), MongoDB, JWT
+- PWA: Service Workers, Web App Manifest
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
 - Password: password123
 
-## API Endpoints Principali
-- Auth: /api/auth/login, /api/auth/register, /api/auth/me
-- Clients: /api/clients, /api/clients/{id}/history
-- Services: /api/services
-- Appointments: /api/appointments, /api/appointments/{id}/checkout
-- Operators: /api/operators
-- Cards: /api/cards
-- Loyalty: /api/loyalty, /api/loyalty/config, /api/loyalty/{client_id}, /api/loyalty/{client_id}/redeem, /api/loyalty/{client_id}/use-reward/{reward_id}, /api/loyalty/{client_id}/add-points
-- Public: /api/public/services, /api/public/operators, /api/public/booking
-- Reports: /api/payments, /api/stats/*
-
 ## Backlog Futuro
-- (P1) Promemoria automatici SMS/WhatsApp (logica schedulata)
+- (P1) Promemoria automatici SMS/WhatsApp schedulati
 - (P2) Stampa ricevuta dopo pagamento
 - (P2) Blocco fasce orarie (pause/ferie)
-- (P2) Refactoring server.py in moduli separati (>1800 righe)
+- (P2) Refactoring server.py in moduli separati
