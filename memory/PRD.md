@@ -36,7 +36,7 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Service Worker per funzionalità offline
 
 #### Prenotazione Online
-- Pagina di benvenuto con logo, indirizzo e numeri di telefono
+- Pagina di benvenuto con logo, indirizzo (Via Vito Nicola Melorio 101, Santa Maria Capua Vetere CE) e numeri di telefono (0823 1878320 / 339 783 3526)
 - Pagina pubblica /prenota con flusso a 3 step
 - Controllo sovrapposizione orari
 
@@ -52,16 +52,21 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Punti visibili nello storico cliente e checkout
 - Notifica WhatsApp automatica al raggiungimento soglia 5/10 punti
 
+#### Promemoria & Richiami (24 Feb 2026)
+- Promemoria appuntamenti del giorno dopo via WhatsApp
+- Richiamo clienti inattivi (60+ giorni) con offerta sconto 10% entro 7 giorni
+- Pagina dedicata /reminders con due sezioni
+- Banner notifica sul Planning con conteggio promemoria pendenti
+- Tracciamento invii (evita doppi invii, cooldown 30 giorni per richiami)
+
 #### Branding
 - Logo MBHS SALON su login, booking, sidebar
-- Indirizzo e contatti su pagina prenotazione
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
 - Password: password123
 
 ## Backlog Futuro
-- (P1) Promemoria automatici SMS/WhatsApp schedulati
 - (P2) Stampa ricevuta dopo pagamento
 - (P2) Blocco fasce orarie (pause/ferie)
-- (P2) Refactoring server.py in moduli separati
+- (P2) Refactoring server.py in moduli separati (>2000 righe)
