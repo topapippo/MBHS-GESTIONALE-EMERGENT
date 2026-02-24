@@ -80,6 +80,14 @@ export default function PlanningPage() {
   const [recurringData, setRecurringData] = useState({ repeat_weeks: 3, repeat_count: 4 });
   const [creatingRecurring, setCreatingRecurring] = useState(false);
 
+  // Edit/Delete appointment state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Selected client info
+  const [selectedClientInfo, setSelectedClientInfo] = useState(null);
+
   useEffect(() => {
     fetchData();
   }, [selectedDate]);
