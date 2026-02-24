@@ -219,6 +219,9 @@ export default function ClientsPage() {
                       <div className="flex items-center gap-2 text-[#78716C]">
                         <Phone className="w-4 h-4" />
                         <span>{client.phone}</span>
+                        {client.sms_reminder && (
+                          <MessageSquare className="w-3 h-3 text-[#789F8A]" title="SMS attivi" />
+                        )}
                       </div>
                     )}
                     {client.email && (
