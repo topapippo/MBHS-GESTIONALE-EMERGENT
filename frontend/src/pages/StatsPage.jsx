@@ -4,20 +4,20 @@ import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { BarChart3, Euro, TrendingUp, Calendar as CalendarIcon, Users } from 'lucide-react';
+import { BarChart3, Euro, TrendingUp, Calendar as CalendarIcon, Download, Users } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-const COLORS = ['#C58970', '#789F8A', '#E9C46A', '#78716C', '#E6CCB2'];
+const COLORS = ['#C58970', '#789F8A', '#E9C46A', '#78716C', '#E6CCB2', '#E76F51', '#3498DB', '#9B59B6'];
 
 export default function StatsPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [dateRange, setDateRange] = useState({
     start: startOfMonth(new Date()),
     end: new Date()
@@ -62,6 +62,35 @@ export default function StatsPage() {
         break;
       default:
         break;
+    }
+  };
+
+  const handleExportPdf = async () => {
+    setExporting(true);
+    try {
+      const response = await axios.get(`${API}/stats/export-pdf`, {
+        params: {
+          start_date: format(dateRange.start, 'yyyy-MM-dd'),
+          end_date: format(dateRange.end, 'yyyy-MM-dd')
+        },
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `report_${format(dateRange.start, 'yyyy-MM-dd')}_${format(dateRange.end, 'yyyy-MM-dd')}.txt`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Report esportato con successo!');
+    } catch (err) {
+      toast.error('Errore nell\'esportazione');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -110,6 +139,15 @@ export default function StatsPage() {
               className="border-[#E6CCB2] text-[#44403C]"
             >
               3 mesi
+            </Button>
+            <Button
+              onClick={handleExportPdf}
+              disabled={exporting || loading}
+              data-testid="export-pdf-btn"
+              className="bg-[#C58970] hover:bg-[#B07860] text-white"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exporting ? 'Esportando...' : 'Esporta Report'}
             </Button>
           </div>
         </div>
@@ -274,6 +312,35 @@ export default function StatsPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Operator Stats */}
+            {stats?.operator_breakdown?.length > 0 && (
+              <Card className="bg-white border-[#E6CCB2]/30 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]">
+                <CardHeader>
+                  <CardTitle className="font-playfair text-xl text-[#44403C] flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#C58970]" />
+                    Performance Operatori
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {stats.operator_breakdown.map((operator, idx) => (
+                      <div 
+                        key={operator.name}
+                        className="p-4 rounded-xl bg-[#FAFAF9] border-l-4"
+                        style={{ borderLeftColor: operator.color || COLORS[idx % COLORS.length] }}
+                      >
+                        <h4 className="font-medium text-[#44403C]">{operator.name}</h4>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-sm text-[#78716C]">{operator.count} appuntamenti</span>
+                          <span className="font-semibold text-[#44403C]">€{operator.revenue.toFixed(0)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>
