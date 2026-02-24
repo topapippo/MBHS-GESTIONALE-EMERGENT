@@ -27,6 +27,7 @@ for (let h = 8; h <= 20; h++) {
 }
 
 export default function BookingPage() {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
   const [operators, setOperators] = useState([]);
