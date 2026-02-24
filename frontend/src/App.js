@@ -19,6 +19,9 @@ import AppointmentsPage from "./pages/AppointmentsPage";
 import OperatorsPage from "./pages/OperatorsPage";
 import PlanningPage from "./pages/PlanningPage";
 import PrepaidCardsPage from "./pages/PrepaidCardsPage";
+import ReportIncassiPage from "./pages/ReportIncassiPage";
+import BackupPage from "./pages/BackupPage";
+import BookingPage from "./pages/BookingPage";
 import LoginPage from "./pages/LoginPage";
 
 // Offline indicator component
