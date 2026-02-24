@@ -336,7 +336,7 @@ def main():
     tests = [
         ("Health Check", tester.test_health_check),
         ("User Registration", tester.test_register), 
-        ("Get Profile", tester.test_profile),
+        ("Get Profile", tester.test_get_profile),
         ("Get Services (Default)", tester.test_get_services),
         ("Create Client", tester.test_create_client),
         ("Get Clients", tester.test_get_clients),
