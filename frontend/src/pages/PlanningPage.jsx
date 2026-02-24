@@ -534,21 +534,49 @@ export default function PlanningPage() {
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
                 <Label>Cliente</Label>
-                <Select
-                  value={formData.client_id}
-                  onValueChange={(val) => setFormData({ ...formData, client_id: val })}
-                >
-                  <SelectTrigger data-testid="select-client-appointment">
-                    <SelectValue placeholder="Seleziona cliente" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Cerca cliente..."
+                    value={clientSearch}
+                    onChange={(e) => {
+                      setClientSearch(e.target.value);
+                      setShowClientDropdown(true);
+                      if (!e.target.value) {
+                        setFormData({ ...formData, client_id: '' });
+                      }
+                    }}
+                    onFocus={() => setShowClientDropdown(true)}
+                    className="bg-[#FAFAF9]"
+                    data-testid="search-client-dialog"
+                  />
+                  {showClientDropdown && clientSearch.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-[#E6CCB2] rounded-lg shadow-lg max-h-48 overflow-auto">
+                      {clients
+                        .filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
+                        .slice(0, 20)
+                        .map((client) => (
+                          <button
+                            key={client.id}
+                            type="button"
+                            className={`w-full px-3 py-2 text-left hover:bg-[#FAFAF9] text-sm ${
+                              formData.client_id === client.id ? 'bg-[#C58970]/10 text-[#C58970]' : ''
+                            }`}
+                            onClick={() => {
+                              setFormData({ ...formData, client_id: client.id });
+                              setClientSearch(client.name);
+                              setShowClientDropdown(false);
+                            }}
+                          >
+                            {client.name}
+                          </button>
+                        ))}
+                      {clients.filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-[#78716C]">Nessun cliente trovato</div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
