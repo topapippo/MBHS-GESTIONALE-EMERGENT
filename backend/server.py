@@ -242,6 +242,26 @@ class RecurringAppointmentCreate(BaseModel):
     repeat_weeks: int  # Every X weeks
     repeat_count: int  # How many times to repeat
 
+# Loyalty Program Models
+class LoyaltyRedeemRequest(BaseModel):
+    reward_type: str  # "sconto_colorazione" or "taglio_gratuito"
+
+# Loyalty config
+LOYALTY_POINTS_PER_EURO = 10  # 1 point every 10€ spent
+LOYALTY_REWARDS = {
+    "sconto_colorazione": {
+        "name": "Sconto 20% Colorazione",
+        "description": "Sconto del 20% sul prossimo servizio di colorazione",
+        "points_required": 5,
+        "discount_percent": 20,
+    },
+    "taglio_gratuito": {
+        "name": "Taglio Gratuito",
+        "description": "Un taglio completamente gratuito",
+        "points_required": 10,
+    }
+}
+
 # ============== HELPER FUNCTIONS ==============
 
 def hash_password(password: str) -> str:
