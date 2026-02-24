@@ -1466,8 +1466,11 @@ async def get_client_history(client_id: str, current_user: dict = Depends(get_cu
 @api_router.get("/public/services")
 async def get_public_services():
     """Get services for public booking page"""
-    # Get first user's services (for single-salon setup)
-    user = await db.users.find_one({}, {"_id": 0, "id": 1})
+    # Get melitobruno's services (main user)
+    user = await db.users.find_one({"email": "melitobruno@gmail.com"}, {"_id": 0, "id": 1})
+    if not user:
+        # Fallback to first user
+        user = await db.users.find_one({}, {"_id": 0, "id": 1})
     if not user:
         return []
     services = await db.services.find(
@@ -1479,13 +1482,16 @@ async def get_public_services():
 @api_router.get("/public/operators")
 async def get_public_operators():
     """Get operators for public booking page"""
-    user = await db.users.find_one({}, {"_id": 0, "id": 1})
+    user = await db.users.find_one({"email": "melitobruno@gmail.com"}, {"_id": 0, "id": 1})
+    if not user:
+        user = await db.users.find_one({}, {"_id": 0, "id": 1})
     if not user:
         return []
     operators = await db.operators.find(
-        {"user_id": user["id"], "active": True},
+        {"user_id": user["id"]},
         {"_id": 0, "user_id": 0}
     ).to_list(50)
+    return operators
     return operators
 
 class PublicBookingRequest(BaseModel):
