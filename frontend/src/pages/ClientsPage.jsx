@@ -592,6 +592,90 @@ export default function ClientsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Client History Dialog */}
+        <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A] flex items-center gap-2">
+                <History className="w-6 h-6 text-[#0EA5E9]" />
+                Storico Cliente
+              </DialogTitle>
+              {clientHistory && (
+                <DialogDescription>
+                  {clientHistory.client.name}
+                </DialogDescription>
+              )}
+            </DialogHeader>
+            
+            {loadingHistory ? (
+              <div className="space-y-3">
+                <Skeleton className="h-20" />
+                <Skeleton className="h-20" />
+              </div>
+            ) : clientHistory ? (
+              <div className="space-y-4">
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="p-4 bg-[#0EA5E9]/10 rounded-lg text-center">
+                    <p className="text-2xl font-black text-[#0EA5E9]">{clientHistory.total_visits}</p>
+                    <p className="text-xs text-[#334155] font-semibold">Visite</p>
+                  </div>
+                  <div className="p-4 bg-green-100 rounded-lg text-center">
+                    <p className="text-2xl font-black text-green-600">€{clientHistory.total_spent.toFixed(0)}</p>
+                    <p className="text-xs text-[#334155] font-semibold">Totale Speso</p>
+                  </div>
+                  <div className="p-4 bg-purple-100 rounded-lg text-center">
+                    <p className="text-sm font-black text-purple-600">{clientHistory.last_visit || '-'}</p>
+                    <p className="text-xs text-[#334155] font-semibold">Ultima Visita</p>
+                  </div>
+                </div>
+
+                {/* Appointments */}
+                <div>
+                  <h3 className="font-bold text-[#0F172A] mb-2">Appuntamenti</h3>
+                  {clientHistory.appointments.length === 0 ? (
+                    <p className="text-[#334155] text-sm">Nessun appuntamento</p>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {clientHistory.appointments.slice(0, 20).map((apt) => (
+                        <div key={apt.id} className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold text-[#0F172A]">{apt.date} - {apt.time}</p>
+                              <p className="text-sm text-[#334155]">{apt.services?.map(s => s.name).join(', ')}</p>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded ${apt.paid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                              {apt.paid ? 'Pagato' : 'Da pagare'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Payments */}
+                {clientHistory.payments.length > 0 && (
+                  <div>
+                    <h3 className="font-bold text-[#0F172A] mb-2">Pagamenti</h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {clientHistory.payments.slice(0, 10).map((pay) => (
+                        <div key={pay.id} className="p-3 bg-green-50 rounded-lg flex justify-between items-center">
+                          <div>
+                            <p className="font-semibold text-[#0F172A]">{pay.date}</p>
+                            <p className="text-xs text-[#334155] capitalize">{pay.payment_method}</p>
+                          </div>
+                          <p className="font-black text-green-600">€{pay.total_paid.toFixed(2)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
