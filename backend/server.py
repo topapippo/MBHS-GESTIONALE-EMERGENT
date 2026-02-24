@@ -106,10 +106,11 @@ class ClientCreate(BaseModel):
 class ClientResponse(BaseModel):
     id: str
     name: str
-    phone: str
-    email: str
-    notes: str
-    sms_reminder: bool
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    notes: Optional[str] = ""
+    sms_reminder: Optional[bool] = False
+    send_sms_reminders: Optional[bool] = False
     created_at: str
     total_visits: int = 0
 
