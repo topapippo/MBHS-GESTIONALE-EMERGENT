@@ -202,16 +202,16 @@ export default function PrepaidCardsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-playfair text-3xl font-medium text-[#44403C]">
+            <h1 className="font-playfair text-3xl font-medium text-[#0F172A]">
               Card & Abbonamenti
             </h1>
-            <p className="text-[#78716C] mt-1 font-manrope">
+            <p className="text-[#334155] mt-1 font-manrope">
               Gestisci le card prepagate e gli abbonamenti dei clienti
             </p>
           </div>
           <Button
             onClick={() => setDialogOpen(true)}
-            className="bg-[#C58970] hover:bg-[#B07860] text-white"
+            className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
             data-testid="new-card-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -220,23 +220,23 @@ export default function PrepaidCardsPage() {
         </div>
 
         {/* Filters */}
-        <Card className="bg-white border-[#E6CCB2]/30">
+        <Card className="bg-white border-[#E2E8F0]/30">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#78716C]" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#334155]" />
                 <Input
                   placeholder="Cerca per cliente o nome card..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 bg-[#FAFAF9] border-[#E6CCB2]"
+                  className="pl-9 bg-[#F8FAFC] border-[#E2E8F0]"
                   data-testid="search-cards-input"
                 />
               </div>
               <Button
                 variant="outline"
                 onClick={() => setShowInactive(!showInactive)}
-                className={`border-[#E6CCB2] ${showInactive ? 'bg-[#FAFAF9]' : ''}`}
+                className={`border-[#E2E8F0] ${showInactive ? 'bg-[#F8FAFC]' : ''}`}
               >
                 {showInactive ? 'Nascondi inattive' : 'Mostra inattive'}
               </Button>
@@ -252,15 +252,15 @@ export default function PrepaidCardsPage() {
             ))}
           </div>
         ) : filteredCards.length === 0 ? (
-          <Card className="bg-white border-[#E6CCB2]/30">
+          <Card className="bg-white border-[#E2E8F0]/30">
             <CardContent className="p-12 text-center">
-              <CreditCard className="w-12 h-12 mx-auto text-[#78716C] mb-4" />
-              <p className="text-[#78716C]">
+              <CreditCard className="w-12 h-12 mx-auto text-[#334155] mb-4" />
+              <p className="text-[#334155]">
                 {searchQuery ? 'Nessuna card trovata' : 'Nessuna card creata'}
               </p>
               <Button
                 onClick={() => setDialogOpen(true)}
-                className="mt-4 bg-[#C58970] hover:bg-[#B07860] text-white"
+                className="mt-4 bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Crea la prima card
@@ -272,23 +272,23 @@ export default function PrepaidCardsPage() {
             {filteredCards.map((card) => (
               <Card
                 key={card.id}
-                className={`bg-white border-[#E6CCB2]/30 overflow-hidden ${!card.active ? 'opacity-60' : ''}`}
+                className={`bg-white border-[#E2E8F0]/30 overflow-hidden ${!card.active ? 'opacity-60' : ''}`}
                 data-testid={`card-${card.id}`}
               >
                 <CardContent className="p-0">
                   {/* Card Header */}
                   <div
-                    className="p-4 cursor-pointer hover:bg-[#FAFAF9]/50 transition-colors"
+                    className="p-4 cursor-pointer hover:bg-[#F8FAFC]/50 transition-colors"
                     onClick={() => setExpandedCard(expandedCard === card.id ? null : card.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-[#C58970]/10 flex items-center justify-center">
-                          <CreditCard className="w-6 h-6 text-[#C58970]" />
+                        <div className="w-12 h-12 rounded-full bg-[#0EA5E9]/10 flex items-center justify-center">
+                          <CreditCard className="w-6 h-6 text-[#0EA5E9]" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-[#44403C]">{card.name}</h3>
+                            <h3 className="font-medium text-[#0F172A]">{card.name}</h3>
                             <Badge className={getCardTypeColor(card.card_type)}>
                               {getCardTypeLabel(card.card_type)}
                             </Badge>
@@ -296,7 +296,7 @@ export default function PrepaidCardsPage() {
                               <Badge variant="secondary">Inattiva</Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-[#78716C]">
+                          <div className="flex items-center gap-4 mt-1 text-sm text-[#334155]">
                             <span className="flex items-center gap-1">
                               <User className="w-3 h-3" />
                               {card.client_name}
@@ -313,19 +313,19 @@ export default function PrepaidCardsPage() {
 
                       <div className="flex items-center gap-6">
                         <div className="text-right">
-                          <p className="text-2xl font-semibold text-[#44403C]">
+                          <p className="text-2xl font-semibold text-[#0F172A]">
                             €{card.remaining_value.toFixed(2)}
                           </p>
-                          <p className="text-xs text-[#78716C]">
+                          <p className="text-xs text-[#334155]">
                             di €{card.total_value.toFixed(2)}
                           </p>
                         </div>
                         {card.total_services && (
-                          <div className="text-right border-l border-[#E6CCB2]/30 pl-6">
-                            <p className="text-2xl font-semibold text-[#44403C]">
+                          <div className="text-right border-l border-[#E2E8F0]/30 pl-6">
+                            <p className="text-2xl font-semibold text-[#0F172A]">
                               {card.total_services - card.used_services}
                             </p>
-                            <p className="text-xs text-[#78716C]">
+                            <p className="text-xs text-[#334155]">
                               di {card.total_services} servizi
                             </p>
                           </div>
@@ -339,7 +339,7 @@ export default function PrepaidCardsPage() {
                               setSelectedCard(card);
                               setRechargeDialogOpen(true);
                             }}
-                            className="text-[#78716C] hover:text-[#C58970]"
+                            className="text-[#334155] hover:text-[#0EA5E9]"
                             data-testid={`recharge-btn-${card.id}`}
                           >
                             <RefreshCw className="w-4 h-4" />
@@ -351,15 +351,15 @@ export default function PrepaidCardsPage() {
                               e.stopPropagation();
                               handleDelete(card.id);
                             }}
-                            className="text-[#78716C] hover:text-red-500"
+                            className="text-[#334155] hover:text-red-500"
                             data-testid={`delete-btn-${card.id}`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                           {expandedCard === card.id ? (
-                            <ChevronUp className="w-5 h-5 text-[#78716C]" />
+                            <ChevronUp className="w-5 h-5 text-[#334155]" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-[#78716C]" />
+                            <ChevronDown className="w-5 h-5 text-[#334155]" />
                           )}
                         </div>
                       </div>
@@ -367,9 +367,9 @@ export default function PrepaidCardsPage() {
 
                     {/* Progress Bar */}
                     <div className="mt-4">
-                      <div className="w-full bg-[#E6CCB2]/30 rounded-full h-2">
+                      <div className="w-full bg-[#E2E8F0]/30 rounded-full h-2">
                         <div
-                          className="bg-[#C58970] h-2 rounded-full transition-all"
+                          className="bg-[#0EA5E9] h-2 rounded-full transition-all"
                           style={{
                             width: `${Math.min((card.remaining_value / card.total_value) * 100, 100)}%`
                           }}
@@ -380,8 +380,8 @@ export default function PrepaidCardsPage() {
 
                   {/* Expanded Section - Transactions */}
                   {expandedCard === card.id && card.transactions && card.transactions.length > 0 && (
-                    <div className="border-t border-[#E6CCB2]/30 p-4 bg-[#FAFAF9]">
-                      <h4 className="font-medium text-[#44403C] mb-3">Storico Transazioni</h4>
+                    <div className="border-t border-[#E2E8F0]/30 p-4 bg-[#F8FAFC]">
+                      <h4 className="font-medium text-[#0F172A] mb-3">Storico Transazioni</h4>
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -393,7 +393,7 @@ export default function PrepaidCardsPage() {
                         <TableBody>
                           {card.transactions.slice().reverse().map((tx, idx) => (
                             <TableRow key={idx}>
-                              <TableCell className="text-[#78716C]">
+                              <TableCell className="text-[#334155]">
                                 {formatDate(tx.date)}
                               </TableCell>
                               <TableCell>{tx.description}</TableCell>
@@ -416,7 +416,7 @@ export default function PrepaidCardsPage() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="font-playfair text-2xl text-[#44403C]">
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A]">
                 Nuova Card
               </DialogTitle>
               <DialogDescription>
@@ -466,7 +466,7 @@ export default function PrepaidCardsPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="es. Card 10 Pieghe"
-                    className="bg-[#FAFAF9]"
+                    className="bg-[#F8FAFC]"
                     data-testid="card-name-input"
                   />
                 </div>
@@ -482,7 +482,7 @@ export default function PrepaidCardsPage() {
                     value={formData.total_value}
                     onChange={(e) => setFormData({ ...formData, total_value: e.target.value })}
                     placeholder="es. 200"
-                    className="bg-[#FAFAF9]"
+                    className="bg-[#F8FAFC]"
                     data-testid="total-value-input"
                   />
                 </div>
@@ -495,7 +495,7 @@ export default function PrepaidCardsPage() {
                     value={formData.total_services}
                     onChange={(e) => setFormData({ ...formData, total_services: e.target.value })}
                     placeholder="es. 10"
-                    className="bg-[#FAFAF9]"
+                    className="bg-[#F8FAFC]"
                     data-testid="total-services-input"
                   />
                 </div>
@@ -507,7 +507,7 @@ export default function PrepaidCardsPage() {
                   type="date"
                   value={formData.valid_until}
                   onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                  className="bg-[#FAFAF9]"
+                  className="bg-[#F8FAFC]"
                   data-testid="valid-until-input"
                 />
               </div>
@@ -518,7 +518,7 @@ export default function PrepaidCardsPage() {
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Note aggiuntive..."
-                  className="bg-[#FAFAF9]"
+                  className="bg-[#F8FAFC]"
                 />
               </div>
 
@@ -530,14 +530,14 @@ export default function PrepaidCardsPage() {
                     setDialogOpen(false);
                     resetForm();
                   }}
-                  className="border-[#E6CCB2]"
+                  className="border-[#E2E8F0]"
                 >
                   Annulla
                 </Button>
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-[#C58970] hover:bg-[#B07860] text-white"
+                  className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
                   data-testid="save-card-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Crea Card'}
@@ -551,7 +551,7 @@ export default function PrepaidCardsPage() {
         <Dialog open={rechargeDialogOpen} onOpenChange={setRechargeDialogOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
-              <DialogTitle className="font-playfair text-2xl text-[#44403C]">
+              <DialogTitle className="font-playfair text-2xl text-[#0F172A]">
                 Ricarica Card
               </DialogTitle>
               <DialogDescription>
@@ -560,9 +560,9 @@ export default function PrepaidCardsPage() {
             </DialogHeader>
             <div className="space-y-4 mt-4">
               {selectedCard && (
-                <div className="p-4 bg-[#FAFAF9] rounded-lg">
-                  <p className="text-sm text-[#78716C]">Credito attuale</p>
-                  <p className="text-2xl font-semibold text-[#44403C]">
+                <div className="p-4 bg-[#F8FAFC] rounded-lg">
+                  <p className="text-sm text-[#334155]">Credito attuale</p>
+                  <p className="text-2xl font-semibold text-[#0F172A]">
                     €{selectedCard.remaining_value.toFixed(2)}
                   </p>
                 </div>
@@ -577,7 +577,7 @@ export default function PrepaidCardsPage() {
                   value={rechargeAmount}
                   onChange={(e) => setRechargeAmount(e.target.value)}
                   placeholder="es. 100"
-                  className="bg-[#FAFAF9]"
+                  className="bg-[#F8FAFC]"
                   data-testid="recharge-amount-input"
                 />
               </div>
@@ -591,14 +591,14 @@ export default function PrepaidCardsPage() {
                     setRechargeAmount('');
                     setSelectedCard(null);
                   }}
-                  className="border-[#E6CCB2]"
+                  className="border-[#E2E8F0]"
                 >
                   Annulla
                 </Button>
                 <Button
                   onClick={handleRecharge}
                   disabled={saving}
-                  className="bg-[#C58970] hover:bg-[#B07860] text-white"
+                  className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
                   data-testid="confirm-recharge-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ricarica'}
