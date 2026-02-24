@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft, ChevronRight, Plus, Clock, Loader2, Search, X, Repeat, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, Loader2, Search, X, Repeat, Check, Trash2, Edit3, User } from 'lucide-react';
 import { format, addDays, subDays } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { toast } from 'sonner';
