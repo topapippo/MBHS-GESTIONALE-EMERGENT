@@ -348,8 +348,8 @@ export default function PlanningPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-playfair text-3xl font-medium text-[#44403C]">Planning</h1>
-            <p className="text-[#78716C] mt-1 font-manrope">
+            <h1 className="font-playfair text-4xl font-bold text-[#44403C]">Planning</h1>
+            <p className="text-[#C58970] mt-1 font-semibold text-lg">
               {format(selectedDate, "EEEE d MMMM yyyy", { locale: it })}
             </p>
           </div>
@@ -358,13 +358,13 @@ export default function PlanningPage() {
             <div className="relative">
               <div className="flex items-center">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#78716C]" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#C58970]" />
                   <Input
                     placeholder="Cerca cliente..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     onFocus={() => setSearchOpen(true)}
-                    className="pl-9 w-48 md:w-56 bg-white border-[#E6CCB2] focus:border-[#C58970]"
+                    className="pl-9 w-48 md:w-56 bg-white border-2 border-[#C58970]/50 focus:border-[#C58970] font-medium"
                     data-testid="search-client-input"
                   />
                   {searchQuery && (
