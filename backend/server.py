@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -12,6 +13,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import jwt
 import bcrypt
+import io
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,6 +27,20 @@ db = client[os.environ['DB_NAME']]
 JWT_SECRET = os.environ.get('JWT_SECRET', 'salone-parrucchiera-secret-key-2024')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
+
+# Twilio Config (optional)
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')
+
+# Initialize Twilio client if credentials are available
+twilio_client = None
+if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
+    try:
+        from twilio.rest import Client
+        twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    except ImportError:
+        pass
 
 # Create the main app
 app = FastAPI()
@@ -59,12 +75,33 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
 
+# Operator Models
+class OperatorCreate(BaseModel):
+    name: str
+    phone: Optional[str] = ""
+    color: Optional[str] = "#C58970"
+
+class OperatorResponse(BaseModel):
+    id: str
+    name: str
+    phone: str
+    color: str
+    active: bool
+    created_at: str
+
+class OperatorUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    color: Optional[str] = None
+    active: Optional[bool] = None
+
 # Client Models
 class ClientCreate(BaseModel):
     name: str
     phone: Optional[str] = ""
     email: Optional[str] = ""
     notes: Optional[str] = ""
+    sms_reminder: Optional[bool] = True
 
 class ClientResponse(BaseModel):
     id: str
@@ -72,6 +109,7 @@ class ClientResponse(BaseModel):
     phone: str
     email: str
     notes: str
+    sms_reminder: bool
     created_at: str
     total_visits: int = 0
 
@@ -80,12 +118,13 @@ class ClientUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     notes: Optional[str] = None
+    sms_reminder: Optional[bool] = None
 
 # Service Models
 class ServiceCreate(BaseModel):
     name: str
-    category: str  # taglio, colore, piega, trattamento
-    duration: int  # minutes
+    category: str
+    duration: int
     price: float
 
 class ServiceResponse(BaseModel):
@@ -106,32 +145,44 @@ class ServiceUpdate(BaseModel):
 class AppointmentCreate(BaseModel):
     client_id: str
     service_ids: List[str]
-    date: str  # YYYY-MM-DD
-    time: str  # HH:MM
+    operator_id: Optional[str] = None
+    date: str
+    time: str
     notes: Optional[str] = ""
 
 class AppointmentResponse(BaseModel):
     id: str
     client_id: str
     client_name: str
+    client_phone: str
     service_ids: List[str]
     services: List[dict]
+    operator_id: Optional[str]
+    operator_name: Optional[str]
+    operator_color: Optional[str]
     date: str
     time: str
     end_time: str
     total_duration: int
     total_price: float
-    status: str  # scheduled, completed, cancelled
+    status: str
     notes: str
+    sms_sent: bool
     created_at: str
 
 class AppointmentUpdate(BaseModel):
     client_id: Optional[str] = None
     service_ids: Optional[List[str]] = None
+    operator_id: Optional[str] = None
     date: Optional[str] = None
     time: Optional[str] = None
     status: Optional[str] = None
     notes: Optional[str] = None
+
+# SMS Model
+class SMSRequest(BaseModel):
+    appointment_id: str
+    message: Optional[str] = None
 
 # Settings Model
 class SettingsUpdate(BaseModel):
@@ -181,11 +232,37 @@ def calculate_end_time(start_time: str, duration_minutes: int) -> str:
     end_minutes = total_minutes % 60
     return f"{end_hours:02d}:{end_minutes:02d}"
 
+def format_phone_e164(phone: str) -> str:
+    """Format phone number to E.164 format for Twilio"""
+    phone = ''.join(filter(str.isdigit, phone))
+    if phone.startswith('39'):
+        return f"+{phone}"
+    elif phone.startswith('3') and len(phone) == 10:
+        return f"+39{phone}"
+    elif not phone.startswith('+'):
+        return f"+39{phone}"
+    return phone
+
+async def send_sms_reminder(phone: str, message: str, salon_name: str) -> dict:
+    """Send SMS via Twilio"""
+    if not twilio_client or not TWILIO_PHONE_NUMBER:
+        return {"success": False, "error": "Twilio non configurato"}
+    
+    try:
+        formatted_phone = format_phone_e164(phone)
+        sms = twilio_client.messages.create(
+            body=f"[{salon_name}] {message}",
+            from_=TWILIO_PHONE_NUMBER,
+            to=formatted_phone
+        )
+        return {"success": True, "sid": sms.sid}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register", response_model=TokenResponse)
 async def register(data: UserCreate):
-    # Check if user exists
     existing = await db.users.find_one({"email": data.email}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Email già registrata")
@@ -223,6 +300,18 @@ async def register(data: UserCreate):
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.services.insert_one(service_doc)
+    
+    # Create default operator (owner)
+    operator_doc = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "name": data.name,
+        "phone": "",
+        "color": "#C58970",
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.operators.insert_one(operator_doc)
     
     token = create_token(user_id)
     
@@ -269,6 +358,56 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=current_user["created_at"]
     )
 
+# ============== OPERATOR ROUTES ==============
+
+@api_router.post("/operators", response_model=OperatorResponse)
+async def create_operator(data: OperatorCreate, current_user: dict = Depends(get_current_user)):
+    operator_id = str(uuid.uuid4())
+    operator_doc = {
+        "id": operator_id,
+        "user_id": current_user["id"],
+        "name": data.name,
+        "phone": data.phone or "",
+        "color": data.color or "#C58970",
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.operators.insert_one(operator_doc)
+    return OperatorResponse(**{k: v for k, v in operator_doc.items() if k != "user_id"})
+
+@api_router.get("/operators", response_model=List[OperatorResponse])
+async def get_operators(current_user: dict = Depends(get_current_user)):
+    operators = await db.operators.find(
+        {"user_id": current_user["id"]}, 
+        {"_id": 0, "user_id": 0}
+    ).sort("name", 1).to_list(100)
+    return operators
+
+@api_router.put("/operators/{operator_id}", response_model=OperatorResponse)
+async def update_operator(operator_id: str, data: OperatorUpdate, current_user: dict = Depends(get_current_user)):
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Nessun dato da aggiornare")
+    
+    result = await db.operators.update_one(
+        {"id": operator_id, "user_id": current_user["id"]},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Operatore non trovato")
+    
+    operator = await db.operators.find_one({"id": operator_id}, {"_id": 0, "user_id": 0})
+    return operator
+
+@api_router.delete("/operators/{operator_id}")
+async def delete_operator(operator_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.operators.delete_one({"id": operator_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Operatore non trovato")
+    return {"message": "Operatore eliminato"}
+
 # ============== CLIENT ROUTES ==============
 
 @api_router.post("/clients", response_model=ClientResponse)
@@ -281,12 +420,12 @@ async def create_client(data: ClientCreate, current_user: dict = Depends(get_cur
         "phone": data.phone or "",
         "email": data.email or "",
         "notes": data.notes or "",
+        "sms_reminder": data.sms_reminder if data.sms_reminder is not None else True,
         "total_visits": 0,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.clients.insert_one(client_doc)
-    
     return ClientResponse(**{k: v for k, v in client_doc.items() if k != "user_id"})
 
 @api_router.get("/clients", response_model=List[ClientResponse])
@@ -321,10 +460,7 @@ async def update_client(client_id: str, data: ClientUpdate, current_user: dict =
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Cliente non trovato")
     
-    client = await db.clients.find_one(
-        {"id": client_id}, 
-        {"_id": 0, "user_id": 0}
-    )
+    client = await db.clients.find_one({"id": client_id}, {"_id": 0, "user_id": 0})
     return client
 
 @api_router.delete("/clients/{client_id}")
@@ -350,7 +486,6 @@ async def create_service(data: ServiceCreate, current_user: dict = Depends(get_c
     }
     
     await db.services.insert_one(service_doc)
-    
     return ServiceResponse(**{k: v for k, v in service_doc.items() if k != "user_id"})
 
 @api_router.get("/services", response_model=List[ServiceResponse])
@@ -375,10 +510,7 @@ async def update_service(service_id: str, data: ServiceUpdate, current_user: dic
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Servizio non trovato")
     
-    service = await db.services.find_one(
-        {"id": service_id}, 
-        {"_id": 0, "user_id": 0}
-    )
+    service = await db.services.find_one({"id": service_id}, {"_id": 0, "user_id": 0})
     return service
 
 @api_router.delete("/services/{service_id}")
@@ -409,6 +541,18 @@ async def create_appointment(data: AppointmentCreate, current_user: dict = Depen
     if len(services) != len(data.service_ids):
         raise HTTPException(status_code=404, detail="Uno o più servizi non trovati")
     
+    # Get operator if specified
+    operator_name = None
+    operator_color = None
+    if data.operator_id:
+        operator = await db.operators.find_one(
+            {"id": data.operator_id, "user_id": current_user["id"]},
+            {"_id": 0}
+        )
+        if operator:
+            operator_name = operator["name"]
+            operator_color = operator.get("color", "#C58970")
+    
     total_duration = sum(s["duration"] for s in services)
     total_price = sum(s["price"] for s in services)
     end_time = calculate_end_time(data.time, total_duration)
@@ -419,8 +563,12 @@ async def create_appointment(data: AppointmentCreate, current_user: dict = Depen
         "user_id": current_user["id"],
         "client_id": data.client_id,
         "client_name": client["name"],
+        "client_phone": client.get("phone", ""),
         "service_ids": data.service_ids,
         "services": [{"id": s["id"], "name": s["name"], "duration": s["duration"], "price": s["price"]} for s in services],
+        "operator_id": data.operator_id,
+        "operator_name": operator_name,
+        "operator_color": operator_color,
         "date": data.date,
         "time": data.time,
         "end_time": end_time,
@@ -428,6 +576,7 @@ async def create_appointment(data: AppointmentCreate, current_user: dict = Depen
         "total_price": total_price,
         "status": "scheduled",
         "notes": data.notes or "",
+        "sms_sent": False,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -441,6 +590,7 @@ async def get_appointments(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     status: Optional[str] = None,
+    operator_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     query = {"user_id": current_user["id"]}
@@ -452,6 +602,9 @@ async def get_appointments(
     
     if status:
         query["status"] = status
+    
+    if operator_id:
+        query["operator_id"] = operator_id
     
     appointments = await db.appointments.find(
         query, 
@@ -490,6 +643,7 @@ async def update_appointment(appointment_id: str, data: AppointmentUpdate, curre
             raise HTTPException(status_code=404, detail="Cliente non trovato")
         update_data["client_id"] = data.client_id
         update_data["client_name"] = client["name"]
+        update_data["client_phone"] = client.get("phone", "")
     
     if data.service_ids:
         services = await db.services.find(
@@ -505,13 +659,27 @@ async def update_appointment(appointment_id: str, data: AppointmentUpdate, curre
         update_data["total_duration"] = sum(s["duration"] for s in services)
         update_data["total_price"] = sum(s["price"] for s in services)
     
+    if data.operator_id is not None:
+        if data.operator_id:
+            operator = await db.operators.find_one(
+                {"id": data.operator_id, "user_id": current_user["id"]},
+                {"_id": 0}
+            )
+            if operator:
+                update_data["operator_id"] = data.operator_id
+                update_data["operator_name"] = operator["name"]
+                update_data["operator_color"] = operator.get("color", "#C58970")
+        else:
+            update_data["operator_id"] = None
+            update_data["operator_name"] = None
+            update_data["operator_color"] = None
+    
     if data.date:
         update_data["date"] = data.date
     if data.time:
         update_data["time"] = data.time
     if data.status:
         update_data["status"] = data.status
-        # Update client visits if completed
         if data.status == "completed":
             await db.clients.update_one(
                 {"id": appointment["client_id"]},
@@ -520,7 +688,6 @@ async def update_appointment(appointment_id: str, data: AppointmentUpdate, curre
     if data.notes is not None:
         update_data["notes"] = data.notes
     
-    # Recalculate end time if time or services changed
     if "time" in update_data or "total_duration" in update_data:
         time = update_data.get("time", appointment["time"])
         duration = update_data.get("total_duration", appointment["total_duration"])
@@ -532,10 +699,7 @@ async def update_appointment(appointment_id: str, data: AppointmentUpdate, curre
             {"$set": update_data}
         )
     
-    updated = await db.appointments.find_one(
-        {"id": appointment_id}, 
-        {"_id": 0, "user_id": 0}
-    )
+    updated = await db.appointments.find_one({"id": appointment_id}, {"_id": 0, "user_id": 0})
     return updated
 
 @api_router.delete("/appointments/{appointment_id}")
@@ -545,22 +709,71 @@ async def delete_appointment(appointment_id: str, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Appuntamento non trovato")
     return {"message": "Appuntamento eliminato"}
 
+# ============== SMS ROUTES ==============
+
+@api_router.post("/sms/send-reminder")
+async def send_appointment_reminder(data: SMSRequest, current_user: dict = Depends(get_current_user)):
+    """Send SMS reminder for a specific appointment"""
+    appointment = await db.appointments.find_one(
+        {"id": data.appointment_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appuntamento non trovato")
+    
+    client = await db.clients.find_one(
+        {"id": appointment["client_id"], "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    
+    if not client or not client.get("phone"):
+        raise HTTPException(status_code=400, detail="Cliente senza numero di telefono")
+    
+    if not client.get("sms_reminder", True):
+        raise HTTPException(status_code=400, detail="Cliente ha disabilitato promemoria SMS")
+    
+    # Format message
+    services_text = ", ".join([s["name"] for s in appointment["services"]])
+    default_message = f"Promemoria: hai un appuntamento il {appointment['date']} alle {appointment['time']} per {services_text}. Ti aspettiamo!"
+    message = data.message or default_message
+    
+    result = await send_sms_reminder(
+        client["phone"],
+        message,
+        current_user["salon_name"]
+    )
+    
+    if result["success"]:
+        await db.appointments.update_one(
+            {"id": data.appointment_id},
+            {"$set": {"sms_sent": True}}
+        )
+        return {"success": True, "message": "SMS inviato con successo"}
+    else:
+        return {"success": False, "error": result.get("error", "Errore sconosciuto")}
+
+@api_router.get("/sms/status")
+async def get_sms_status(current_user: dict = Depends(get_current_user)):
+    """Check if Twilio is configured"""
+    return {
+        "configured": twilio_client is not None and TWILIO_PHONE_NUMBER is not None,
+        "phone_number": TWILIO_PHONE_NUMBER if TWILIO_PHONE_NUMBER else None
+    }
+
 # ============== STATS ROUTES ==============
 
 @api_router.get("/stats/dashboard")
 async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
-    # Today's appointments
     today_appointments = await db.appointments.find(
         {"user_id": current_user["id"], "date": today, "status": {"$ne": "cancelled"}},
         {"_id": 0, "user_id": 0}
     ).sort("time", 1).to_list(100)
     
-    # Total clients
     total_clients = await db.clients.count_documents({"user_id": current_user["id"]})
+    total_operators = await db.operators.count_documents({"user_id": current_user["id"], "active": True})
     
-    # This month stats
     first_of_month = datetime.now(timezone.utc).replace(day=1).strftime("%Y-%m-%d")
     last_of_month = (datetime.now(timezone.utc).replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
     last_of_month = last_of_month.strftime("%Y-%m-%d")
@@ -577,7 +790,6 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     monthly_revenue = sum(a.get("total_price", 0) for a in monthly_appointments)
     monthly_appointments_count = len(monthly_appointments)
     
-    # Upcoming appointments (next 7 days)
     next_week = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d")
     upcoming = await db.appointments.find(
         {
@@ -593,6 +805,7 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
         "today_appointments_count": len(today_appointments),
         "today_revenue": sum(a.get("total_price", 0) for a in today_appointments if a.get("status") == "completed"),
         "total_clients": total_clients,
+        "total_operators": total_operators,
         "monthly_revenue": monthly_revenue,
         "monthly_appointments": monthly_appointments_count,
         "upcoming_appointments": upcoming
@@ -631,12 +844,96 @@ async def get_revenue_stats(
             service_revenue[name]["count"] += 1
             service_revenue[name]["revenue"] += svc["price"]
     
+    # Group by operator
+    operator_stats = {}
+    for apt in appointments:
+        op_name = apt.get("operator_name", "Non assegnato")
+        if op_name not in operator_stats:
+            operator_stats[op_name] = {"count": 0, "revenue": 0, "color": apt.get("operator_color", "#78716C")}
+        operator_stats[op_name]["count"] += 1
+        operator_stats[op_name]["revenue"] += apt.get("total_price", 0)
+    
     return {
         "total_revenue": sum(daily_revenue.values()),
         "total_appointments": len(appointments),
         "daily_revenue": [{"date": k, "revenue": v} for k, v in sorted(daily_revenue.items())],
-        "service_breakdown": [{"name": k, **v} for k, v in sorted(service_revenue.items(), key=lambda x: x[1]["revenue"], reverse=True)]
+        "service_breakdown": [{"name": k, **v} for k, v in sorted(service_revenue.items(), key=lambda x: x[1]["revenue"], reverse=True)],
+        "operator_breakdown": [{"name": k, **v} for k, v in sorted(operator_stats.items(), key=lambda x: x[1]["revenue"], reverse=True)]
     }
+
+@api_router.get("/stats/export-pdf")
+async def export_stats_pdf(
+    start_date: str,
+    end_date: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate PDF report of statistics"""
+    # Get stats data
+    appointments = await db.appointments.find(
+        {
+            "user_id": current_user["id"],
+            "date": {"$gte": start_date, "$lte": end_date},
+            "status": "completed"
+        },
+        {"_id": 0}
+    ).to_list(10000)
+    
+    total_revenue = sum(a.get("total_price", 0) for a in appointments)
+    total_appointments = len(appointments)
+    
+    # Group by service
+    service_stats = {}
+    for apt in appointments:
+        for svc in apt.get("services", []):
+            name = svc["name"]
+            if name not in service_stats:
+                service_stats[name] = {"count": 0, "revenue": 0}
+            service_stats[name]["count"] += 1
+            service_stats[name]["revenue"] += svc["price"]
+    
+    # Group by operator
+    operator_stats = {}
+    for apt in appointments:
+        op_name = apt.get("operator_name", "Non assegnato")
+        if op_name not in operator_stats:
+            operator_stats[op_name] = {"count": 0, "revenue": 0}
+        operator_stats[op_name]["count"] += 1
+        operator_stats[op_name]["revenue"] += apt.get("total_price", 0)
+    
+    # Generate simple text-based report (CSV format for easy import)
+    report_lines = []
+    report_lines.append(f"REPORT STATISTICHE - {current_user['salon_name']}")
+    report_lines.append(f"Periodo: {start_date} - {end_date}")
+    report_lines.append("")
+    report_lines.append("=" * 50)
+    report_lines.append("RIEPILOGO")
+    report_lines.append("=" * 50)
+    report_lines.append(f"Totale Incasso: €{total_revenue:.2f}")
+    report_lines.append(f"Totale Appuntamenti: {total_appointments}")
+    report_lines.append(f"Media per Appuntamento: €{(total_revenue/total_appointments if total_appointments > 0 else 0):.2f}")
+    report_lines.append("")
+    report_lines.append("=" * 50)
+    report_lines.append("SERVIZI")
+    report_lines.append("=" * 50)
+    for name, data in sorted(service_stats.items(), key=lambda x: x[1]["revenue"], reverse=True):
+        report_lines.append(f"{name}: {data['count']} volte - €{data['revenue']:.2f}")
+    report_lines.append("")
+    report_lines.append("=" * 50)
+    report_lines.append("OPERATORI")
+    report_lines.append("=" * 50)
+    for name, data in sorted(operator_stats.items(), key=lambda x: x[1]["revenue"], reverse=True):
+        report_lines.append(f"{name}: {data['count']} appuntamenti - €{data['revenue']:.2f}")
+    
+    report_content = "\n".join(report_lines)
+    
+    # Return as downloadable text file
+    return StreamingResponse(
+        io.BytesIO(report_content.encode('utf-8')),
+        media_type="text/plain",
+        headers={
+            "Content-Disposition": f"attachment; filename=report_{start_date}_{end_date}.txt"
+        }
+    )
 
 # ============== SETTINGS ROUTES ==============
 
@@ -669,7 +966,8 @@ async def get_settings(current_user: dict = Depends(get_current_user)):
         "salon_name": current_user["salon_name"],
         "opening_time": current_user.get("opening_time", "09:00"),
         "closing_time": current_user.get("closing_time", "19:00"),
-        "working_days": current_user.get("working_days", ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"])
+        "working_days": current_user.get("working_days", ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"]),
+        "twilio_configured": twilio_client is not None
     }
 
 # ============== HEALTH CHECK ==============
