@@ -610,7 +610,7 @@ async def get_services(current_user: dict = Depends(get_current_user)):
     services = await db.services.find(
         {"user_id": current_user["id"]}, 
         {"_id": 0, "user_id": 0}
-    ).sort("category", 1).to_list(1000)
+    ).sort("sort_order", 1).to_list(1000)
     return services
 
 @api_router.put("/services/{service_id}", response_model=ServiceResponse)
