@@ -541,17 +541,4 @@ export default function LoyaltyPage() {
   );
 }
 
-const LOYALTY_REWARDS_UI = {
-  sconto_colorazione: {
-    name: 'Sconto 10% Colorazione',
-    pointsReq: 5,
-    icon: <Award className="w-5 h-5 text-purple-600" />,
-    bgColor: 'bg-purple-100',
-  },
-  taglio_gratuito: {
-    name: 'Taglio Gratuito',
-    pointsReq: 10,
-    icon: <Trophy className="w-5 h-5 text-emerald-600" />,
-    bgColor: 'bg-emerald-100',
-  },
-};
+// Rewards loaded from API
