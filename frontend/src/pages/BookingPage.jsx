@@ -251,7 +251,7 @@ export default function BookingPage() {
       <Toaster position="top-center" />
 
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e]/90 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e]/90 backdrop-blur-md border-b border-amber-400/10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo.png?v=3" alt="MBHS Salon" className="w-10 h-10 rounded-lg" />
@@ -271,7 +271,7 @@ export default function BookingPage() {
       <section className="relative min-h-screen flex items-center pt-16">
         <div className="absolute inset-0">
           <img src={HERO_BG} alt="Bruno Melito Hair" className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/60 via-[#0a0a0a]/40 to-[#0a0a0a]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e]/60 via-[#1a1a2e]/40 to-[#1a1a2e]" />
         </div>
         <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32 w-full">
           <div className="text-center max-w-3xl mx-auto">
@@ -308,8 +308,8 @@ export default function BookingPage() {
             </div>
           </div>
           {/* Experience badge */}
-          <div className="absolute right-4 sm:right-8 bottom-20 sm:bottom-32 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center hidden md:block">
-            <p className="text-4xl font-black text-amber-300">40+</p>
+          <div className="absolute right-4 sm:right-8 bottom-20 sm:bottom-32 bg-white/5 backdrop-blur-md border border-rose-400/30 rounded-3xl p-5 text-center hidden md:block">
+            <p className="text-4xl font-black text-rose-300">40+</p>
             <p className="text-xs text-gray-400 font-semibold">Anni di<br />Esperienza</p>
             <p className="text-[10px] text-gray-600 mt-1">Dal 1983</p>
           </div>
