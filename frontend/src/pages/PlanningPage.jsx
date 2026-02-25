@@ -1174,7 +1174,22 @@ export default function PlanningPage() {
               </div>
 
               {/* Checkout Section */}
-              {!checkoutMode ? (
+              {editingAppointment?.status === 'completed' ? (
+                <div className="pt-4 border-t-2 border-emerald-300 bg-emerald-50 -mx-6 px-6 pb-4 rounded-b-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-emerald-800">Pagamento completato</p>
+                      <p className="text-sm text-emerald-600">
+                        {editingAppointment.payment_method === 'cash' ? 'Contanti' : editingAppointment.payment_method === 'card' ? 'Carta' : editingAppointment.payment_method || 'N/A'}
+                        {editingAppointment.amount_paid ? ` - \u20AC${editingAppointment.amount_paid.toFixed(2)}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : !checkoutMode ? (
                 <div className="pt-4 border-t-2 border-[#E2E8F0]">
                   <div className="flex items-center justify-between">
                     <div>
