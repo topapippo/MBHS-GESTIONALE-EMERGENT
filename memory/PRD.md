@@ -70,12 +70,15 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Banner notifica sul Planning con conteggio promemoria pendenti
 
 #### Landing Page Redesign (25 Feb 2026)
-- Ripristinato tema scuro (#0a0a0a) con accenti amber/gold
+- Tema blu scuro chiaro (#1a1a2e) con colori vivaci multicolore
+- Bordi morbidi arrotondati (rounded-3xl) e colorati su tutte le card (amber, rose, teal, violet)
 - Artwork utente come hero image centrale
 - Servizi collassabili (Mostra/Nascondi listino)
 - 6 foto reali nella gallery acconciature
 - Indirizzo cliccabile -> Google Maps
 - Orari aggiornati 08:00-19:00
+- Pulsanti CTA gradient vivace (amber-to-rose)
+- Icone sezioni in colori diversi (amber, rose, teal, violet)
 - Layout responsive mobile con CTA fisso in basso
 
 ## Credenziali Test
