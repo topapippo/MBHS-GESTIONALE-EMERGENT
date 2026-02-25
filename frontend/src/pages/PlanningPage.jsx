@@ -421,6 +421,50 @@ export default function PlanningPage() {
   };
 
   // Calculate appointment position and height
+  // Drag & Drop handlers
+  const handleDragStart = (e, apt) => {
+    setDraggedApt(apt);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', apt.id);
+    e.currentTarget.style.opacity = '0.5';
+  };
+
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
+    setDraggedApt(null);
+    setDragOverSlot(null);
+  };
+
+  const handleDragOver = (e, time, colId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverSlot(`${time}-${colId}`);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverSlot(null);
+  };
+
+  const handleDrop = async (e, time, colId) => {
+    e.preventDefault();
+    setDragOverSlot(null);
+    if (!draggedApt) return;
+    if (draggedApt.time === time && draggedApt.operator_id === colId) return;
+    
+    try {
+      const updateData = { time };
+      if (colId !== draggedApt.operator_id) {
+        updateData.operator_id = colId || '';
+      }
+      await axios.put(`${API}/appointments/${draggedApt.id}`, updateData);
+      toast.success(`Spostato a ${time}`);
+      fetchData();
+    } catch (err) {
+      toast.error('Errore nello spostamento');
+    }
+    setDraggedApt(null);
+  };
+
   const getAppointmentStyle = (apt) => {
     const [startHour, startMin] = apt.time.split(':').map(Number);
     const startSlotIndex = (startHour - 8) * 4 + Math.floor(startMin / 15);
