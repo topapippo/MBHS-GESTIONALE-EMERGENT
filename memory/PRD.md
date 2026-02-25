@@ -1,7 +1,7 @@
 # PRD - MBHS SALON
 
 ## Problema Originale
-Applicazione gestionale completa per un salone di parrucchiera con autenticazione, gestione appuntamenti, clienti, servizi, operatori, statistiche e funzionalità avanzate.
+Applicazione gestionale completa per un salone di parrucchiera con autenticazione, gestione appuntamenti, clienti, servizi, operatori, statistiche e funzionalita avanzate.
 
 ## Stato Attuale: COMPLETO E LIVE
 
@@ -11,7 +11,7 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - **Database:** MongoDB Atlas (Free Tier)
 - **URL Live:** https://mbhssalon.onrender.com
 
-### Funzionalità Implementate
+### Funzionalita Implementate
 
 #### Core Application
 - Autenticazione JWT (email/password)
@@ -21,19 +21,26 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Vista mensile
 - Gestione Clienti (CRUD) - 183 clienti
 - Gestione Servizi (CRUD) - 20 servizi in 6 categorie con colori personalizzati
-- Operatore unico BRUNO con possibilità di aggiungerne altri
+- Operatore unico BRUNO con possibilita di aggiungerne altri
 - Statistiche con export PDF
 - Storico appuntamenti
 
-#### Servizi (6 categorie, ordinati per numero)
-- **Taglio:** 01 Taglio Donna, 06 Taglio uomo
-- **Colore:** 11-15 (Parziale, Completo, Colpi di sole, Cartine, Balayage)
-- **Piega:** 02-04 (Cap.corti, Cap.lunghi, Fantasy)
-- **Trattamento:** 08-10 (Maschera, Fiala, Laminazione)
-- **Modellanti:** 16-20 (Permanente, Anticrespo, Ondulazione, Stiratura Classica, Stiratura New) - Da 40EUR
-- **Altro:** 05, 07
+#### Landing Page / Sito Web (25 Feb 2026)
+- URL principale mbhssalon.onrender.com mostra la landing page ai visitatori
+- Utenti loggati vedono direttamente il Planning
+- /prenota continua a funzionare come alias
+- Sezioni: Hero, Servizi, Gallery Salone, Chi Siamo, Recensioni, Gallery Lavori, Contatti, Footer
+- Tema scuro (#1a1a2e) con bordi colorati e effetto glow
 
-#### Funzionalità Avanzate
+#### Servizi (6 categorie, ordinati per numero)
+- Taglio: 01 Taglio Donna, 06 Taglio uomo
+- Colore: 11-15 (Parziale, Completo, Colpi di sole, Cartine, Balayage)
+- Piega: 02-04 (Cap.corti, Cap.lunghi, Fantasy)
+- Trattamento: 08-10 (Maschera, Fiala, Laminazione)
+- Modellanti: 16-20 (Permanente, Anticrespo, Ondulazione, Stiratura Classica, Stiratura New) - Da 40 EUR
+- Altro: 05, 07
+
+#### Funzionalita Avanzate
 - Checkout in-appointment con metodi pagamento e sconti
 - Card Prepagate / Abbonamenti
 - Ricerca Rapida Cliente nel Planning
@@ -43,31 +50,10 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Pagina Impostazioni
 - Riepilogo Giornaliero con grafico orario
 
-#### PWA & Offline
-- Progressive Web App installabile con icona desktop
-- Service Worker per funzionalità offline
-
-#### Prenotazione Online & Landing Page
-- Pagina pubblica /prenota con tema blu scuro chiaro (#1a1a2e)
-- Bordi morbidi arrotondati (rounded-3xl) colorati con effetto glow al hover
-- Artwork "Metti la testa a posto!!" centrato nella hero
-- 6 foto reali nella gallery acconciature
-- Servizi collassabili, indirizzo cliccabile Google Maps
-- Orari: Mar-Sab 08:00-19:00
-- Flusso prenotazione a 3 step
-
-#### Programma Fedeltà (punti azzerati il 25 Feb 2026)
-- 1 punto ogni 10EUR spesi
-- Premi configurabili da UI
-- Pagina dedicata /loyalty
-
-#### Promemoria & Richiami
-- Promemoria appuntamenti via WhatsApp
-- Richiamo clienti inattivi
-- Pagina dedicata /reminders
-
 ## Bug Fix (25 Feb 2026)
 - Fix percorsi Dashboard: i moduli Planning, Settimanale, Mensile e Card Prepagate puntavano a rotte inesistenti
+- Aggiunta rotta /planning dedicata
+- Landing page come homepage per visitatori non loggati
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
