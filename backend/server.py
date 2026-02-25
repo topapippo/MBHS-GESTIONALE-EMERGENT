@@ -1851,7 +1851,7 @@ async def get_client_loyalty(client_id: str, current_user: dict = Depends(get_cu
     
     loyalty = await get_or_create_loyalty(client_id, current_user["id"])
     loyalty["client_name"] = client["name"]
-    loyalty["rewards_config"] = LOYALTY_REWARDS
+    loyalty["rewards_config"] = await get_loyalty_rewards(current_user["id"])
     return loyalty
 
 @api_router.post("/loyalty/{client_id}/redeem")
@@ -1864,7 +1864,8 @@ async def redeem_loyalty_reward(client_id: str, data: LoyaltyRedeemRequest, curr
     if not client:
         raise HTTPException(status_code=404, detail="Cliente non trovato")
     
-    reward = LOYALTY_REWARDS.get(data.reward_type)
+    rewards = await get_loyalty_rewards(current_user["id"])
+    reward = rewards.get(data.reward_type)
     if not reward:
         raise HTTPException(status_code=400, detail="Tipo di premio non valido")
     
