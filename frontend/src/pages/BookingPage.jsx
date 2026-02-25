@@ -509,14 +509,14 @@ export default function BookingPage() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-black text-base px-10 py-6 rounded-xl w-full sm:w-auto" data-testid="contact-book-btn">
+            <Button onClick={() => setShowBooking(true)} className="bg-gradient-to-r from-amber-400 to-rose-400 text-[#1a1a2e] hover:from-amber-300 hover:to-rose-300 font-black text-base px-10 py-6 rounded-2xl w-full sm:w-auto shadow-lg shadow-amber-400/20" data-testid="contact-book-btn">
               <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
             </Button>
-            <Button onClick={openWhatsApp} className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-base px-10 py-6 rounded-xl w-full sm:w-auto" data-testid="contact-whatsapp-btn">
+            <Button onClick={openWhatsApp} className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-base px-10 py-6 rounded-2xl w-full sm:w-auto shadow-lg shadow-green-400/20" data-testid="contact-whatsapp-btn">
               <MessageSquare className="w-5 h-5 mr-2" /> WHATSAPP
             </Button>
             <a href="tel:08231878320" className="w-full sm:w-auto">
-              <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-white/10 font-bold text-base px-10 py-6 rounded-xl w-full" data-testid="contact-call-btn">
+              <Button variant="outline" className="border-rose-400/30 text-rose-300 hover:bg-rose-400/10 font-bold text-base px-10 py-6 rounded-2xl w-full" data-testid="contact-call-btn">
                 <Phone className="w-5 h-5 mr-2" /> CHIAMA
               </Button>
             </a>
