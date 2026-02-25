@@ -25,6 +25,7 @@ const MODULES = [
   { path: '/operators', label: 'Operatori', desc: 'Gestione staff', icon: UserCheck, color: '#F59E0B' },
   { path: '/stats', label: 'Statistiche', desc: 'Report e grafici', icon: BarChart3, color: '#EF4444' },
   { path: '/incassi', label: 'Incassi', desc: 'Report pagamenti', icon: Euro, color: '#10B981' },
+  { path: '/daily-summary', label: 'Riepilogo', desc: 'Riepilogo giornaliero', icon: BarChart3, color: '#F43F5E' },
   { path: '/prepaid', label: 'Card Prepagate', desc: 'Abbonamenti', icon: CreditCard, color: '#6366F1' },
   { path: '/loyalty', label: 'Fedeltà', desc: 'Programma punti', icon: Gift, color: '#EC4899' },
   { path: '/reminders', label: 'Promemoria', desc: 'Notifiche clienti', icon: Bell, color: '#F97316' },
