@@ -468,12 +468,36 @@ export default function BookingPage() {
         </div>
       </section>
 
-      {/* ABOUT SECTION */}
+      {/* SALON GALLERY - Real Photos */}
       <section className="py-20 sm:py-28 bg-[#111]">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Il Nostro Salone</p>
+            <h2 className="text-3xl sm:text-4xl font-black">Dove Nasce la Bellezza</h2>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { img: SALON_EXTERIOR, label: "Esterno" },
+              { img: SALON_RECEPTION, label: "Reception" },
+              { img: SALON_INTERIOR, label: "Area Colore" },
+              { img: SALON_WORKSTATIONS, label: "Postazioni" },
+            ].map((item, idx) => (
+              <div key={idx} className="relative rounded-2xl overflow-hidden aspect-square group">
+                <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <p className="absolute bottom-3 left-3 text-white font-bold text-sm">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT SECTION */}
+      <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="rounded-2xl overflow-hidden h-80 lg:h-96">
-              <img src={SALON_IMG} alt="Il nostro salone" className="w-full h-full object-cover" />
+              <img src={SALON_RECEPTION} alt="Il nostro salone" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Chi Siamo</p>
