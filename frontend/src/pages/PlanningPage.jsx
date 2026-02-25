@@ -475,6 +475,8 @@ export default function PlanningPage() {
     if (catA !== catB) return (catA === -1 ? 99 : catA) - (catB === -1 ? 99 : catB);
     return (a.sort_order || 999) - (b.sort_order || 999);
   });
+
+  const getAppointmentStyle = (apt) => {
     const [startHour, startMin] = apt.time.split(':').map(Number);
     const startSlotIndex = (startHour - 8) * 4 + Math.floor(startMin / 15);
     const slotsCount = Math.ceil(apt.total_duration / 15);
