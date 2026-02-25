@@ -4,14 +4,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, User, Scissors, CheckCircle, ArrowLeft, MapPin, Phone, Mail, Star, MessageSquare, ChevronDown, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, User, Scissors, CheckCircle, ArrowLeft, MapPin, Phone, Mail, Star, MessageSquare, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { toast, Toaster } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-const HERO_IMG = "https://customer-assets.emergentagent.com/job_ac0aaacf-8266-485a-8bab-9e57ed904c7a/artifacts/0inxpacz_517029262_10231563813060391_9151321643853820111_n.jpg";
+const HERO_IMG = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/snwuwd2g_image.png";
 const SALON_EXTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/dadmar03_image.png";
 const SALON_RECEPTION = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/snwuwd2g_image.png";
 const SALON_INTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/owkrsi8u_image.png";
@@ -26,17 +26,30 @@ const GALLERY = [
   { img: "https://images.pexels.com/photos/10318044/pexels-photo-10318044.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940", label: "Look Audace", tag: "Colore Fantasy" },
 ];
 
-const SERVICES_DISPLAY = [
-  { name: "Taglio", price: "€ 10", desc: "Taglio stilistico personalizzato" },
-  { name: "Piega Corti", price: "€ 10", desc: "Piega professionale capelli corti" },
-  { name: "Piega Lunghi", price: "€ 12", desc: "Piega professionale capelli lunghi" },
-  { name: "Piega Fantasy", price: "€ 15", desc: "Piega creativa e personalizzata" },
-  { name: "Piastra/Ferro", price: "+ € 3", desc: "Styling con piastra o ferro" },
-  { name: "Colorazione Parziale", price: "€ 18", desc: "Colorazione su zone specifiche" },
-  { name: "Colorazione Completa", price: "€ 30", desc: "Colorazione completa senza ammoniaca" },
-  { name: "Cuffia - Cartine", price: "Da € 40", desc: "Schiariture con tecniche tradizionali" },
-  { name: "Balayage", price: "Da € 40", desc: "Schiariture naturali e sfumate" },
-  { name: "Giochi di Colore", price: "Da € 40", desc: "Effetti unici e personalizzati" },
+const SERVICE_CATEGORIES = [
+  {
+    title: "Taglio & Piega",
+    items: [
+      { name: "Taglio", price: "€ 10" },
+      { name: "Piega Corti", price: "€ 10" },
+      { name: "Piega Lunghi", price: "€ 12" },
+      { name: "Piega Fantasy", price: "€ 15" },
+      { name: "Piastra/Ferro", price: "+ € 3" },
+    ]
+  },
+  {
+    title: "Colorazione",
+    desc: "Tutte le colorazioni sono senza ammoniaca, con cheratina e olio di argan",
+    items: [
+      { name: "Colorazione Parziale / Completa / Cuffia / Cartine / Balayage / Giochi di Colore", price: "Da € 30" },
+    ]
+  },
+  {
+    title: "Modellanti",
+    items: [
+      { name: "Permanente / Ondulazione / Anticrespo / Stiratura Classica", price: "Da € 40" },
+    ]
+  },
 ];
 
 const REVIEWS = [
@@ -55,6 +68,7 @@ for (let h = 8; h <= 20; h++) {
 
 export default function BookingPage() {
   const [showBooking, setShowBooking] = useState(false);
+  const [showServices, setShowServices] = useState(false);
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
   const [operators, setOperators] = useState([]);
@@ -65,13 +79,8 @@ export default function BookingPage() {
   const contactRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    client_name: '',
-    client_phone: '',
-    service_ids: [],
-    operator_id: '',
-    date: format(new Date(), 'yyyy-MM-dd'),
-    time: '09:00',
-    notes: ''
+    client_name: '', client_phone: '', service_ids: [], operator_id: '',
+    date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', notes: ''
   });
 
   useEffect(() => { fetchData(); }, []);
@@ -79,19 +88,16 @@ export default function BookingPage() {
   const fetchData = async () => {
     try {
       const [servicesRes, operatorsRes] = await Promise.all([
-        axios.get(`${API}/public/services`),
-        axios.get(`${API}/public/operators`)
+        axios.get(`${API}/public/services`), axios.get(`${API}/public/operators`)
       ]);
-      setServices(servicesRes.data);
-      setOperators(operatorsRes.data);
+      setServices(servicesRes.data); setOperators(operatorsRes.data);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
 
   const toggleService = (id) => {
     setFormData(prev => ({
-      ...prev,
-      service_ids: prev.service_ids.includes(id) ? prev.service_ids.filter(s => s !== id) : [...prev.service_ids, id]
+      ...prev, service_ids: prev.service_ids.includes(id) ? prev.service_ids.filter(s => s !== id) : [...prev.service_ids, id]
     }));
   };
 
@@ -102,10 +108,8 @@ export default function BookingPage() {
   const handleSubmit = async () => {
     if (!formData.client_name || !formData.client_phone) { toast.error('Inserisci nome e telefono'); return; }
     setSubmitting(true);
-    try {
-      await axios.post(`${API}/public/book-appointment`, formData);
-      setSuccess(true);
-    } catch (err) { toast.error(err.response?.data?.detail || 'Errore nella prenotazione'); }
+    try { await axios.post(`${API}/public/book-appointment`, formData); setSuccess(true); }
+    catch (err) { toast.error(err.response?.data?.detail || 'Errore nella prenotazione'); }
     finally { setSubmitting(false); }
   };
 
@@ -120,14 +124,10 @@ export default function BookingPage() {
         <div className="max-w-md w-full text-center">
           <CheckCircle className="w-20 h-20 mx-auto text-green-500 mb-6" />
           <h1 className="text-3xl font-black text-[#1a1a1a] mb-3">Prenotazione Confermata!</h1>
-          <p className="text-[#444] mb-2">
-            Ti aspettiamo il <span className="font-black text-[#1a1a1a]">{format(new Date(formData.date), 'd MMMM yyyy', { locale: it })}</span> alle <span className="font-black text-[#1a1a1a]">{formData.time}</span>
-          </p>
+          <p className="text-[#444] mb-2">Ti aspettiamo il <span className="font-black">{format(new Date(formData.date), 'd MMMM yyyy', { locale: it })}</span> alle <span className="font-black">{formData.time}</span></p>
           <p className="text-sm text-[#888] mb-8">Riceverai un promemoria prima dell'appuntamento.</p>
           <Button onClick={() => { setSuccess(false); setShowBooking(false); setStep(1); setFormData({ client_name: '', client_phone: '', service_ids: [], operator_id: '', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', notes: '' }); }}
-            className="bg-[#1a1a1a] text-white hover:bg-[#333] font-bold px-8">
-            Torna alla Home
-          </Button>
+            className="bg-[#1a1a1a] text-white hover:bg-[#333] font-bold px-8">Torna alla Home</Button>
         </div>
       </div>
     );
@@ -172,10 +172,7 @@ export default function BookingPage() {
                     <div key={service.id} onClick={() => toggleService(service.id)}
                       className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.service_ids.includes(service.id) ? 'border-[#C8956C] bg-[#C8956C]/5' : 'border-[#eee] bg-white hover:border-[#ddd]'}`}>
                       <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-bold text-[#1a1a1a]">{service.name}</p>
-                          <p className="text-sm text-[#888]">{service.duration} min</p>
-                        </div>
+                        <div><p className="font-bold text-[#1a1a1a]">{service.name}</p><p className="text-sm text-[#888]">{service.duration} min</p></div>
                         <p className="font-black text-[#C8956C]">€{service.price}</p>
                       </div>
                     </div>
@@ -187,38 +184,25 @@ export default function BookingPage() {
                   <p className="font-bold text-[#1a1a1a]">Riepilogo: {totalDuration} min - <span className="text-[#C8956C]">€{totalPrice}</span></p>
                 </div>
               )}
-              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0}
-                className="w-full bg-[#1a1a1a] text-white hover:bg-[#333] font-bold py-6">
-                Continua <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0} className="w-full bg-[#1a1a1a] text-white hover:bg-[#333] font-bold py-6">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
             </div>
           )}
           {step === 2 && (
             <div className="space-y-4">
               <h2 className="text-xl font-black text-[#1a1a1a]">Data e Ora</h2>
               <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-[#555] font-bold mb-1 block">Data</label>
-                  <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')}
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
-                    className="bg-white border-[#ddd] text-[#1a1a1a] font-bold" />
-                </div>
-                <div>
-                  <label className="text-sm text-[#555] font-bold mb-1 block">Ora</label>
-                  <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})}
-                    className="w-full p-3 bg-white border border-[#ddd] rounded-lg text-[#1a1a1a] font-bold">
+                <div><label className="text-sm text-[#555] font-bold mb-1 block">Data</label>
+                  <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')} onChange={(e) => setFormData({...formData, date: e.target.value})} className="bg-white border-[#ddd] text-[#1a1a1a] font-bold" /></div>
+                <div><label className="text-sm text-[#555] font-bold mb-1 block">Ora</label>
+                  <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-white border border-[#ddd] rounded-lg text-[#1a1a1a] font-bold">
                     {TIME_SLOTS.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
+                  </select></div>
                 {operators.length > 0 && (
-                  <div>
-                    <label className="text-sm text-[#555] font-bold mb-1 block">Operatore (opzionale)</label>
-                    <select value={formData.operator_id} onChange={(e) => setFormData({...formData, operator_id: e.target.value})}
-                      className="w-full p-3 bg-white border border-[#ddd] rounded-lg text-[#1a1a1a] font-bold">
+                  <div><label className="text-sm text-[#555] font-bold mb-1 block">Operatore (opzionale)</label>
+                    <select value={formData.operator_id} onChange={(e) => setFormData({...formData, operator_id: e.target.value})} className="w-full p-3 bg-white border border-[#ddd] rounded-lg text-[#1a1a1a] font-bold">
                       <option value="">Nessuna preferenza</option>
                       {operators.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
-                    </select>
-                  </div>
+                    </select></div>
                 )}
               </div>
               <div className="flex gap-3">
@@ -231,34 +215,17 @@ export default function BookingPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-black text-[#1a1a1a]">I Tuoi Dati</h2>
               <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-[#555] font-bold mb-1 block">Nome e Cognome *</label>
-                  <Input value={formData.client_name} onChange={(e) => setFormData({...formData, client_name: e.target.value})}
-                    placeholder="Es. Maria Rossi" className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" />
-                </div>
-                <div>
-                  <label className="text-sm text-[#555] font-bold mb-1 block">Telefono *</label>
-                  <Input value={formData.client_phone} onChange={(e) => setFormData({...formData, client_phone: e.target.value})}
-                    placeholder="Es. 339 123 4567" className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" />
-                </div>
-                <div>
-                  <label className="text-sm text-[#555] font-bold mb-1 block">Note (opzionale)</label>
-                  <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    placeholder="Richieste particolari..." className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" rows={3} />
-                </div>
+                <div><label className="text-sm text-[#555] font-bold mb-1 block">Nome e Cognome *</label>
+                  <Input value={formData.client_name} onChange={(e) => setFormData({...formData, client_name: e.target.value})} placeholder="Es. Maria Rossi" className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" /></div>
+                <div><label className="text-sm text-[#555] font-bold mb-1 block">Telefono *</label>
+                  <Input value={formData.client_phone} onChange={(e) => setFormData({...formData, client_phone: e.target.value})} placeholder="Es. 339 123 4567" className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" /></div>
+                <div><label className="text-sm text-[#555] font-bold mb-1 block">Note (opzionale)</label>
+                  <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Richieste particolari..." className="bg-white border-[#ddd] text-[#1a1a1a] font-bold placeholder:text-[#bbb]" rows={3} /></div>
               </div>
               <div className="bg-white p-4 rounded-xl border border-[#C8956C]/30 space-y-2">
                 <p className="text-sm text-[#888] font-bold">Riepilogo:</p>
-                {selectedServices.map(s => (
-                  <div key={s.id} className="flex justify-between text-sm">
-                    <span className="text-[#444] font-bold">{s.name}</span>
-                    <span className="text-[#1a1a1a] font-black">€{s.price}</span>
-                  </div>
-                ))}
-                <div className="border-t border-[#eee] pt-2 flex justify-between">
-                  <span className="text-[#1a1a1a] font-black">Totale</span>
-                  <span className="text-[#C8956C] font-black text-lg">€{totalPrice}</span>
-                </div>
+                {selectedServices.map(s => (<div key={s.id} className="flex justify-between text-sm"><span className="text-[#444] font-bold">{s.name}</span><span className="text-[#1a1a1a] font-black">€{s.price}</span></div>))}
+                <div className="border-t border-[#eee] pt-2 flex justify-between"><span className="text-[#1a1a1a] font-black">Totale</span><span className="text-[#C8956C] font-black text-lg">€{totalPrice}</span></div>
                 <p className="text-xs text-[#888] font-bold">{format(new Date(formData.date), 'd MMMM yyyy', { locale: it })} alle {formData.time}</p>
               </div>
               <div className="flex gap-3">
@@ -287,7 +254,7 @@ export default function BookingPage() {
             <span className="font-black text-sm sm:text-base tracking-tight text-[#1a1a1a]">BRUNO MELITO HAIR</span>
           </div>
           <div className="hidden sm:flex items-center gap-6 text-sm text-[#666] font-bold">
-            <button onClick={() => scrollTo(servicesRef)} className="hover:text-[#C8956C] transition-colors">Servizi</button>
+            <button onClick={() => { setShowServices(!showServices); setTimeout(() => scrollTo(servicesRef), 100); }} className="hover:text-[#C8956C] transition-colors">Servizi</button>
             <button onClick={() => scrollTo(contactRef)} className="hover:text-[#C8956C] transition-colors">Contatti</button>
           </div>
           <Button onClick={() => setShowBooking(true)} className="bg-[#1a1a1a] text-white hover:bg-[#333] font-black text-sm px-4 sm:px-6" data-testid="booking-start-btn">
@@ -302,73 +269,86 @@ export default function BookingPage() {
           <img src={HERO_IMG} alt="Bruno Melito Hair" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#FFF9F5]/60 via-[#FFF9F5]/40 to-[#FFF9F5]" />
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32">
-          <div className="max-w-2xl">
+        <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32 w-full">
+          <div className="text-center max-w-3xl mx-auto">
+            {/* Logo centered */}
+            <div className="flex justify-center mb-6">
+              <img src="/logo.png?v=3" alt="MBHS Salon" className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl shadow-xl border-4 border-white/50" />
+            </div>
             <div className="inline-block bg-[#C8956C]/10 text-[#C8956C] text-xs font-black px-4 py-2 rounded-full border border-[#C8956C]/20 mb-6 tracking-widest">
               SOLO PER APPUNTAMENTO
             </div>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#1a1a1a]">
-              Metti la<br />testa a<br />
+              Metti la testa a<br />
               <span className="text-[#C8956C]">posto!!</span>
             </h1>
-            <p className="text-base sm:text-lg text-[#555] max-w-lg mb-8 leading-relaxed font-bold">
+            <p className="text-base sm:text-lg text-[#555] max-w-lg mx-auto mb-8 leading-relaxed font-bold">
               Scopri l'eccellenza dell'hair styling al Bruno Melito Hair. Dove ogni taglio è un'opera d'arte e ogni cliente è unica.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
               <Button onClick={() => setShowBooking(true)} className="bg-[#1a1a1a] text-white hover:bg-[#333] font-black text-base px-8 py-6 rounded-xl shadow-lg">
                 <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
               </Button>
-              <Button onClick={() => scrollTo(servicesRef)} variant="outline" className="border-[#C8956C] text-[#C8956C] hover:bg-[#C8956C]/5 font-bold text-base px-8 py-6 rounded-xl">
+              <Button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} variant="outline" className="border-[#C8956C] text-[#C8956C] hover:bg-[#C8956C]/5 font-bold text-base px-8 py-6 rounded-xl">
                 Scopri i Servizi <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 text-sm">
-              <a href="tel:08231878320" className="flex items-center gap-2 text-[#666] hover:text-[#C8956C] transition-colors font-bold">
+            {/* Contact quick links */}
+            <div className="flex flex-col sm:flex-row gap-4 text-sm justify-center">
+              <a href="tel:08231878320" className="flex items-center gap-2 text-[#666] hover:text-[#C8956C] transition-colors font-bold justify-center">
                 <Phone className="w-4 h-4" /> 0823 18 78 320
               </a>
-              <a href="tel:3397833526" className="flex items-center gap-2 text-[#666] hover:text-[#C8956C] transition-colors font-bold">
+              <a href="tel:3397833526" className="flex items-center gap-2 text-[#666] hover:text-[#C8956C] transition-colors font-bold justify-center">
                 <Phone className="w-4 h-4" /> 339 78 33 526
               </a>
-              <span className="flex items-center gap-2 text-[#666] font-bold">
+              <a href="https://maps.google.com/?q=Via+Vito+Nicola+Melorio+101+Santa+Maria+Capua+Vetere" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[#666] hover:text-[#C8956C] transition-colors font-bold justify-center">
                 <MapPin className="w-4 h-4" /> Via Vito Nicola Melorio 101, S.M.C.V.
-              </span>
+              </a>
             </div>
-          </div>
-          <div className="absolute right-4 sm:right-8 bottom-20 sm:bottom-32 bg-white/80 backdrop-blur-md border border-[#C8956C]/20 rounded-2xl p-5 text-center hidden md:block shadow-lg">
-            <p className="text-4xl font-black text-[#C8956C]">40+</p>
-            <p className="text-xs text-[#555] font-black">Anni di<br />Esperienza</p>
-            <p className="text-[10px] text-[#999] mt-1 font-bold">Dal 1983</p>
           </div>
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <section ref={servicesRef} className="py-20 sm:py-28 bg-white">
+      {/* SERVICES SECTION - Expandable */}
+      <section ref={servicesRef} className="py-16 sm:py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <button
+            onClick={() => setShowServices(!showServices)}
+            className="w-full text-center mb-4 group"
+          >
             <p className="text-[#C8956C] font-black text-sm tracking-widest uppercase mb-3">I Nostri Servizi</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#1a1a1a]">Servizi Professionali</h2>
-            <p className="text-[#666] mt-3 max-w-xl mx-auto font-bold">Dal taglio classico alle tecniche più innovative, offriamo una gamma completa di servizi per prenderci cura dei tuoi capelli.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SERVICES_DISPLAY.map((service, idx) => (
-              <div key={idx} className="bg-[#FFF9F5] border border-[#eee] rounded-2xl p-5 hover:border-[#C8956C]/30 hover:shadow-md transition-all group">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-black text-[#1a1a1a] group-hover:text-[#C8956C] transition-colors">{service.name}</h3>
-                    <p className="text-sm text-[#888] mt-1 font-bold">{service.desc}</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#1a1a1a] mb-2">Servizi Professionali</h2>
+            <p className="text-[#666] max-w-xl mx-auto font-bold mb-4">Dal taglio classico alle tecniche più innovative.</p>
+            <div className="flex items-center justify-center gap-2 text-[#C8956C] font-bold">
+              {showServices ? <><span>Nascondi listino</span><ChevronUp className="w-5 h-5" /></> : <><span>Mostra listino</span><ChevronDown className="w-5 h-5" /></>}
+            </div>
+          </button>
+
+          {showServices && (
+            <div className="space-y-6 mt-8 animate-in fade-in duration-300">
+              {SERVICE_CATEGORIES.map((cat, idx) => (
+                <div key={idx} className="bg-[#FFF9F5] border border-[#eee] rounded-2xl p-6">
+                  <h3 className="text-xl font-black text-[#1a1a1a] mb-1">{cat.title}</h3>
+                  {cat.desc && <p className="text-sm text-[#888] font-bold mb-4">{cat.desc}</p>}
+                  <div className="space-y-3">
+                    {cat.items.map((item, i) => (
+                      <div key={i} className="flex justify-between items-center py-2 border-b border-[#eee] last:border-0">
+                        <span className="font-bold text-[#444]">{item.name}</span>
+                        <span className="font-black text-[#C8956C] text-lg shrink-0 ml-4">{item.price}</span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-[#C8956C] font-black text-lg shrink-0 ml-3">{service.price}</span>
                 </div>
+              ))}
+              <div className="text-center">
+                <p className="text-[#999] text-sm mb-6 font-bold">Tutti i servizi includono consulenza personalizzata e prodotti professionali.</p>
+                <Button onClick={() => setShowBooking(true)} className="bg-[#1a1a1a] text-white hover:bg-[#333] font-black px-8 py-6 rounded-xl shadow-lg">
+                  <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
+                </Button>
               </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <p className="text-[#999] text-sm mb-6 font-bold">Tutti i nostri servizi includono consulenza personalizzata e prodotti professionali.</p>
-            <Button onClick={() => setShowBooking(true)} className="bg-[#1a1a1a] text-white hover:bg-[#333] font-black px-8 py-6 rounded-xl shadow-lg">
-              <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
-            </Button>
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -436,9 +416,7 @@ export default function BookingPage() {
             {REVIEWS.map((review, idx) => (
               <div key={idx} className="bg-white border border-[#eee] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex gap-0.5 mb-3">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-[#C8956C] text-[#C8956C]" />
-                  ))}
+                  {[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-[#C8956C] text-[#C8956C]" />))}
                 </div>
                 <p className="text-[#444] text-sm leading-relaxed mb-4 font-bold">"{review.text}"</p>
                 <div className="flex items-center gap-3">
@@ -466,9 +444,7 @@ export default function BookingPage() {
               <div key={idx} className="relative rounded-2xl overflow-hidden aspect-[3/4] group cursor-pointer shadow-md">
                 <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-3 right-3 bg-white/90 text-[#1a1a1a] text-xs font-black px-3 py-1 rounded-full shadow-sm">
-                  {item.tag}
-                </div>
+                <div className="absolute top-3 right-3 bg-white/90 text-[#1a1a1a] text-xs font-black px-3 py-1 rounded-full shadow-sm">{item.tag}</div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <p className="text-white font-black">{item.label}</p>
                 </div>
@@ -512,7 +488,7 @@ export default function BookingPage() {
             <div className="bg-white border border-[#eee] rounded-2xl p-5 text-center">
               <Clock className="w-6 h-6 text-[#C8956C] mx-auto mb-3" />
               <h3 className="font-black text-[#1a1a1a] text-sm mb-1">Orari</h3>
-              <p className="text-[#666] text-xs font-bold">Mar - Sab: 9:00 - 19:00</p>
+              <p className="text-[#666] text-xs font-bold">Mar - Sab: 08:00 - 19:00</p>
               <p className="text-[#999] text-xs mt-1 font-bold">Dom - Lun: Chiuso</p>
             </div>
           </div>
@@ -538,7 +514,7 @@ export default function BookingPage() {
           <img src="/logo.png?v=3" alt="MBHS Salon" className="w-12 h-12 rounded-lg mx-auto mb-3" />
           <p className="text-[#1a1a1a] text-sm font-black">BRUNO MELITO HAIR</p>
           <p className="text-[#999] text-xs mt-2 font-bold">Via Vito Nicola Melorio 101, Santa Maria Capua Vetere (CE)</p>
-          <p className="text-[#ccc] text-xs mt-4 font-bold">© {new Date().getFullYear()} Bruno Melito Hair. Tutti i diritti riservati.</p>
+          <p className="text-[#ccc] text-xs mt-4 font-bold">&copy; {new Date().getFullYear()} Bruno Melito Hair. Tutti i diritti riservati.</p>
         </div>
       </footer>
 
