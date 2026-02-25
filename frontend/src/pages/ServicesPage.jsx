@@ -347,6 +347,21 @@ export default function ServicesPage() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label>Colore</Label>
+                <div className="flex flex-wrap gap-2">
+                  {COLOR_PRESETS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, color: c })}
+                      className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${formData.color === c ? 'border-[#0F172A] scale-110 ring-2 ring-offset-1 ring-[#0F172A]/20' : 'border-transparent'}`}
+                      style={{ backgroundColor: c }}
+                      data-testid={`color-${c}`}
+                    />
+                  ))}
+                </div>
+              </div>
               <DialogFooter>
                 <Button
                   type="submit"
