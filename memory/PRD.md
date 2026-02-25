@@ -15,12 +15,12 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 
 #### Core Application
 - Autenticazione JWT (email/password)
-- Dashboard con moduli cliccabili (15 moduli con navigazione alle sottopagine)
+- Dashboard con moduli cliccabili (16 moduli con navigazione alle sottopagine)
 - Planning giornaliero con griglia 15 minuti + DRAG & DROP per spostare appuntamenti
 - Vista settimanale con slot 15 minuti (Lun-Sab)
 - Vista mensile
 - Gestione Clienti (CRUD) - 183 clienti
-- Gestione Servizi (CRUD) - 20 servizi in 6 categorie
+- Gestione Servizi (CRUD) - 20 servizi in 6 categorie con colori personalizzati
 - Operatore unico BRUNO con possibilità di aggiungerne altri
 - Statistiche con export PDF
 - Storico appuntamenti
@@ -30,7 +30,7 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - **Colore:** 11-15 (Parziale, Completo, Colpi di sole, Cartine, Balayage)
 - **Piega:** 02-04 (Cap.corti, Cap.lunghi, Fantasy)
 - **Trattamento:** 08-10 (Maschera, Fiala, Laminazione)
-- **Modellanti:** 16-20 (Permanente, Anticrespo, Ondulazione, Stiratura Classica, Stiratura New) - Da €40
+- **Modellanti:** 16-20 (Permanente, Anticrespo, Ondulazione, Stiratura Classica, Stiratura New) - Da 40EUR
 - **Altro:** 05, 07
 
 #### Funzionalità Avanzate
@@ -41,6 +41,7 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Report Incassi + Statistiche
 - Backup dati con export Excel
 - Pagina Impostazioni
+- Riepilogo Giornaliero con grafico orario
 
 #### PWA & Offline
 - Progressive Web App installabile con icona desktop
@@ -56,8 +57,8 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Flusso prenotazione a 3 step
 
 #### Programma Fedeltà (punti azzerati il 25 Feb 2026)
-- 1 punto ogni €10 spesi
-- Premi configurabili
+- 1 punto ogni 10EUR spesi
+- Premi configurabili da UI
 - Pagina dedicata /loyalty
 
 #### Promemoria & Richiami
@@ -65,14 +66,8 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Richiamo clienti inattivi
 - Pagina dedicata /reminders
 
-#### Riepilogo Giornaliero (25 Feb 2026)
-- Pagina /daily-summary con navigazione per data
-- Incasso totale con confronto vs giorno precedente
-- Numero clienti serviti e media per cliente
-- Grafico a barre distribuzione oraria (08:00-20:00)
-- Top 5 servizi più richiesti del giorno
-- Metodi di pagamento utilizzati
-- Ora di punta automatica
+## Bug Fix (25 Feb 2026)
+- Fix percorsi Dashboard: i moduli Planning, Settimanale, Mensile e Card Prepagate puntavano a rotte inesistenti
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
@@ -83,4 +78,4 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - (P1) Cambio nome repository/username GitHub
 - (P2) Stampa ricevuta dopo pagamento
 - (P2) Blocco fasce orarie (pause/ferie)
-- (P2) Refactoring server.py in moduli separati (>2000 righe)
+- (P2) Refactoring server.py in moduli separati (>2500 righe)
