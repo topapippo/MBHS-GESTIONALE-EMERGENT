@@ -247,6 +247,7 @@ class LoyaltyRedeemRequest(BaseModel):
     reward_type: str  # "sconto_colorazione" or "taglio_gratuito"
 
 # Loyalty config - defaults, overridden by DB
+LOYALTY_POINTS_PER_EURO = 10  # 1 point every 10€ spent
 DEFAULT_LOYALTY_REWARDS = {
     "sconto_colorazione": {
         "name": "Sconto 10% Colorazione",
