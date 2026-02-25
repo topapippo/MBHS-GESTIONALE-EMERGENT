@@ -332,8 +332,9 @@ export default function BookingPage() {
             <div className="space-y-6 mt-8 animate-in fade-in duration-300">
               {SERVICE_CATEGORIES.map((cat, idx) => {
                 const borderColors = ['border-amber-400/30', 'border-rose-400/30', 'border-teal-400/30'];
+                const glowColors = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20'];
                 return (
-                <div key={idx} className={`bg-[#242445]/80 border ${borderColors[idx % 3]} rounded-3xl p-6`}>
+                <div key={idx} className={`bg-[#242445]/80 border ${borderColors[idx % 3]} rounded-3xl p-6 transition-all duration-300 hover:shadow-lg ${glowColors[idx % 3]} hover:border-opacity-60 hover:scale-[1.01]`}>
                   <h3 className="text-xl font-black text-white mb-1">{cat.title}</h3>
                   {cat.desc && <p className="text-sm text-gray-400 mb-4">{cat.desc}</p>}
                   <div className="space-y-3">
@@ -367,12 +368,12 @@ export default function BookingPage() {
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { img: SALON_EXTERIOR, label: "Esterno", border: "border-amber-400/30" },
-              { img: SALON_RECEPTION, label: "Reception", border: "border-rose-400/30" },
-              { img: SALON_INTERIOR, label: "Area Colore", border: "border-teal-400/30" },
-              { img: SALON_WORKSTATIONS, label: "Postazioni", border: "border-violet-400/30" },
+              { img: SALON_EXTERIOR, label: "Esterno", border: "border-amber-400/30", glow: "hover:shadow-amber-400/25" },
+              { img: SALON_RECEPTION, label: "Reception", border: "border-rose-400/30", glow: "hover:shadow-rose-400/25" },
+              { img: SALON_INTERIOR, label: "Area Colore", border: "border-teal-400/30", glow: "hover:shadow-teal-400/25" },
+              { img: SALON_WORKSTATIONS, label: "Postazioni", border: "border-violet-400/30", glow: "hover:shadow-violet-400/25" },
             ].map((item, idx) => (
-              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-square group border-2 ${item.border}`}>
+              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-square group border-2 ${item.border} transition-all duration-300 hover:shadow-xl ${item.glow} hover:border-opacity-60`}>
                 <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <p className="absolute bottom-3 left-3 text-white font-bold text-sm">{item.label}</p>
@@ -421,10 +422,11 @@ export default function BookingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {REVIEWS.map((review, idx) => {
               const borders = ['border-amber-400/25', 'border-rose-400/25', 'border-teal-400/25', 'border-violet-400/25'];
+              const glows = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20'];
               const avatarBgs = ['bg-amber-400/15', 'bg-rose-400/15', 'bg-teal-400/15', 'bg-violet-400/15'];
               const avatarTexts = ['text-amber-400', 'text-rose-400', 'text-teal-400', 'text-violet-400'];
               return (
-              <div key={idx} className={`bg-[#242445]/80 border ${borders[idx % 4]} rounded-3xl p-5 hover:border-opacity-50 transition-all`}>
+              <div key={idx} className={`bg-[#242445]/80 border ${borders[idx % 4]} rounded-3xl p-5 transition-all duration-300 hover:shadow-lg ${glows[idx % 4]} hover:border-opacity-60 hover:scale-[1.02]`}>
                 <div className="flex gap-0.5 mb-3">
                   {[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />))}
                 </div>
@@ -453,8 +455,9 @@ export default function BookingPage() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {GALLERY.map((item, idx) => {
               const borders = ['border-amber-400/25', 'border-rose-400/25', 'border-teal-400/25', 'border-violet-400/25', 'border-sky-400/25', 'border-orange-400/25'];
+              const glows = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20', 'hover:shadow-sky-400/20', 'hover:shadow-orange-400/20'];
               return (
-              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${borders[idx % 6]}`}>
+              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${borders[idx % 6]} transition-all duration-300 hover:shadow-xl ${glows[idx % 6]} hover:border-opacity-60`}>
                 <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">
