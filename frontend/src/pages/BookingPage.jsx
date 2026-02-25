@@ -12,7 +12,19 @@ import { toast, Toaster } from 'sonner';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const HERO_IMG = "https://customer-assets.emergentagent.com/job_ac0aaacf-8266-485a-8bab-9e57ed904c7a/artifacts/0inxpacz_517029262_10231563813060391_9151321643853820111_n.jpg";
-const SALON_IMG = "https://images.unsplash.com/photo-1706629503603-e47c37722776?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBoYWlyJTIwc2Fsb24lMjBpbnRlcmlvciUyMGVsZWdhbnR8ZW58MHx8fHwxNzcyMDEwODc0fDA&ixlib=rb-4.1.0&q=85";
+const SALON_EXTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/dadmar03_image.png";
+const SALON_RECEPTION = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/snwuwd2g_image.png";
+const SALON_INTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/owkrsi8u_image.png";
+const SALON_WORKSTATIONS = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/t15b4lty_image.png";
+
+const GALLERY = [
+  { img: "https://images.unsplash.com/photo-1753951649696-6e074b08ea3a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxiZWF1dGlmdWwlMjB3b21hbiUyMGhhaXIlMjBjb2xvciUyMGhpZ2hsaWdodHMlMjBibG9uZGUlMjB3YXJtJTIwdG9uZXN8ZW58MHx8fHwxNzcyMDExNDIwfDA&ixlib=rb-4.1.0&q=85", label: "Balayage Luminoso", tag: "Capelli Lunghi" },
+  { img: "https://images.unsplash.com/photo-1695934485051-ddd96b8ade83?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwyfHx0cmVuZHklMjB3b21lbiUyMHNob3J0JTIwaGFpciUyMGJvYiUyMGN1dCUyMG1vZGVybiUyMHN0eWxlfGVufDB8fHx8MTc3MjAxMTQwNnww&ixlib=rb-4.1.0&q=85", label: "Bob Geometrico", tag: "Capelli Corti" },
+  { img: "https://images.pexels.com/photos/3448813/pexels-photo-3448813.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940", label: "Biondo Naturale", tag: "Colorazione" },
+  { img: "https://images.unsplash.com/photo-1599042426110-03e7730293cf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwxfHx0cmVuZHklMjB3b21lbiUyMHNob3J0JTIwaGFpciUyMGJvYiUyMGN1dCUyMG1vZGVybiUyMHN0eWxlfGVufDB8fHx8MTc3MjAxMTQwNnww&ixlib=rb-4.1.0&q=85", label: "Beach Waves", tag: "Capelli Corti" },
+  { img: "https://images.unsplash.com/photo-1715408153850-1883177a715d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHx0cmVuZHklMjB3b21lbiUyMGhhaXJzdHlsZSUyMGxvbmclMjBoYWlyJTIwYmFsYXlhZ2UlMjAyMDI1fGVufDB8fHx8MTc3MjAxMTQwNnww&ixlib=rb-4.1.0&q=85", label: "Styling Creativo", tag: "Capelli Lunghi" },
+  { img: "https://images.pexels.com/photos/10318044/pexels-photo-10318044.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940", label: "Look Audace", tag: "Colore Fantasy" },
+];
 
 const SERVICES_DISPLAY = [
   { name: "Taglio", price: "€ 10", desc: "Taglio stilistico personalizzato" },
