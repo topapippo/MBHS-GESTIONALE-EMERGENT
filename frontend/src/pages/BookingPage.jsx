@@ -40,7 +40,7 @@ export default function BookingPage() {
     client_phone: '',
     service_ids: [],
     operator_id: '',
-    date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+    date: format(new Date(), 'yyyy-MM-dd'),
     time: '09:00',
     notes: ''
   });
