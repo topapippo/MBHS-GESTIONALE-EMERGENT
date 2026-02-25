@@ -254,6 +254,19 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* SITO WEB PUBBLICO */}
+          <Route path="/sito" element={<WebsitePage />} />
+
+          {/* GESTIONE SITO WEB (admin) */}
+          <Route
+            path="/gestione-sito"
+            element={
+              <ProtectedRoute>
+                <WebsiteAdminPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Toaster 
