@@ -418,6 +418,7 @@ export default function PlanningPage() {
     } finally {
       setCreatingRecurring(false);
     }
+  };
 
   // Drag & Drop handlers
   const handleDragStart = (e, apt) => {
