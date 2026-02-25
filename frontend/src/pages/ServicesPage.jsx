@@ -48,6 +48,12 @@ const CATEGORIES = [
 
 const CATEGORY_ORDER = CATEGORIES.map(c => c.value);
 
+const COLOR_PRESETS = [
+  '#0EA5E9', '#0284C7', '#789F8A', '#10B981', '#E9C46A', '#F59E0B',
+  '#F97316', '#EF4444', '#EC4899', '#C084FC', '#6366F1', '#334155',
+  '#14B8A6', '#8B5CF6', '#D946EF', '#64748B',
+];
+
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
