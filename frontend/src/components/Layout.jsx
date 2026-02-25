@@ -19,7 +19,8 @@ import {
   Euro,
   Database,
   Star,
-  Bell
+  Bell,
+  FileBarChart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -35,6 +36,7 @@ const navItems = [
   { path: '/loyalty', label: 'Programma Fedeltà', icon: Star },
   { path: '/reminders', label: 'Promemoria', icon: Bell },
   { path: '/incassi', label: 'Report Incassi', icon: Euro },
+  { path: '/daily-summary', label: 'Riepilogo Giorno', icon: FileBarChart },
   { path: '/services', label: 'Servizi', icon: Scissors },
   { path: '/operators', label: 'Operatori', icon: UserCircle },
   { path: '/stats', label: 'Statistiche', icon: BarChart3 },
