@@ -1296,6 +1296,69 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
         "upcoming_appointments": upcoming
     }
 
+
+@api_router.get("/stats/daily-summary")
+async def get_daily_summary(date: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    target_date = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    yesterday = (datetime.strptime(target_date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    
+    today_apts = await db.appointments.find(
+        {"user_id": current_user["id"], "date": target_date, "status": {"$ne": "cancelled"}},
+        {"_id": 0, "user_id": 0}
+    ).to_list(200)
+    
+    yesterday_apts = await db.appointments.find(
+        {"user_id": current_user["id"], "date": yesterday, "status": {"$ne": "cancelled"}},
+        {"_id": 0, "user_id": 0}
+    ).to_list(200)
+    
+    completed = [a for a in today_apts if a.get("status") == "completed"]
+    total_earnings = sum(a.get("total_paid", a.get("total_price", 0)) for a in completed)
+    yesterday_earnings = sum(a.get("total_paid", a.get("total_price", 0)) for a in yesterday_apts if a.get("status") == "completed")
+    
+    hourly = {}
+    for h in range(8, 21):
+        hourly[f"{h:02d}:00"] = 0
+    for apt in today_apts:
+        hour = apt.get("time", "09:00")[:2] + ":00"
+        if hour in hourly:
+            hourly[hour] += 1
+    
+    service_counts = {}
+    for apt in today_apts:
+        for svc in apt.get("services", []):
+            name = svc.get("name", "Altro")
+            service_counts[name] = service_counts.get(name, 0) + 1
+    top_services = sorted(service_counts.items(), key=lambda x: -x[1])[:5]
+    
+    unique_clients = set()
+    for apt in today_apts:
+        cname = apt.get("client_name", "")
+        if cname:
+            unique_clients.add(cname)
+    
+    payment_methods = {}
+    for apt in completed:
+        pm = apt.get("payment_method", "non specificato")
+        payment_methods[pm] = payment_methods.get(pm, 0) + 1
+    
+    return {
+        "date": target_date,
+        "total_appointments": len(today_apts),
+        "completed_appointments": len(completed),
+        "total_earnings": total_earnings,
+        "yesterday_earnings": yesterday_earnings,
+        "earnings_diff": total_earnings - yesterday_earnings,
+        "unique_clients": len(unique_clients),
+        "avg_per_client": round(total_earnings / len(unique_clients), 2) if unique_clients else 0,
+        "hourly_distribution": hourly,
+        "top_services": [{"name": s[0], "count": s[1]} for s in top_services],
+        "payment_methods": payment_methods,
+        "busiest_hour": max(hourly, key=hourly.get) if any(hourly.values()) else None,
+        "busiest_hour_count": max(hourly.values()) if any(hourly.values()) else 0,
+    }
+
+
 @api_router.get("/stats/revenue")
 async def get_revenue_stats(
     start_date: str,
