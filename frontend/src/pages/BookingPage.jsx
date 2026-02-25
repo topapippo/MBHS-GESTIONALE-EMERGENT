@@ -415,7 +415,7 @@ export default function BookingPage() {
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Recensioni</p>
+            <p className="text-teal-400 font-bold text-sm tracking-widest uppercase mb-3">Recensioni</p>
             <h2 className="text-3xl sm:text-4xl font-black">Cosa Dicono di Noi</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -446,7 +446,7 @@ export default function BookingPage() {
       <section className="py-20 sm:py-28 bg-[#242445]">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Tendenze P/E 2026</p>
+            <p className="text-rose-400 font-bold text-sm tracking-widest uppercase mb-3">Tendenze P/E 2026</p>
             <h2 className="text-3xl sm:text-4xl font-black">I Nostri Lavori</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">Lasciati ispirare dalle ultime tendenze Primavera Estate 2026.</p>
           </div>
@@ -479,7 +479,7 @@ export default function BookingPage() {
       <section ref={contactRef} className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Contattaci</p>
+            <p className="text-violet-400 font-bold text-sm tracking-widest uppercase mb-3">Contattaci</p>
             <h2 className="text-3xl sm:text-4xl font-black">Prenota il Tuo Appuntamento</h2>
             <p className="text-gray-500 mt-3">Siamo pronti ad accoglierti nel nostro salone.</p>
           </div>
@@ -535,8 +535,8 @@ export default function BookingPage() {
       </footer>
 
       {/* Fixed bottom CTA on mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-[#1a1a2e]/95 backdrop-blur-md border-t border-white/5 sm:hidden z-50">
-        <Button onClick={() => setShowBooking(true)} className="w-full bg-white text-[#1a1a2e] hover:bg-gray-200 font-black py-5 rounded-xl" data-testid="mobile-book-btn">
+      <div className="fixed bottom-0 left-0 right-0 p-3 bg-[#1a1a2e]/95 backdrop-blur-md border-t border-amber-400/10 sm:hidden z-50">
+        <Button onClick={() => setShowBooking(true)} className="w-full bg-gradient-to-r from-amber-400 to-rose-400 text-[#1a1a2e] hover:from-amber-300 hover:to-rose-300 font-black py-5 rounded-2xl shadow-lg" data-testid="mobile-book-btn">
           <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
         </Button>
       </div>
