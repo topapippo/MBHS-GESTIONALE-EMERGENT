@@ -418,6 +418,8 @@ export default function PlanningPage() {
     } finally {
       setCreatingRecurring(false);
     }
+
+  const getAppointmentStyle = (apt) => {
   };
 
   // Calculate appointment position and height
