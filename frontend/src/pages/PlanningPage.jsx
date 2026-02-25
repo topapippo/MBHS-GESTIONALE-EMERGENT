@@ -754,7 +754,7 @@ export default function PlanningPage() {
                               }`}
                               style={{
                                 ...style,
-                                backgroundColor: apt.operator_color || col.color,
+                                backgroundColor: apt.status === 'completed' ? '#10B981' : (apt.operator_color || col.color),
                               }}
                               title={`Clicca per modificare - ${apt.client_name}`}
                             >
