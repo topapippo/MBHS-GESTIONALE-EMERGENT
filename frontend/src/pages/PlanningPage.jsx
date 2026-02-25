@@ -794,6 +794,13 @@ export default function PlanningPage() {
           </Card>
         )}
 
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-xs text-[#334155]">
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[#0EA5E9]" /> Da fare</div>
+          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Completato</div>
+        </div>
+
+
         {/* New Appointment Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
