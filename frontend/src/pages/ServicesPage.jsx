@@ -67,7 +67,8 @@ export default function ServicesPage() {
     name: '',
     category: 'taglio',
     duration: 30,
-    price: 0
+    price: 0,
+    color: '#0EA5E9',
   });
 
   useEffect(() => {
