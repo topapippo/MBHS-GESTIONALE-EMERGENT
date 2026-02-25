@@ -331,7 +331,7 @@ export default function BookingPage() {
           {showServices && (
             <div className="space-y-6 mt-8 animate-in fade-in duration-300">
               {SERVICE_CATEGORIES.map((cat, idx) => (
-                <div key={idx} className="bg-[#242445] border border-gray-800/50 rounded-2xl p-6">
+                <div key={idx} className="bg-[#242445] border border-gray-800/50 rounded-3xl p-6">
                   <h3 className="text-xl font-black text-white mb-1">{cat.title}</h3>
                   {cat.desc && <p className="text-sm text-gray-500 mb-4">{cat.desc}</p>}
                   <div className="space-y-3">
@@ -417,7 +417,7 @@ export default function BookingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {REVIEWS.map((review, idx) => (
-              <div key={idx} className="bg-[#242445] border border-gray-800/50 rounded-2xl p-5">
+              <div key={idx} className="bg-[#242445] border border-gray-800/50 rounded-3xl p-5">
                 <div className="flex gap-0.5 mb-3">
                   {[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />))}
                 </div>
@@ -474,23 +474,23 @@ export default function BookingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             <a href="https://maps.google.com/?q=Via+Vito+Nicola+Melorio+101+Santa+Maria+Capua+Vetere" target="_blank" rel="noopener noreferrer"
-              className="bg-[#242445] border border-gray-800/50 rounded-2xl p-5 hover:border-gray-700 transition-colors text-center" data-testid="contact-address">
+              className="bg-[#242445] border border-gray-800/50 rounded-3xl p-5 hover:border-gray-700 transition-colors text-center" data-testid="contact-address">
               <MapPin className="w-6 h-6 text-amber-400 mx-auto mb-3" />
               <h3 className="font-bold text-white text-sm mb-1">Indirizzo</h3>
               <p className="text-gray-500 text-xs leading-relaxed">Via Vito Nicola Melorio 101<br />Santa Maria Capua Vetere (CE)</p>
             </a>
-            <div className="bg-[#242445] border border-gray-800/50 rounded-2xl p-5 text-center">
+            <div className="bg-[#242445] border border-gray-800/50 rounded-3xl p-5 text-center">
               <Phone className="w-6 h-6 text-amber-400 mx-auto mb-3" />
               <h3 className="font-bold text-white text-sm mb-1">Telefono</h3>
               <a href="tel:08231878320" className="text-gray-400 text-xs hover:text-white transition-colors block">0823 18 78 320</a>
               <a href="tel:3397833526" className="text-gray-400 text-xs hover:text-white transition-colors block mt-1">339 78 33 526</a>
             </div>
-            <a href="mailto:melitobruno@gmail.com" className="bg-[#242445] border border-gray-800/50 rounded-2xl p-5 hover:border-gray-700 transition-colors text-center">
+            <a href="mailto:melitobruno@gmail.com" className="bg-[#242445] border border-gray-800/50 rounded-3xl p-5 hover:border-gray-700 transition-colors text-center">
               <Mail className="w-6 h-6 text-amber-400 mx-auto mb-3" />
               <h3 className="font-bold text-white text-sm mb-1">Email</h3>
               <p className="text-gray-400 text-xs">melitobruno@gmail.com</p>
             </a>
-            <div className="bg-[#242445] border border-gray-800/50 rounded-2xl p-5 text-center">
+            <div className="bg-[#242445] border border-gray-800/50 rounded-3xl p-5 text-center">
               <Clock className="w-6 h-6 text-amber-400 mx-auto mb-3" />
               <h3 className="font-bold text-white text-sm mb-1">Orari</h3>
               <p className="text-gray-400 text-xs">Mar - Sab: 08:00 - 19:00</p>
