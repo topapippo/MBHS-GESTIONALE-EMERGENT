@@ -130,7 +130,7 @@ export default function BookingPage() {
           <p className="text-gray-300 mb-2">Ti aspettiamo il <span className="text-white font-bold">{format(new Date(formData.date), 'd MMMM yyyy', { locale: it })}</span> alle <span className="text-white font-bold">{formData.time}</span></p>
           <p className="text-sm text-gray-500 mb-8">Riceverai un promemoria prima dell'appuntamento.</p>
           <Button onClick={() => { setSuccess(false); setShowBooking(false); setStep(1); setFormData({ client_name: '', client_phone: '', service_ids: [], operator_id: '', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', notes: '' }); }}
-            className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold px-8" data-testid="booking-back-home-btn">Torna alla Home</Button>
+            className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8" data-testid="booking-back-home-btn">Torna alla Home</Button>
         </div>
       </div>
     );
@@ -159,7 +159,7 @@ export default function BookingPage() {
           <div className="flex items-center justify-center gap-2 mb-6">
             {[1, 2, 3].map(s => (
               <div key={s} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-white text-[#0a0a0a]' : 'bg-gray-800 text-gray-500'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-white text-[#1a1a2e]' : 'bg-gray-800 text-gray-500'}`}>
                   {step > s ? <CheckCircle className="w-4 h-4" /> : s}
                 </div>
                 {s < 3 && <div className={`w-12 h-0.5 ${step > s ? 'bg-white' : 'bg-gray-800'}`} />}
@@ -188,7 +188,7 @@ export default function BookingPage() {
                   <p className="font-bold text-white">Riepilogo: {totalDuration} min - {'\u20AC'}{totalPrice}</p>
                 </div>
               )}
-              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0} className="w-full bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold py-6" data-testid="booking-step1-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
+              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0} className="w-full bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold py-6" data-testid="booking-step1-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
             </div>
           )}
           {step === 2 && (
@@ -211,7 +211,7 @@ export default function BookingPage() {
               </div>
               <div className="flex gap-3">
                 <Button onClick={() => setStep(1)} variant="outline" className="flex-1 border-gray-700 text-gray-300 hover:bg-white/10">Indietro</Button>
-                <Button onClick={() => setStep(3)} className="flex-1 bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold" data-testid="booking-step2-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
+                <Button onClick={() => setStep(3)} className="flex-1 bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold" data-testid="booking-step2-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
               </div>
             </div>
           )}
@@ -234,7 +234,7 @@ export default function BookingPage() {
               </div>
               <div className="flex gap-3">
                 <Button onClick={() => setStep(2)} variant="outline" className="flex-1 border-gray-700 text-gray-300 hover:bg-white/10">Indietro</Button>
-                <Button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold" data-testid="booking-submit-btn">
+                <Button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold" data-testid="booking-submit-btn">
                   {submitting ? <Clock className="w-4 h-4 animate-spin" /> : 'Conferma Prenotazione'}
                 </Button>
               </div>
@@ -261,7 +261,7 @@ export default function BookingPage() {
             <button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} className="hover:text-white transition-colors">Servizi</button>
             <button onClick={() => scrollTo(contactRef)} className="hover:text-white transition-colors">Contatti</button>
           </div>
-          <Button onClick={() => setShowBooking(true)} className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="booking-start-btn">
+          <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="booking-start-btn">
             PRENOTA ORA
           </Button>
         </div>
@@ -286,7 +286,7 @@ export default function BookingPage() {
               Scopri l'eccellenza dell'hair styling al Bruno Melito Hair. Dove ogni taglio è un'opera d'arte e ogni cliente è unica.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-black text-base px-8 py-6 rounded-xl">
+              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-black text-base px-8 py-6 rounded-xl">
                 <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
               </Button>
               <Button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} variant="outline" className="border-white/20 text-white hover:bg-white/10 font-bold text-base px-8 py-6 rounded-xl">
@@ -346,7 +346,7 @@ export default function BookingPage() {
               ))}
               <div className="text-center">
                 <p className="text-gray-600 text-sm mb-6">Tutti i servizi includono consulenza personalizzata e prodotti professionali.</p>
-                <Button onClick={() => setShowBooking(true)} className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+                <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
                   <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
                 </Button>
               </div>
@@ -457,7 +457,7 @@ export default function BookingPage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
               <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
             </Button>
           </div>
@@ -498,7 +498,7 @@ export default function BookingPage() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#0a0a0a] hover:bg-gray-200 font-black text-base px-10 py-6 rounded-xl w-full sm:w-auto" data-testid="contact-book-btn">
+            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-black text-base px-10 py-6 rounded-xl w-full sm:w-auto" data-testid="contact-book-btn">
               <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
             </Button>
             <Button onClick={openWhatsApp} className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-base px-10 py-6 rounded-xl w-full sm:w-auto" data-testid="contact-whatsapp-btn">
@@ -525,7 +525,7 @@ export default function BookingPage() {
 
       {/* Fixed bottom CTA on mobile */}
       <div className="fixed bottom-0 left-0 right-0 p-3 bg-[#1a1a2e]/95 backdrop-blur-md border-t border-white/5 sm:hidden z-50">
-        <Button onClick={() => setShowBooking(true)} className="w-full bg-white text-[#0a0a0a] hover:bg-gray-200 font-black py-5 rounded-xl" data-testid="mobile-book-btn">
+        <Button onClick={() => setShowBooking(true)} className="w-full bg-white text-[#1a1a2e] hover:bg-gray-200 font-black py-5 rounded-xl" data-testid="mobile-book-btn">
           <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
         </Button>
       </div>
