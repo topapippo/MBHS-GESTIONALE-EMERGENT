@@ -65,6 +65,15 @@ Applicazione gestionale completa per un salone di parrucchiera con autenticazion
 - Richiamo clienti inattivi
 - Pagina dedicata /reminders
 
+#### Riepilogo Giornaliero (25 Feb 2026)
+- Pagina /daily-summary con navigazione per data
+- Incasso totale con confronto vs giorno precedente
+- Numero clienti serviti e media per cliente
+- Grafico a barre distribuzione oraria (08:00-20:00)
+- Top 5 servizi più richiesti del giorno
+- Metodi di pagamento utilizzati
+- Ora di punta automatica
+
 ## Credenziali Test
 - Email: melitobruno@gmail.com
 - Password: password123
