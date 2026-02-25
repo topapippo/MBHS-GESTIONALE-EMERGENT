@@ -138,8 +138,14 @@ export default function ServicesPage() {
     return CATEGORIES.find(c => c.value === category) || CATEGORIES[4];
   };
 
-  // Group services by category
-  const groupedServices = services.reduce((acc, service) => {
+  // Sort services by number prefix and group by category
+  const sortByNumber = (a, b) => {
+    const numA = parseInt(a.name.match(/^\d+/)?.[0] || '999');
+    const numB = parseInt(b.name.match(/^\d+/)?.[0] || '999');
+    return numA - numB;
+  };
+
+  const groupedServices = services.sort(sortByNumber).reduce((acc, service) => {
     const cat = service.category;
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(service);
