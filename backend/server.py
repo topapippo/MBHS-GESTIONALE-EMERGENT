@@ -2123,6 +2123,207 @@ async def mark_inactive_recall_sent(client_id: str, current_user: dict = Depends
 async def root():
     return {"message": "Salone Parrucchiera API", "status": "ok"}
 
+# ============== WEBSITE CMS ==============
+
+# Object Storage config
+STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+APP_NAME = "mbhssalon"
+_storage_key = None
+
+def init_storage():
+    global _storage_key
+    if _storage_key:
+        return _storage_key
+    resp = http_requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+    resp.raise_for_status()
+    _storage_key = resp.json()["storage_key"]
+    return _storage_key
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    resp = http_requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def get_object(path: str):
+    key = init_storage()
+    resp = http_requests.get(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key}, timeout=60
+    )
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+
+# Default website config
+DEFAULT_WEBSITE_CONFIG = {
+    "salon_name": "BRUNO MELITO HAIR",
+    "slogan": "Metti la testa a posto!!",
+    "subtitle": "SOLO PER APPUNTAMENTO",
+    "hero_description": "Scopri l'eccellenza dell'hair styling al Bruno Melito Hair. Dove ogni taglio e' un'opera d'arte e ogni cliente e' unica.",
+    "about_title": "Dal 1983 con Passione",
+    "about_text": "Dal 1983 con grande soddisfazione nostra e delle clienti che ci seguono, siamo un punto di riferimento per chi cerca qualita' e professionalita' nell'hair styling.",
+    "about_text_2": "Abbiamo introdotto una nuova linea di prodotti altamente curativi, di ultima generazione: shampoo, maschere e finishing, senza parabeni, solfati e sale. Le colorazioni e le schiariture sono senza ammoniaca, ma con cheratina, olio di semi di lino, proteine della seta e olio di argan.",
+    "about_features": ["Dal 1983 nel settore", "Senza parabeni e solfati", "Colorazioni senza ammoniaca", "Cheratina e olio di argan"],
+    "years_experience": "40+",
+    "year_founded": "1983",
+    "phones": ["0823 18 78 320", "339 78 33 526"],
+    "email": "melitobruno@gmail.com",
+    "address": "Via Vito Nicola Melorio 101, Santa Maria Capua Vetere (CE)",
+    "maps_url": "https://maps.google.com/?q=Via+Vito+Nicola+Melorio+101+Santa+Maria+Capua+Vetere",
+    "whatsapp": "393397833526",
+    "hours": {"mar": "08:00 - 19:00", "mer": "08:00 - 19:00", "gio": "08:00 - 19:00", "ven": "08:00 - 19:00", "sab": "08:00 - 19:00", "dom": "Chiuso", "lun": "Chiuso"},
+    "service_categories": [
+        {"title": "Taglio & Piega", "desc": "", "items": [{"name": "Taglio", "price": "10"}, {"name": "Piega Corti", "price": "10"}, {"name": "Piega Lunghi", "price": "12"}, {"name": "Piega Fantasy", "price": "15"}, {"name": "Piastra/Ferro", "price": "+ 3"}]},
+        {"title": "Colorazione", "desc": "Tutte le colorazioni sono senza ammoniaca, con cheratina e olio di argan", "items": [{"name": "Colorazione Parziale / Completa / Cuffia / Cartine / Balayage / Giochi di Colore", "price": "Da 30"}]},
+        {"title": "Modellanti", "desc": "", "items": [{"name": "Permanente / Ondulazione / Anticrespo / Stiratura Classica", "price": "Da 40"}]}
+    ],
+    "gallery_title": "Tendenze P/E 2026",
+    "gallery_subtitle": "Lasciati ispirare dalle ultime tendenze Primavera Estate 2026."
+}
+
+# --- Upload endpoint ---
+@api_router.post("/website/upload")
+async def website_upload_image(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
+    if ext not in ("jpg", "jpeg", "png", "gif", "webp"):
+        raise HTTPException(status_code=400, detail="Formato non supportato. Usa JPG, PNG, GIF o WebP.")
+    mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}
+    file_id = str(uuid.uuid4())
+    path = f"{APP_NAME}/uploads/{file_id}.{ext}"
+    data = await file.read()
+    if len(data) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File troppo grande. Max 10MB.")
+    result = put_object(path, data, mime_map.get(ext, "image/jpeg"))
+    doc = {
+        "id": file_id,
+        "storage_path": result["path"],
+        "original_filename": file.filename,
+        "content_type": mime_map.get(ext, "image/jpeg"),
+        "size": result.get("size", len(data)),
+        "is_deleted": False,
+        "user_id": current_user["id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.website_files.insert_one(doc)
+    return {"id": file_id, "path": result["path"], "url": f"/api/website/files/{file_id}"}
+
+# --- Serve uploaded files (PUBLIC) ---
+@api_router.get("/website/files/{file_id}")
+async def website_serve_file(file_id: str):
+    record = await db.website_files.find_one({"id": file_id, "is_deleted": False}, {"_id": 0})
+    if not record:
+        raise HTTPException(status_code=404, detail="File non trovato")
+    data, content_type = get_object(record["storage_path"])
+    return Response(content=data, media_type=record.get("content_type", content_type))
+
+# --- Website Config CRUD ---
+@api_router.get("/website/config")
+async def get_website_config(current_user: dict = Depends(get_current_user)):
+    config = await db.website_config.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not config:
+        return {**DEFAULT_WEBSITE_CONFIG, "user_id": current_user["id"]}
+    return config
+
+@api_router.put("/website/config")
+async def update_website_config(data: dict, current_user: dict = Depends(get_current_user)):
+    data["user_id"] = current_user["id"]
+    data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.website_config.update_one(
+        {"user_id": current_user["id"]},
+        {"$set": data},
+        upsert=True
+    )
+    config = await db.website_config.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    return config
+
+# --- Website Reviews CRUD ---
+@api_router.get("/website/reviews")
+async def get_website_reviews(current_user: dict = Depends(get_current_user)):
+    reviews = await db.website_reviews.find({"user_id": current_user["id"]}, {"_id": 0}).to_list(100)
+    return reviews
+
+@api_router.post("/website/reviews")
+async def create_website_review(data: dict, current_user: dict = Depends(get_current_user)):
+    review = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "name": data.get("name", ""),
+        "text": data.get("text", ""),
+        "rating": data.get("rating", 5),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.website_reviews.insert_one(review)
+    return {k: v for k, v in review.items() if k != "_id"}
+
+@api_router.put("/website/reviews/{review_id}")
+async def update_website_review(review_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    await db.website_reviews.update_one(
+        {"id": review_id, "user_id": current_user["id"]},
+        {"$set": {"name": data.get("name"), "text": data.get("text"), "rating": data.get("rating", 5)}}
+    )
+    review = await db.website_reviews.find_one({"id": review_id}, {"_id": 0})
+    return review
+
+@api_router.delete("/website/reviews/{review_id}")
+async def delete_website_review(review_id: str, current_user: dict = Depends(get_current_user)):
+    await db.website_reviews.delete_one({"id": review_id, "user_id": current_user["id"]})
+    return {"success": True}
+
+# --- Website Gallery CRUD ---
+@api_router.get("/website/gallery")
+async def get_website_gallery(current_user: dict = Depends(get_current_user)):
+    items = await db.website_gallery.find({"user_id": current_user["id"], "is_deleted": {"$ne": True}}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    return items
+
+@api_router.post("/website/gallery")
+async def create_website_gallery_item(data: dict, current_user: dict = Depends(get_current_user)):
+    count = await db.website_gallery.count_documents({"user_id": current_user["id"], "is_deleted": {"$ne": True}})
+    item = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "image_url": data.get("image_url", ""),
+        "label": data.get("label", ""),
+        "tag": data.get("tag", ""),
+        "section": data.get("section", "gallery"),
+        "sort_order": count,
+        "is_deleted": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.website_gallery.insert_one(item)
+    return {k: v for k, v in item.items() if k != "_id"}
+
+@api_router.put("/website/gallery/{item_id}")
+async def update_website_gallery_item(item_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    update_data = {}
+    for key in ["label", "tag", "sort_order", "section", "image_url"]:
+        if key in data:
+            update_data[key] = data[key]
+    if update_data:
+        await db.website_gallery.update_one({"id": item_id, "user_id": current_user["id"]}, {"$set": update_data})
+    item = await db.website_gallery.find_one({"id": item_id}, {"_id": 0})
+    return item
+
+@api_router.delete("/website/gallery/{item_id}")
+async def delete_website_gallery_item(item_id: str, current_user: dict = Depends(get_current_user)):
+    await db.website_gallery.update_one({"id": item_id, "user_id": current_user["id"]}, {"$set": {"is_deleted": True}})
+    return {"success": True}
+
+# --- PUBLIC Website endpoints (no auth) ---
+@api_router.get("/public/website")
+async def public_get_website():
+    config = await db.website_config.find_one({}, {"_id": 0, "user_id": 0})
+    if not config:
+        config = {k: v for k, v in DEFAULT_WEBSITE_CONFIG.items()}
+    reviews = await db.website_reviews.find({}, {"_id": 0, "user_id": 0}).to_list(100)
+    gallery = await db.website_gallery.find({"is_deleted": {"$ne": True}}, {"_id": 0, "user_id": 0}).sort("sort_order", 1).to_list(100)
+    services = await db.services.find({}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    return {"config": config, "reviews": reviews, "gallery": gallery, "services": services}
+
 # Include the router in the main app
 app.include_router(api_router)
 
