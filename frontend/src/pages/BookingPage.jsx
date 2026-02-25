@@ -283,7 +283,7 @@ export default function BookingPage() {
                 <Input
                   type="date"
                   value={formData.date}
-                  min={format(addDays(new Date(), 1), 'yyyy-MM-dd')}
+                  min={format(new Date(), 'yyyy-MM-dd')}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="mt-1 border-2"
                 />
