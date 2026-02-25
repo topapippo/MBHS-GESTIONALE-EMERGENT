@@ -202,9 +202,9 @@ export default function LoyaltyPage() {
               <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="w-5 h-5 text-purple-600" />
-                  <h3 className="font-bold text-purple-800">Sconto 20% Colorazione</h3>
+                  <h3 className="font-bold text-purple-800">Sconto 10% Colorazione</h3>
                 </div>
-                <p className="text-sm text-purple-600 mb-2">Sconto del 20% sul prossimo servizio di colorazione</p>
+                <p className="text-sm text-purple-600 mb-2">Sconto del 10% sul prossimo servizio di colorazione</p>
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-amber-500" />
                   <span className="text-sm font-black text-purple-700">5 punti necessari</span>
@@ -478,7 +478,7 @@ export default function LoyaltyPage() {
 
 const LOYALTY_REWARDS_UI = {
   sconto_colorazione: {
-    name: 'Sconto 20% Colorazione',
+    name: 'Sconto 10% Colorazione',
     pointsReq: 5,
     icon: <Award className="w-5 h-5 text-purple-600" />,
     bgColor: 'bg-purple-100',

@@ -250,8 +250,8 @@ class LoyaltyRedeemRequest(BaseModel):
 LOYALTY_POINTS_PER_EURO = 10  # 1 point every 10€ spent
 LOYALTY_REWARDS = {
     "sconto_colorazione": {
-        "name": "Sconto 20% Colorazione",
-        "description": "Sconto del 20% sul prossimo servizio di colorazione",
+        "name": "Sconto 10% Colorazione",
+        "description": "Sconto del 10% sul prossimo servizio di colorazione",
         "points_required": 5,
         "discount_percent": 20,
     },
