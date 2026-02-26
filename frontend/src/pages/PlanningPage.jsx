@@ -176,6 +176,15 @@ export default function PlanningPage() {
     }
   };
 
+  const fetchUpcomingExpenses = async () => {
+    try {
+      const res = await axios.get(`${API}/expenses/upcoming?days=7`);
+      setUpcomingExpenses(res.data);
+    } catch (err) {
+      // silent fail
+    }
+  };
+
   const handleSlotClick = (time, operatorId) => {
     setSelectedSlot(time);
     setSelectedOperator(operatorId);
