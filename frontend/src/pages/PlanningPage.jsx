@@ -168,12 +168,14 @@ export default function PlanningPage() {
 
   const fetchReminderCounts = async () => {
     try {
-      const [remRes, inactRes] = await Promise.all([
+      const [remRes, inactRes, autoRes] = await Promise.all([
         axios.get(`${API}/reminders/tomorrow`),
-        axios.get(`${API}/reminders/inactive-clients`)
+        axios.get(`${API}/reminders/inactive-clients`),
+        axios.get(`${API}/reminders/auto-check`)
       ]);
       setPendingRemindersCount(remRes.data.filter(r => !r.reminded).length);
       setInactiveClientsCount(inactRes.data.filter(c => !c.already_recalled).length);
+      setAutoReminderPending(autoRes.data.pending?.length || 0);
     } catch (err) {
       // silent fail - not critical
     }
