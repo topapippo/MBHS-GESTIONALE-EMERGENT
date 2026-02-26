@@ -107,6 +107,20 @@ export default function PlanningPage() {
   const [draggedApt, setDraggedApt] = useState(null);
   const [dragOverSlot, setDragOverSlot] = useState(null);
 
+  // Client cards & loyalty for checkout
+  const [clientCards, setClientCards] = useState([]);
+  const [selectedCardId, setSelectedCardId] = useState('');
+  const [clientLoyalty, setClientLoyalty] = useState({ points: 0 });
+  const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(false);
+
+  // New client mode
+  const [newClientMode, setNewClientMode] = useState(false);
+  const [newClientName, setNewClientName] = useState('');
+  const [newClientPhone, setNewClientPhone] = useState('');
+
+  // Touch swipe
+  const touchStartRef = useRef(null);
+
   useEffect(() => {
     fetchData();
     fetchReminderCounts();
