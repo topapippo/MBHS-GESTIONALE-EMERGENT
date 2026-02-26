@@ -543,12 +543,32 @@ export default function BookingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-8 border-t border-amber-400/10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <img src="/logo.png?v=3" alt="MBHS Salon" className="w-12 h-12 rounded-2xl mx-auto mb-3 border border-amber-400/20" />
-          <p className="text-gray-500 text-sm font-semibold">BRUNO MELITO HAIR</p>
-          <p className="text-gray-700 text-xs mt-2">Via Vito Nicola Melorio 101, Santa Maria Capua Vetere (CE)</p>
-          <p className="text-gray-800 text-xs mt-4">&copy; {new Date().getFullYear()} Bruno Melito Hair. Tutti i diritti riservati.</p>
+      <footer className="py-12 border-t border-amber-400/10">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col items-center gap-6">
+            <img src="/logo.png?v=3" alt="MBHS Salon" className="w-14 h-14 rounded-2xl border border-amber-400/20" />
+            <p className="text-gray-400 text-sm font-bold">BRUNO MELITO HAIR</p>
+            
+            {/* Social Links */}
+            <div className="flex items-center gap-4">
+              {SOCIAL_LINKS.map((link, i) => (
+                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                  className={`w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 ${link.color} transition-all hover:bg-white/10 hover:scale-110`}
+                  title={link.label}>
+                  <link.icon className="w-5 h-5" />
+                </a>
+              ))}
+            </div>
+
+            {/* Page Links */}
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <a href="/prenota" className="hover:text-white transition-colors">Prenota Online</a>
+              <a href="/sito" className="hover:text-white transition-colors">Sito Web</a>
+            </div>
+
+            <p className="text-gray-700 text-xs">Via Vito Nicola Melorio 101, Santa Maria Capua Vetere (CE)</p>
+            <p className="text-gray-800 text-xs">&copy; {new Date().getFullYear()} Bruno Melito Hair. Tutti i diritti riservati.</p>
+          </div>
         </div>
       </footer>
 
