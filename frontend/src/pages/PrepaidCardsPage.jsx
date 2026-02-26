@@ -429,21 +429,47 @@ export default function PrepaidCardsPage() {
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
                 <Label>Cliente *</Label>
-                <Select
-                  value={formData.client_id}
-                  onValueChange={(val) => setFormData({ ...formData, client_id: val })}
-                >
-                  <SelectTrigger data-testid="select-client">
-                    <SelectValue placeholder="Seleziona cliente" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Digita nome cliente..."
+                    value={cardClientSearch}
+                    onChange={(e) => {
+                      setCardClientSearch(e.target.value);
+                      setShowCardClientDropdown(true);
+                      if (!e.target.value) setFormData({ ...formData, client_id: '' });
+                    }}
+                    onFocus={() => setShowCardClientDropdown(true)}
+                    className="bg-white border-2 text-[#0F172A] font-medium"
+                    data-testid="search-client-card"
+                  />
+                  {showCardClientDropdown && cardClientSearch.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-[#0EA5E9] rounded-lg shadow-xl max-h-48 overflow-auto">
+                      {clients
+                        .filter(c => c.name.toLowerCase().includes(cardClientSearch.toLowerCase()))
+                        .slice(0, 20)
+                        .map((client) => (
+                          <button
+                            key={client.id}
+                            type="button"
+                            className={`w-full px-3 py-2 text-left hover:bg-[#0EA5E9]/20 text-sm font-medium border-b border-[#E2E8F0]/30 last:border-0 ${
+                              formData.client_id === client.id ? 'bg-[#0EA5E9]/20 text-[#0EA5E9]' : 'text-[#0F172A]'
+                            }`}
+                            onClick={() => {
+                              setFormData({ ...formData, client_id: client.id });
+                              setCardClientSearch(client.name);
+                              setShowCardClientDropdown(false);
+                            }}
+                          >
+                            {client.name}
+                          </button>
+                        ))}
+                      {clients.filter(c => c.name.toLowerCase().includes(cardClientSearch.toLowerCase())).length === 0 && (
+                        <div className="px-3 py-2 text-sm text-[#334155]">Nessun cliente trovato</div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
