@@ -38,6 +38,7 @@ const navItems = [
   { path: '/cards', label: 'Card / Abbonamenti', icon: CreditCard },
   { path: '/loyalty', label: 'Programma Fedeltà', icon: Star },
   { path: '/reminders', label: 'Promemoria', icon: Bell },
+  { path: '/promozioni', label: 'Promozioni', icon: Gift },
   { path: '/incassi', label: 'Report Incassi', icon: Euro },
   { path: '/uscite', label: 'Registro Uscite', icon: ArrowDownCircle },
   { path: '/daily-summary', label: 'Riepilogo Giorno', icon: FileBarChart },
