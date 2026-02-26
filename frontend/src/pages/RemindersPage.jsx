@@ -76,6 +76,61 @@ export default function RemindersPage() {
     }
   };
 
+  const checkAutoReminder = async () => {
+    try {
+      const res = await axios.get(`${API}/reminders/auto-check`);
+      setAutoCheck(res.data);
+    } catch (err) {
+      // silent
+    }
+  };
+
+  const batchSendAll = async () => {
+    if (!autoCheck || autoCheck.pending.length === 0) return;
+    setBatchSending(true);
+
+    // Find the appointment template
+    const aptTemplate = templates.find(t => t.template_type === 'appointment');
+    const templateText = aptTemplate?.text || 'Ciao {nome}! Ti ricordiamo il tuo appuntamento domani alle {ora} presso MBHS SALON. Ti aspettiamo!';
+
+    const pendingApts = autoCheck.pending;
+    const sentIds = [];
+
+    for (let i = 0; i < pendingApts.length; i++) {
+      const apt = pendingApts[i];
+      // Build personalized message
+      let msg = templateText
+        .replace('{nome}', apt.client_name || '')
+        .replace('{ora}', apt.time || '')
+        .replace('{servizi}', apt.services?.map(s => s.name).join(', ') || '')
+        .replace('{operatore}', '')
+        .replace('{data}', autoCheck.tomorrow_date || '');
+
+      const phone = formatPhone(apt.client_phone);
+      const encoded = encodeURIComponent(msg);
+      window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+      sentIds.push(apt.id);
+
+      // Small delay between opens to avoid browser blocking
+      if (i < pendingApts.length - 1) {
+        await new Promise(r => setTimeout(r, 1500));
+      }
+    }
+
+    // Mark all as sent
+    if (sentIds.length > 0) {
+      try {
+        await axios.post(`${API}/reminders/batch-mark-sent`, { appointment_ids: sentIds });
+        toast.success(`${sentIds.length} promemoria inviati!`);
+        fetchData();
+        checkAutoReminder();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    setBatchSending(false);
+  };
+
   const buildMessage = (template, target) => {
     if (!template) return '';
     let text = template;
