@@ -23,27 +23,40 @@ Applicazione gestionale completa per un salone di parrucchiera.
 - Upload immagini con Object Storage
 
 ### Fix Gestionale (26 Feb 2026) - Batch Critici
-- Metodi pagamento: solo Contanti e Abbonamento/Prepagata (rimossi Carta e Bonifico)
-- Checkout con card prepagata: mostra card attive del cliente, scala servizi e valore
+- Metodi pagamento: solo Contanti e Abbonamento/Prepagata
+- Checkout con card prepagata: mostra card attive, scala servizi e valore
 - Riscatto punti fedelta in cassa
 - Appuntamento ricorrente: settimanale E mensile
-- Cliente Generico per appuntamenti senza nominativo
-- Nuovo Cliente: crea al volo dal dialog appuntamento (non serve rubrica)
-- Operatore MBHS aggiunto come colonna nel planning
-- Ricerca cliente con prime lettere nella pagina Card/Abbonamenti
-- Frecce navigazione giorno centrate e ben visibili
-- Swipe touch per cambiare giorno su mobile
-- Report Incassi aggiornati con nuovi label metodi pagamento
-- Categoria Modellanti confermata con 5 servizi (gia esistente)
+- Cliente Generico e Nuovo Cliente al volo
+- Operatore MBHS aggiunto, Ricerca cliente card/abbonamenti
+- Frecce navigazione e swipe touch per cambiare giorno
+- Report Incassi con nuovi label
+
+### Promemoria & Richiami (26 Feb 2026)
+- Pagina /reminders completamente riscritta e funzionale
+- Messaggi preimpostati (template) con variabili: {nome}, {ora}, {servizi}, {giorni}, {operatore}
+- CRUD template messaggi (crea, modifica, elimina)
+- Dialog anteprima messaggio prima dell'invio WhatsApp
+- Selezione template nel dialog di invio
+- Possibilita di reinviare promemoria (reset stato inviato)
+- Pulsante WhatsApp funzionante con wa.me e messaggio personalizzabile
+- Sezione clienti inattivi 60+ giorni con richiamo e reset
+
+### Pacchetti Preimpostati Card/Abbonamenti (26 Feb 2026)
+- Sezione "Pacchetti Preimpostati" nella pagina Card & Abbonamenti
+- CRUD pacchetti (crea, modifica, elimina template pacchetti)
+- Pacchetti con: nome, tipo, valore, n. servizi, durata mesi, note
+- Pulsante "Assegna a Cliente" pre-compila il form nuova card
+- 3 pacchetti di esempio creati: Card 10 Pieghe, Abbonamento Mensile, Card 5 Colori
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
 - Password: password123
 
 ## Backlog
-- (P2) Sezione Promemoria: modifica/cancellazione/reinvio
-- (P1) Attivare Twilio SMS Reminders (richiede chiavi API)
+- (P1) Attivare Twilio SMS Reminders (richiede chiavi API utente)
 - (P1) Aggiungere EMERGENT_LLM_KEY nelle env di Render per upload foto
 - (P2) Stampa ricevuta dopo checkout
 - (P2) Blocco fasce orarie (pause/ferie)
-- (P2) Refactoring server.py in moduli separati
+- (P2) Refactoring server.py in moduli separati (>2500 righe)
+- (P2) Refactoring PlanningPage.jsx in componenti piu piccoli
