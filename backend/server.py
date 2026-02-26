@@ -942,6 +942,27 @@ async def checkout_appointment(appointment_id: str, data: CheckoutData, current_
         "client_name": appointment.get("client_name", "")
     }
 
+# Get client cards for checkout
+@api_router.get("/clients/{client_id}/cards")
+async def get_client_cards(client_id: str, current_user: dict = Depends(get_current_user)):
+    cards = await db.cards.find(
+        {"client_id": client_id, "user_id": current_user["id"], "active": True},
+        {"_id": 0}
+    ).to_list(50)
+    return cards
+
+# Get client loyalty points
+@api_router.get("/clients/{client_id}/loyalty")
+async def get_client_loyalty(client_id: str, current_user: dict = Depends(get_current_user)):
+    loyalty = await db.loyalty.find_one(
+        {"client_id": client_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not loyalty:
+        return {"points": 0, "total_earned": 0}
+    return {"points": loyalty.get("points", 0), "total_earned": loyalty.get("total_earned", 0)}
+
+
 # ============== RECURRING APPOINTMENTS ==============
 
 @api_router.post("/appointments/recurring")
