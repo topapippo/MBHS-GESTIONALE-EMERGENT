@@ -381,6 +381,54 @@ export default function RemindersPage() {
           </Card>
         </div>
 
+        {/* Auto-Send Banner */}
+        {autoCheck && autoCheck.pending.length > 0 && (
+          <Card className="border-2 border-green-400 bg-gradient-to-r from-green-50 to-emerald-50 shadow-md">
+            <CardContent className="p-5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2.5 bg-green-500 rounded-xl shrink-0">
+                    <Send className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-green-800 text-lg">
+                      Invio Automatico Promemoria
+                    </p>
+                    <p className="text-sm text-green-700 mt-0.5">
+                      {autoCheck.pending.length} clienti da avvisare per domani ({autoCheck.tomorrow_date}).
+                      {autoCheck.already_sent > 0 && (
+                        <span className="ml-1">({autoCheck.already_sent} già inviati)</span>
+                      )}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {autoCheck.pending.slice(0, 5).map((p, i) => (
+                        <span key={i} className="text-xs bg-white border border-green-200 text-green-800 px-2 py-0.5 rounded-full">
+                          {p.client_name} ({p.time})
+                        </span>
+                      ))}
+                      {autoCheck.pending.length > 5 && (
+                        <span className="text-xs text-green-600">+{autoCheck.pending.length - 5} altri</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  onClick={batchSendAll}
+                  disabled={batchSending}
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold text-base px-6 py-3 h-auto shrink-0"
+                  data-testid="batch-send-btn"
+                >
+                  {batchSending ? (
+                    <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Invio in corso...</>
+                  ) : (
+                    <><MessageSquare className="w-5 h-5 mr-2" /> Invia Tutti su WhatsApp</>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Message Templates Section */}
         <Card className="border-[#E2E8F0]/30">
           <CardHeader className="pb-3">
