@@ -103,6 +103,9 @@ export default function PlanningPage() {
   const [pendingRemindersCount, setPendingRemindersCount] = useState(0);
   const [inactiveClientsCount, setInactiveClientsCount] = useState(0);
 
+  // Upcoming expenses
+  const [upcomingExpenses, setUpcomingExpenses] = useState([]);
+
   // Drag & Drop state
   const [draggedApt, setDraggedApt] = useState(null);
   const [dragOverSlot, setDragOverSlot] = useState(null);
