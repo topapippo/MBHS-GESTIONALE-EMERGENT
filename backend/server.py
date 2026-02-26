@@ -444,6 +444,21 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=current_user["created_at"]
     )
 
+
+@api_router.put("/auth/change-password")
+async def change_password(data: dict, current_user: dict = Depends(get_current_user)):
+    current_pw = data.get("current_password", "")
+    new_pw = data.get("new_password", "")
+    if not current_pw or not new_pw:
+        raise HTTPException(status_code=400, detail="Password corrente e nuova password sono obbligatorie")
+    if len(new_pw) < 6:
+        raise HTTPException(status_code=400, detail="La nuova password deve avere almeno 6 caratteri")
+    user = await db.users.find_one({"id": current_user["id"]})
+    if not user or not verify_password(current_pw, user["password"]):
+        raise HTTPException(status_code=400, detail="Password corrente non corretta")
+    await db.users.update_one({"id": current_user["id"]}, {"$set": {"password": hash_password(new_pw)}})
+    return {"success": True, "message": "Password aggiornata con successo"}
+
 # ============== OPERATOR ROUTES ==============
 
 @api_router.post("/operators", response_model=OperatorResponse)
