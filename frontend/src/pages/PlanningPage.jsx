@@ -188,21 +188,32 @@ export default function PlanningPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.client_id || formData.service_ids.length === 0) {
+    const hasClient = formData.client_id || newClientMode;
+    if (!hasClient || formData.service_ids.length === 0) {
       toast.error('Seleziona un cliente e almeno un servizio');
       return;
     }
 
     setSaving(true);
     try {
-      await axios.post(`${API}/appointments`, {
+      const payload = {
         ...formData,
         date: format(selectedDate, 'yyyy-MM-dd'),
         operator_id: formData.operator_id || null
-      });
+      };
+      if (newClientMode && !formData.client_id) {
+        payload.client_id = null;
+        payload.client_name = newClientName || 'Cliente Generico';
+        payload.client_phone = newClientPhone || '';
+      }
+      await axios.post(`${API}/appointments`, payload);
       toast.success('Appuntamento creato!');
       setDialogOpen(false);
       setFormData({ client_id: '', service_ids: [], operator_id: '', time: '09:00', notes: '' });
+      setNewClientMode(false);
+      setNewClientName('');
+      setNewClientPhone('');
+      setClientSearch('');
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Errore nella creazione');
