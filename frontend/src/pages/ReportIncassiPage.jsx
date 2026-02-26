@@ -77,7 +77,7 @@ export default function ReportIncassiPage() {
       'Importo Originale': p.original_amount,
       'Sconto': p.discount_value || 0,
       'Totale Pagato': p.total_paid,
-      'Metodo': p.payment_method === 'cash' ? 'Contanti' : p.payment_method === 'card' ? 'Carta' : p.payment_method === 'transfer' ? 'Bonifico' : 'Prepagata'
+      'Metodo': p.payment_method === 'cash' ? 'Contanti' : 'Abbonamento/Prepagata'
     }));
     
     const ws = XLSX.utils.json_to_sheet(data);
