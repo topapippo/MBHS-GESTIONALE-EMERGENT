@@ -175,6 +175,7 @@ export default function PrepaidCardsPage() {
       valid_until: '',
       notes: ''
     });
+    setCardClientSearch('');
   };
 
   const filteredCards = cards.filter(card =>
