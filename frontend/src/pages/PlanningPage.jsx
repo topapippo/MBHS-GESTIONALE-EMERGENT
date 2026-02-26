@@ -715,30 +715,6 @@ export default function PlanningPage() {
               </div>
             )}
 
-            {/* Date Navigation */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSelectedDate(subDays(selectedDate, 1))}
-              className="border-[#E2E8F0]"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSelectedDate(new Date())}
-              className="border-[#E2E8F0] text-[#0F172A]"
-            >
-              Oggi
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-              className="border-[#E2E8F0]"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         </div>
 
