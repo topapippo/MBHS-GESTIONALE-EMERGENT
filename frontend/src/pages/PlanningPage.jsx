@@ -884,7 +884,55 @@ export default function PlanningPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label className="text-[#0F172A] font-semibold">Cliente</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[#0F172A] font-semibold">Cliente</Label>
+                  <div className="flex gap-1">
+                    <Button type="button" variant="ghost" size="sm" className="text-xs h-7 text-amber-600"
+                      onClick={() => {
+                        setNewClientMode(false);
+                        setNewClientName('');
+                        setFormData({ ...formData, client_id: 'generic' });
+                        setClientSearch('Cliente Generico');
+                        setSelectedClientInfo(null);
+                      }}
+                      data-testid="generic-client-btn">
+                      <User className="w-3 h-3 mr-1" /> Generico
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="text-xs h-7 text-emerald-600"
+                      onClick={() => {
+                        setNewClientMode(true);
+                        setFormData({ ...formData, client_id: '' });
+                        setClientSearch('');
+                        setSelectedClientInfo(null);
+                      }}
+                      data-testid="new-client-btn">
+                      <UserPlus className="w-3 h-3 mr-1" /> Nuovo
+                    </Button>
+                  </div>
+                </div>
+                {newClientMode ? (
+                  <div className="space-y-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                    <Input
+                      type="text"
+                      placeholder="Nome e Cognome *"
+                      value={newClientName}
+                      onChange={(e) => setNewClientName(e.target.value)}
+                      className="bg-white border-2 border-emerald-300 text-[#0F172A] font-medium"
+                      data-testid="new-client-name-input"
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Telefono (opzionale)"
+                      value={newClientPhone}
+                      onChange={(e) => setNewClientPhone(e.target.value)}
+                      className="bg-white border-2 border-emerald-300 text-[#0F172A] font-medium"
+                      data-testid="new-client-phone-input"
+                    />
+                    <button type="button" className="text-xs text-gray-500 hover:text-red-500" onClick={() => { setNewClientMode(false); setNewClientName(''); setNewClientPhone(''); }}>
+                      Annulla nuovo cliente
+                    </button>
+                  </div>
+                ) : (
                 <div className="relative">
                   <Input
                     type="text"
