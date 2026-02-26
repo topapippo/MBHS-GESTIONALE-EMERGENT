@@ -983,18 +983,22 @@ export default function PlanningPage() {
 
               {/* Client Info Card */}
               {selectedClientInfo && (
-                <div className="p-3 bg-[#FEF3C7] border-2 border-[#F59E0B] rounded-lg">
+                <div className={`p-3 rounded-lg border-2 ${!selectedClientInfo.phone ? 'bg-red-50 border-red-400' : 'bg-[#FEF3C7] border-[#F59E0B]'}`}>
                   <div className="flex items-start gap-2">
-                    <User className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                    <User className={`w-5 h-5 flex-shrink-0 mt-0.5 ${!selectedClientInfo.phone ? 'text-red-500' : 'text-[#F59E0B]'}`} />
                     <div className="flex-1">
-                      <p className="font-bold text-[#92400E]">{selectedClientInfo.name}</p>
-                      {selectedClientInfo.phone && (
+                      <p className={`font-bold ${!selectedClientInfo.phone ? 'text-red-700' : 'text-[#92400E]'}`}>{selectedClientInfo.name}</p>
+                      {selectedClientInfo.phone ? (
                         <p className="text-sm text-[#92400E]">Tel: {selectedClientInfo.phone}</p>
+                      ) : (
+                        <p className="text-sm text-red-600 font-semibold flex items-center gap-1">
+                          <Bell className="w-3.5 h-3.5" /> Telefono mancante! Inseriscilo nella scheda cliente
+                        </p>
                       )}
                       {selectedClientInfo.notes && (
                         <p className="text-sm text-[#92400E] mt-1 whitespace-pre-wrap">{selectedClientInfo.notes}</p>
                       )}
-                      {!selectedClientInfo.notes && (
+                      {!selectedClientInfo.notes && selectedClientInfo.phone && (
                         <p className="text-sm text-[#92400E]/60 italic">Nessuna nota</p>
                       )}
                     </div>
