@@ -1,10 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, MessageSquare, Clock, UserX, Check, Phone, Calendar } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Bell, MessageSquare, Clock, UserX, Check, Phone, Calendar,
+  RotateCcw, Pencil, Trash2, Plus, FileText, Send, Loader2
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -12,8 +32,22 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function RemindersPage() {
   const [tomorrowReminders, setTomorrowReminders] = useState([]);
   const [inactiveClients, setInactiveClients] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingId, setSendingId] = useState(null);
+  const [resettingId, setResettingId] = useState(null);
+
+  // Message preview dialog
+  const [msgDialog, setMsgDialog] = useState(false);
+  const [msgTarget, setMsgTarget] = useState(null); // { type: 'appointment'|'recall', data: ... }
+  const [msgText, setMsgText] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+
+  // Template management dialog
+  const [templateDialog, setTemplateDialog] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateForm, setTemplateForm] = useState({ name: '', text: '', template_type: 'appointment' });
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -21,12 +55,14 @@ export default function RemindersPage() {
 
   const fetchData = async () => {
     try {
-      const [remRes, inactRes] = await Promise.all([
+      const [remRes, inactRes, templRes] = await Promise.all([
         axios.get(`${API}/reminders/tomorrow`),
-        axios.get(`${API}/reminders/inactive-clients`)
+        axios.get(`${API}/reminders/inactive-clients`),
+        axios.get(`${API}/reminders/templates`)
       ]);
       setTomorrowReminders(remRes.data);
       setInactiveClients(inactRes.data);
+      setTemplates(templRes.data);
     } catch (err) {
       console.error(err);
       toast.error('Errore nel caricamento');
@@ -35,57 +71,180 @@ export default function RemindersPage() {
     }
   };
 
-  const sendAppointmentReminder = async (apt) => {
-    if (!apt.client_phone) {
-      toast.error('Numero di telefono non disponibile');
-      return;
+  const buildMessage = (template, target) => {
+    if (!template) return '';
+    let text = template;
+    if (target.type === 'appointment') {
+      const apt = target.data;
+      text = text.replace('{nome}', apt.client_name || '');
+      text = text.replace('{ora}', apt.time || '');
+      text = text.replace('{servizi}', apt.services?.map(s => s.name).join(', ') || '');
+      text = text.replace('{operatore}', apt.operator_name || '');
+      text = text.replace('{data}', apt.date || '');
+    } else {
+      const client = target.data;
+      text = text.replace('{nome}', client.client_name || '');
+      text = text.replace('{giorni}', String(client.days_ago || ''));
+      text = text.replace('{servizi}', client.last_services?.join(', ') || '');
     }
-    setSendingId(apt.id);
-    let phone = apt.client_phone.replace(/[\s\-\+]/g, '');
-    if (!phone.startsWith('39')) phone = '39' + phone;
-
-    const serviceNames = apt.services?.map(s => s.name).join(', ') || '';
-    const message = encodeURIComponent(
-      `Ciao ${apt.client_name}! Ti ricordiamo il tuo appuntamento domani alle ${apt.time} presso MBHS SALON. Servizi: ${serviceNames}. Ti aspettiamo!`
-    );
-    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
-
-    try {
-      await axios.post(`${API}/reminders/appointment/${apt.id}/mark-sent`);
-      setTomorrowReminders(prev =>
-        prev.map(r => r.id === apt.id ? { ...r, reminded: true } : r)
-      );
-      toast.success(`Promemoria inviato a ${apt.client_name}`);
-    } catch (err) {
-      console.error(err);
-    }
-    setSendingId(null);
+    return text;
   };
 
-  const sendInactiveRecall = async (client) => {
-    if (!client.client_phone) {
+  const openMessageDialog = (type, data) => {
+    const target = { type, data };
+    setMsgTarget(target);
+
+    // Auto-select matching template
+    const tType = type === 'appointment' ? 'appointment' : 'recall';
+    const matching = templates.find(t => t.template_type === tType);
+    if (matching) {
+      setSelectedTemplateId(matching.id);
+      setMsgText(buildMessage(matching.text, target));
+    } else {
+      setSelectedTemplateId('');
+      if (type === 'appointment') {
+        const apt = data;
+        setMsgText(`Ciao ${apt.client_name}! Ti ricordiamo il tuo appuntamento domani alle ${apt.time} presso MBHS SALON. Ti aspettiamo!`);
+      } else {
+        const client = data;
+        setMsgText(`Ciao ${client.client_name}! Sono passati ${client.days_ago} giorni dalla tua ultima visita. Torna a trovarci!`);
+      }
+    }
+    setMsgDialog(true);
+  };
+
+  const handleTemplateSelect = (templateId) => {
+    setSelectedTemplateId(templateId);
+    const tmpl = templates.find(t => t.id === templateId);
+    if (tmpl && msgTarget) {
+      setMsgText(buildMessage(tmpl.text, msgTarget));
+    }
+  };
+
+  const formatPhone = (phone) => {
+    if (!phone) return '';
+    let p = phone.replace(/[\s\-\+\(\)]/g, '');
+    if (p.startsWith('0039')) p = p.substring(2);
+    if (!p.startsWith('39')) p = '39' + p;
+    return p;
+  };
+
+  const sendMessage = async () => {
+    if (!msgTarget) return;
+    const { type, data } = msgTarget;
+
+    let phone = '';
+    if (type === 'appointment') {
+      phone = data.client_phone;
+    } else {
+      phone = data.client_phone;
+    }
+
+    if (!phone) {
       toast.error('Numero di telefono non disponibile');
       return;
     }
-    setSendingId(client.client_id);
-    let phone = client.client_phone.replace(/[\s\-\+]/g, '');
-    if (!phone.startsWith('39')) phone = '39' + phone;
 
-    const message = encodeURIComponent(
-      `Ciao ${client.client_name}! Sono passati ${client.days_ago} giorni dalla tua ultima visita presso MBHS SALON. Torna entro 7 giorni e avrai uno sconto del 10%! Prenota il tuo appuntamento!`
-    );
-    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+    const formattedPhone = formatPhone(phone);
+    const encoded = encodeURIComponent(msgText);
+    const url = `https://wa.me/${formattedPhone}?text=${encoded}`;
 
+    // Open WhatsApp
+    window.open(url, '_blank');
+
+    // Mark as sent
+    const id = type === 'appointment' ? data.id : data.client_id;
+    setSendingId(id);
     try {
-      await axios.post(`${API}/reminders/inactive/${client.client_id}/mark-sent`);
-      setInactiveClients(prev =>
-        prev.map(c => c.client_id === client.client_id ? { ...c, already_recalled: true } : c)
-      );
-      toast.success(`Richiamo inviato a ${client.client_name}`);
+      if (type === 'appointment') {
+        await axios.post(`${API}/reminders/appointment/${data.id}/mark-sent`);
+        setTomorrowReminders(prev =>
+          prev.map(r => r.id === data.id ? { ...r, reminded: true } : r)
+        );
+        toast.success(`Promemoria inviato a ${data.client_name}`);
+      } else {
+        await axios.post(`${API}/reminders/inactive/${data.client_id}/mark-sent`);
+        setInactiveClients(prev =>
+          prev.map(c => c.client_id === data.client_id ? { ...c, already_recalled: true } : c)
+        );
+        toast.success(`Richiamo inviato a ${data.client_name}`);
+      }
     } catch (err) {
       console.error(err);
     }
     setSendingId(null);
+    setMsgDialog(false);
+  };
+
+  const resetReminder = async (type, id) => {
+    setResettingId(id);
+    try {
+      if (type === 'appointment') {
+        await axios.delete(`${API}/reminders/appointment/${id}/reset`);
+        setTomorrowReminders(prev =>
+          prev.map(r => r.id === id ? { ...r, reminded: false } : r)
+        );
+        toast.success('Promemoria resettato, puoi reinviarlo');
+      } else {
+        await axios.delete(`${API}/reminders/inactive/${id}/reset`);
+        setInactiveClients(prev =>
+          prev.map(c => c.client_id === id ? { ...c, already_recalled: false } : c)
+        );
+        toast.success('Richiamo resettato, puoi reinviarlo');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Errore nel reset');
+    }
+    setResettingId(null);
+  };
+
+  // Template CRUD
+  const openTemplateDialog = (tmpl = null) => {
+    if (tmpl) {
+      setEditingTemplate(tmpl);
+      setTemplateForm({ name: tmpl.name, text: tmpl.text, template_type: tmpl.template_type });
+    } else {
+      setEditingTemplate(null);
+      setTemplateForm({ name: '', text: '', template_type: 'appointment' });
+    }
+    setTemplateDialog(true);
+  };
+
+  const saveTemplate = async () => {
+    if (!templateForm.name || !templateForm.text) {
+      toast.error('Compila tutti i campi');
+      return;
+    }
+    setSavingTemplate(true);
+    try {
+      if (editingTemplate) {
+        await axios.put(`${API}/reminders/templates/${editingTemplate.id}`, {
+          name: templateForm.name,
+          text: templateForm.text
+        });
+        toast.success('Template aggiornato');
+      } else {
+        await axios.post(`${API}/reminders/templates`, templateForm);
+        toast.success('Template creato');
+      }
+      setTemplateDialog(false);
+      fetchData();
+    } catch (err) {
+      toast.error('Errore nel salvataggio');
+    }
+    setSavingTemplate(false);
+  };
+
+  const deleteTemplate = async (id) => {
+    if (!window.confirm('Eliminare questo template?')) return;
+    try {
+      await axios.delete(`${API}/reminders/templates/${id}`);
+      toast.success('Template eliminato');
+      fetchData();
+    } catch (err) {
+      toast.error('Errore nell\'eliminazione');
+    }
   };
 
   const pendingReminders = tomorrowReminders.filter(r => !r.reminded);
@@ -107,12 +266,23 @@ export default function RemindersPage() {
     <Layout>
       <div className="space-y-6" data-testid="reminders-page">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] flex items-center gap-3">
-            <Bell className="w-7 h-7 text-[#0EA5E9]" />
-            Promemoria & Richiami
-          </h1>
-          <p className="text-[#334155] mt-1">Invia promemoria appuntamenti e richiama clienti inattivi</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] flex items-center gap-3">
+              <Bell className="w-7 h-7 text-[#0EA5E9]" />
+              Promemoria & Richiami
+            </h1>
+            <p className="text-[#334155] mt-1">Invia promemoria via WhatsApp e richiama clienti inattivi</p>
+          </div>
+          <Button
+            onClick={() => openTemplateDialog()}
+            variant="outline"
+            className="border-[#0EA5E9] text-[#0EA5E9] hover:bg-[#0EA5E9]/10 shrink-0"
+            data-testid="manage-templates-btn"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Gestisci Messaggi
+          </Button>
         </div>
 
         {/* Stats */}
@@ -151,6 +321,88 @@ export default function RemindersPage() {
           </Card>
         </div>
 
+        {/* Message Templates Section */}
+        <Card className="border-[#E2E8F0]/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-bold text-[#0F172A] flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#0EA5E9]" />
+              Messaggi Preimpostati
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {templates.length > 0 ? (
+              <div className="space-y-2">
+                {templates.map((tmpl) => (
+                  <div
+                    key={tmpl.id}
+                    className="p-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+                    data-testid={`template-${tmpl.id}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-[#0F172A] text-sm">{tmpl.name}</p>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          tmpl.template_type === 'appointment'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-orange-100 text-orange-700'
+                        }`}>
+                          {tmpl.template_type === 'appointment' ? 'Appuntamento' : 'Richiamo'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#64748B] mt-1 truncate">{tmpl.text}</p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openTemplateDialog(tmpl)}
+                        className="text-[#334155] hover:text-[#0EA5E9] h-8 w-8 p-0"
+                        data-testid={`edit-template-${tmpl.id}`}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteTemplate(tmpl.id)}
+                        className="text-[#334155] hover:text-red-500 h-8 w-8 p-0"
+                        data-testid={`delete-template-${tmpl.id}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openTemplateDialog()}
+                  className="text-[#0EA5E9] hover:bg-[#0EA5E9]/10 w-full mt-2"
+                  data-testid="add-template-btn"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Aggiungi Template
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <FileText className="w-10 h-10 mx-auto text-[#E2E8F0] mb-2" />
+                <p className="text-sm text-[#334155]">Nessun template creato</p>
+                <Button
+                  onClick={() => openTemplateDialog()}
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 border-[#0EA5E9] text-[#0EA5E9]"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Crea Template
+                </Button>
+              </div>
+            )}
+            <p className="text-xs text-[#94A3B8] mt-3">
+              Variabili disponibili: <code className="bg-[#F1F5F9] px-1 rounded">{'{nome}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{ora}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{servizi}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{giorni}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{operatore}'}</code>
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Tomorrow's Appointments */}
         <Card className="border-[#E2E8F0]/30">
           <CardHeader className="pb-3">
@@ -184,7 +436,7 @@ export default function RemindersPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 text-sm text-[#334155] mt-1">
+                      <div className="flex items-center gap-3 text-sm text-[#334155] mt-1 flex-wrap">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" /> {apt.time}
                         </span>
@@ -198,17 +450,37 @@ export default function RemindersPage() {
                         {apt.services?.map(s => s.name).join(', ')}
                       </p>
                     </div>
-                    {!apt.reminded && (
-                      <Button
-                        onClick={() => sendAppointmentReminder(apt)}
-                        disabled={sendingId === apt.id || !apt.client_phone}
-                        className="bg-green-500 hover:bg-green-600 text-white font-bold shrink-0"
-                        data-testid={`send-reminder-${apt.id}`}
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        WhatsApp
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {apt.reminded ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => resetReminder('appointment', apt.id)}
+                          disabled={resettingId === apt.id}
+                          className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                          data-testid={`reset-reminder-${apt.id}`}
+                        >
+                          {resettingId === apt.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <><RotateCcw className="w-4 h-4 mr-1" /> Reinvia</>
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => openMessageDialog('appointment', apt)}
+                          disabled={sendingId === apt.id || !apt.client_phone}
+                          className="bg-green-500 hover:bg-green-600 text-white font-bold"
+                          data-testid={`send-reminder-${apt.id}`}
+                        >
+                          {sendingId === apt.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <><MessageSquare className="w-4 h-4 mr-2" /> WhatsApp</>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -254,7 +526,7 @@ export default function RemindersPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 text-sm mt-1">
+                      <div className="flex items-center gap-3 text-sm mt-1 flex-wrap">
                         <span className="text-orange-700 font-semibold flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" /> {client.days_ago} giorni fa
                         </span>
@@ -268,17 +540,37 @@ export default function RemindersPage() {
                         Ultima visita: {client.last_visit} — {client.last_services?.join(', ')}
                       </p>
                     </div>
-                    {!client.already_recalled && (
-                      <Button
-                        onClick={() => sendInactiveRecall(client)}
-                        disabled={sendingId === client.client_id || !client.client_phone}
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold shrink-0"
-                        data-testid={`send-recall-${client.client_id}`}
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Richiama
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {client.already_recalled ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => resetReminder('recall', client.client_id)}
+                          disabled={resettingId === client.client_id}
+                          className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                          data-testid={`reset-recall-${client.client_id}`}
+                        >
+                          {resettingId === client.client_id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <><RotateCcw className="w-4 h-4 mr-1" /> Reinvia</>
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => openMessageDialog('recall', client)}
+                          disabled={sendingId === client.client_id || !client.client_phone}
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-bold"
+                          data-testid={`send-recall-${client.client_id}`}
+                        >
+                          {sendingId === client.client_id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <><MessageSquare className="w-4 h-4 mr-2" /> Richiama</>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -291,6 +583,132 @@ export default function RemindersPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Send Message Dialog */}
+        <Dialog open={msgDialog} onOpenChange={setMsgDialog}>
+          <DialogContent className="sm:max-w-[520px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[#0F172A] flex items-center gap-2">
+                <Send className="w-5 h-5 text-green-500" />
+                Invia Messaggio WhatsApp
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              {msgTarget && (
+                <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
+                  <p className="font-semibold text-[#0F172A]">
+                    {msgTarget.type === 'appointment' ? msgTarget.data.client_name : msgTarget.data.client_name}
+                  </p>
+                  <p className="text-sm text-[#334155] flex items-center gap-1 mt-1">
+                    <Phone className="w-3.5 h-3.5" />
+                    {msgTarget.type === 'appointment' ? msgTarget.data.client_phone : msgTarget.data.client_phone}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Template</Label>
+                <Select value={selectedTemplateId} onValueChange={handleTemplateSelect}>
+                  <SelectTrigger data-testid="select-template">
+                    <SelectValue placeholder="Seleziona un template..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates.map(t => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Messaggio</Label>
+                <Textarea
+                  value={msgText}
+                  onChange={(e) => setMsgText(e.target.value)}
+                  rows={5}
+                  className="bg-white resize-none"
+                  data-testid="message-text"
+                />
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setMsgDialog(false)}>Annulla</Button>
+              <Button
+                onClick={sendMessage}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold"
+                disabled={!msgText.trim()}
+                data-testid="confirm-send-btn"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Invia su WhatsApp
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Template Edit Dialog */}
+        <Dialog open={templateDialog} onOpenChange={setTemplateDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[#0F172A]">
+                {editingTemplate ? 'Modifica Template' : 'Nuovo Template'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              <div className="space-y-2">
+                <Label>Nome</Label>
+                <Input
+                  value={templateForm.name}
+                  onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                  placeholder="es. Promemoria Appuntamento"
+                  data-testid="template-name-input"
+                />
+              </div>
+              {!editingTemplate && (
+                <div className="space-y-2">
+                  <Label>Tipo</Label>
+                  <Select
+                    value={templateForm.template_type}
+                    onValueChange={(v) => setTemplateForm({ ...templateForm, template_type: v })}
+                  >
+                    <SelectTrigger data-testid="template-type-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="appointment">Promemoria Appuntamento</SelectItem>
+                      <SelectItem value="recall">Richiamo Cliente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label>Testo del messaggio</Label>
+                <Textarea
+                  value={templateForm.text}
+                  onChange={(e) => setTemplateForm({ ...templateForm, text: e.target.value })}
+                  rows={5}
+                  className="resize-none"
+                  placeholder="Ciao {nome}! Ti ricordiamo..."
+                  data-testid="template-text-input"
+                />
+                <p className="text-xs text-[#94A3B8]">
+                  Variabili: <code className="bg-[#F1F5F9] px-1 rounded">{'{nome}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{ora}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{servizi}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{giorni}'}</code> <code className="bg-[#F1F5F9] px-1 rounded">{'{operatore}'}</code>
+                </p>
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setTemplateDialog(false)}>Annulla</Button>
+              <Button
+                onClick={saveTemplate}
+                disabled={savingTemplate}
+                className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white"
+                data-testid="save-template-btn"
+              >
+                {savingTemplate ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salva'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
