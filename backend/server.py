@@ -151,7 +151,9 @@ class ServiceUpdate(BaseModel):
 
 # Appointment Models
 class AppointmentCreate(BaseModel):
-    client_id: str
+    client_id: Optional[str] = None
+    client_name: Optional[str] = None  # For new/generic clients
+    client_phone: Optional[str] = ""
     service_ids: List[str]
     operator_id: Optional[str] = None
     date: str
