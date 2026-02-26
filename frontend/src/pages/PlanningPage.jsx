@@ -405,7 +405,9 @@ export default function PlanningPage() {
         discount_value: discountType !== 'none' ? parseFloat(discountValue) || 0 : 0,
         total_paid: calculateFinalAmount(),
         card_id: paymentMethod === 'prepaid' ? selectedCardId : null,
-        loyalty_points_used: loyaltyPointsUsed
+        loyalty_points_used: loyaltyPointsUsed,
+        promo_id: selectedPromo?.id || null,
+        promo_free_service: selectedPromo?.free_service_name || null
       });
       const pointsEarned = res.data.loyalty_points_earned || 0;
       const msg = pointsEarned > 0
