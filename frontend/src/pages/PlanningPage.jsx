@@ -376,11 +376,14 @@ export default function PlanningPage() {
     
     setProcessing(true);
     try {
+      const loyaltyPointsUsed = useLoyaltyPoints ? clientLoyalty.points : 0;
       const res = await axios.post(`${API}/appointments/${editingAppointment.id}/checkout`, {
         payment_method: paymentMethod,
         discount_type: discountType,
         discount_value: discountType !== 'none' ? parseFloat(discountValue) || 0 : 0,
-        total_paid: calculateFinalAmount()
+        total_paid: calculateFinalAmount(),
+        card_id: paymentMethod === 'prepaid' ? selectedCardId : null,
+        loyalty_points_used: loyaltyPointsUsed
       });
       const pointsEarned = res.data.loyalty_points_earned || 0;
       const msg = pointsEarned > 0
