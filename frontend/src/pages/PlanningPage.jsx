@@ -581,23 +581,32 @@ export default function PlanningPage() {
     <Layout>
       <div className="space-y-4" data-testid="planning-page">
         {/* Reminder Banner */}
-        {(pendingRemindersCount > 0 || inactiveClientsCount > 0) && (
+        {(pendingRemindersCount > 0 || inactiveClientsCount > 0 || autoReminderPending > 0) && (
           <a
             href="/reminders"
             className="flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl hover:shadow-md transition-shadow"
             data-testid="reminder-banner"
           >
-            <Bell className="w-5 h-5 text-amber-500 shrink-0" />
+            <Bell className={`w-5 h-5 shrink-0 ${autoReminderPending > 0 ? 'text-green-500 animate-bounce' : 'text-amber-500'}`} />
             <div className="flex-1 text-sm">
-              {pendingRemindersCount > 0 && (
+              {autoReminderPending > 0 && (
+                <span className="font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mr-2">
+                  {autoReminderPending} promemoria da inviare ora!
+                </span>
+              )}
+              {pendingRemindersCount > 0 && autoReminderPending === 0 && (
                 <span className="font-bold text-[#0F172A]">{pendingRemindersCount} promemoria domani</span>
               )}
-              {pendingRemindersCount > 0 && inactiveClientsCount > 0 && <span className="text-[#334155]"> · </span>}
               {inactiveClientsCount > 0 && (
-                <span className="font-bold text-orange-600">{inactiveClientsCount} clienti inattivi</span>
+                <>
+                  {(pendingRemindersCount > 0 || autoReminderPending > 0) && <span className="text-[#334155]"> · </span>}
+                  <span className="font-bold text-orange-600">{inactiveClientsCount} clienti inattivi</span>
+                </>
               )}
             </div>
-            <span className="text-xs text-[#0EA5E9] font-bold shrink-0">Gestisci →</span>
+            <span className={`text-xs font-bold shrink-0 ${autoReminderPending > 0 ? 'text-green-600' : 'text-[#0EA5E9]'}`}>
+              {autoReminderPending > 0 ? 'Invia ora →' : 'Gestisci →'}
+            </span>
           </a>
         )}
 
