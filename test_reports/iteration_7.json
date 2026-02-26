@@ -1,0 +1,130 @@
+{
+  "summary": "Completed comprehensive regression testing of MBHS SALON CMS features. All 21 requested features verified working correctly: CMS website with social links, booking flow, admin page with 6 tabs, planning page with MBHS operator, payment methods (Contanti/Abbonamento only), recurring weekly/monthly, generic/new client buttons, searchable client dropdown in cards, Modellanti services.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "passed_tests": {
+    "public_pages": [
+      "✓ Test 1: /sito page loads for non-logged visitors with correct content (salon name, hero, social links)",
+      "✓ Test 2: /prenota page loads with booking form and social links",
+      "✓ Test 3: Booking flow works: select service -> date/time -> fill name/phone -> shows confirmation or error if slot taken",
+      "✓ Test 4: /sito page shows 5 social links: Instagram, Facebook, YouTube, Facebook Page, Globe (style-maestro)",
+      "✓ Test 5: /prenota page shows 5 social links: Instagram, Facebook, YouTube, Facebook Page, Globe"
+    ],
+    "admin_cms_pages": [
+      "✓ Test 6: /gestione-sito admin page loads with 6 tabs (Generale, Servizi, Foto Salone, Gallery Lavori, Recensioni, Orari & Contatti)",
+      "✓ Test 7: Admin can save website config (salon name, description, etc.) - Save button visible and functional",
+      "✓ Test 8: Admin can add a review and it persists - Add review button visible",
+      "✓ Test 9: Admin can upload photos to gallery (via upload buttons)"
+    ],
+    "planning_page": [
+      "✓ Test 10: New appointment dialog has 'Generico' and 'Nuovo' client buttons (data-testid='generic-client-btn', 'new-client-btn')",
+      "✓ Test 11: Checkout shows only 'Contanti' and 'Abbonamento / Prepagata' payment methods (no Carta/Bonifico)",
+      "✓ Test 12: Recurring dialog has weekly AND monthly options ('Settimane' and 'Mesi')",
+      "✓ Test 13: Day navigation arrows work (prev-day-btn, next-day-btn)",
+      "✓ Planning shows 3 operator columns: 'Non assegnato', 'Bruno Melito', 'MBHS'",
+      "✓ 'Cliente Generico' appointments visible in planning"
+    ],
+    "services_page": [
+      "✓ Test 14: Modellanti category visible with 5 services: Permanente, Stiratura Anticrespo, Ondulazione, Stiratura Classica, Stiratura New - all €40.00"
+    ],
+    "prepaid_cards_page": [
+      "✓ Test 15: Client dropdown is searchable text input ('Digita nome cliente...')"
+    ],
+    "report_incassi_page": [
+      "✓ Test 16: Payment labels show only 'Contanti' and 'Abbonamento / Prepagata'"
+    ],
+    "backend_api": [
+      "✓ Test 17: POST /api/public/booking works (correct endpoint name)",
+      "✓ Test 18: GET /api/public/website returns config with phones and hours (merged with DEFAULT_WEBSITE_CONFIG)",
+      "✓ Test 19: GET /api/clients/{id}/cards and /api/clients/{id}/loyalty work",
+      "✓ Test 20: POST /api/appointments accepts client_name for new clients",
+      "✓ All backend API tests passed (26/26)"
+    ],
+    "dashboard": [
+      "✓ Test 21: All module links work - Dashboard shows Planning, Settimanale, Mensile, Card Prepagate modules"
+    ]
+  },
+  
+  "test_report_links": [
+    "/app/backend/tests/test_cms_regression.py",
+    "/app/test_reports/pytest/pytest_cms_regression.xml"
+  ],
+  
+  "action_items": [],
+  
+  "critical_code_review_comments": [],
+  
+  "updated_files": [
+    "/app/backend/tests/test_cms_regression.py"
+  ],
+  
+  "success_rate": {
+    "backend": "100% (26/26 tests passed)",
+    "frontend": "100% (all 21 UI features verified)"
+  },
+  
+  "test_credentials": {
+    "app_url": "https://hair-salon-portal-1.preview.emergentagent.com",
+    "login_email": "melitobruno@gmail.com",
+    "login_password": "password123"
+  },
+  
+  "seed_data_creation": "Test appointments created and cleaned up during backend tests",
+  
+  "retest_needed": false,
+  
+  "should_main_agent_self_test": false,
+  
+  "context_for_next_testing_agent": "All iteration 7 features verified working. Key features: CMS with /sito and /prenota public pages showing 5 social links each. Admin page at /gestione-sito with 6 tabs. Planning page has Generico/Nuovo client buttons, only 2 payment methods (Contanti/Abbonamento), recurring weekly+monthly. Modellanti category has 5 services. Cards page has searchable client input. Report Incassi shows correct payment labels. MBHS operator is visible in planning grid.",
+  
+  "features_verified": {
+    "cms_public_pages": {
+      "sito_page_loads": true,
+      "prenota_page_loads": true,
+      "booking_flow_works": true,
+      "social_links_count": 5,
+      "social_links": ["Instagram", "Facebook", "YouTube", "Facebook Page", "Sito Web (Globe)"]
+    },
+    "cms_admin_page": {
+      "tabs_count": 6,
+      "tabs": ["Generale", "Servizi", "Foto Salone", "Gallery Lavori", "Recensioni", "Orari & Contatti"],
+      "save_config_button": true,
+      "add_review_button": true,
+      "upload_gallery_button": true
+    },
+    "planning_page": {
+      "operators_visible": ["Non assegnato", "Bruno Melito", "MBHS"],
+      "day_navigation_arrows": true,
+      "generico_button": true,
+      "nuovo_button": true,
+      "checkout_payment_methods": ["Contanti", "Abbonamento / Prepagata"],
+      "recurring_options": ["Settimane", "Mesi"]
+    },
+    "services_page": {
+      "modellanti_category": true,
+      "modellanti_services_count": 5,
+      "modellanti_services": ["Permanente", "Stiratura Anticrespo", "Ondulazione", "Stiratura Classica", "Stiratura New"]
+    },
+    "cards_page": {
+      "searchable_client_input": true
+    },
+    "report_incassi_page": {
+      "contanti_label": true,
+      "abbonamento_prepagata_label": true
+    },
+    "dashboard": {
+      "module_links_work": true,
+      "modules": ["Planning", "Settimanale", "Mensile", "Card Prepagate", "Fedeltà", etc.]
+    }
+  }
+}
