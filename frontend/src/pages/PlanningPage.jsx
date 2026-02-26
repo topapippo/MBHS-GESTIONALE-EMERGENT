@@ -1202,7 +1202,7 @@ export default function PlanningPage() {
                 <p className="text-sm text-[#0F172A]">
                   <Check className="w-4 h-4 inline mr-1 text-[#0EA5E9]" />
                   Verranno creati <strong>{recurringData.repeat_count}</strong> nuovi appuntamenti, 
-                  uno ogni <strong>{recurringData.repeat_weeks}</strong> settimane
+                  uno ogni <strong>{recurringData.repeat_type === 'weeks' ? `${recurringData.repeat_weeks} settimane` : `${recurringData.repeat_months} mesi`}</strong>
                 </p>
               </div>
 
