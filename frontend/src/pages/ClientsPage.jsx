@@ -450,14 +450,24 @@ export default function ClientsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Telefono</Label>
+                <Label className="flex items-center gap-2">
+                  Telefono
+                  <span className="text-xs text-orange-500 font-normal">(importante per promemoria)</span>
+                </Label>
                 <Input
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+39 ..."
                   data-testid="client-phone-input"
-                  className="bg-[#F8FAFC] border-transparent focus:border-[#0EA5E9]"
+                  className={`border-2 ${
+                    formData.phone
+                      ? 'bg-[#F8FAFC] border-transparent focus:border-[#0EA5E9]'
+                      : 'bg-orange-50 border-orange-300 focus:border-orange-400'
+                  }`}
                 />
+                {!formData.phone && (
+                  <p className="text-xs text-orange-500 font-medium">Senza telefono non potrai inviare promemoria WhatsApp</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label>Email</Label>
