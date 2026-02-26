@@ -42,9 +42,9 @@ const navItems = [
   { path: '/daily-summary', label: 'Riepilogo Giorno', icon: FileBarChart },
   { path: '/services', label: 'Servizi', icon: Scissors },
   { path: '/operators', label: 'Operatori', icon: UserCircle },
+  { path: '/gestione-sito', label: 'Gestione Sito', icon: Globe },
   { path: '/stats', label: 'Statistiche', icon: BarChart3 },
   { path: '/backup', label: 'Backup Dati', icon: Database },
-  { path: '/gestione-sito', label: 'Gestione Sito', icon: Globe },
   { path: '/history', label: 'Storico', icon: History },
   { path: '/settings', label: 'Impostazioni', icon: Settings },
 ];
