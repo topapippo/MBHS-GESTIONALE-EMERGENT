@@ -268,6 +268,13 @@ export default function BookingPage() {
           <div className="hidden sm:flex items-center gap-6 text-sm text-gray-400">
             <button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} className="hover:text-white transition-colors">Servizi</button>
             <button onClick={() => scrollTo(contactRef)} className="hover:text-white transition-colors">Contatti</button>
+            <div className="flex items-center gap-3 border-l border-gray-700 pl-4">
+              {SOCIAL_LINKS.map((link, i) => (
+                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className={`text-gray-500 ${link.color} transition-colors`} title={link.label}>
+                  <link.icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
           </div>
           <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="booking-start-btn">
             PRENOTA ORA
