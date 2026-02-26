@@ -1126,22 +1126,58 @@ export default function PlanningPage() {
               <div className="space-y-2">
                 <Label>Ripeti ogni</Label>
                 <Select
-                  value={recurringData.repeat_weeks.toString()}
-                  onValueChange={(val) => setRecurringData({ ...recurringData, repeat_weeks: parseInt(val) })}
+                  value={recurringData.repeat_type}
+                  onValueChange={(val) => setRecurringData({ ...recurringData, repeat_type: val })}
                 >
-                  <SelectTrigger data-testid="select-repeat-weeks">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 settimana</SelectItem>
-                    <SelectItem value="2">2 settimane</SelectItem>
-                    <SelectItem value="3">3 settimane</SelectItem>
-                    <SelectItem value="4">4 settimane</SelectItem>
-                    <SelectItem value="6">6 settimane</SelectItem>
-                    <SelectItem value="8">8 settimane</SelectItem>
+                    <SelectItem value="weeks">Settimane</SelectItem>
+                    <SelectItem value="months">Mesi</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              {recurringData.repeat_type === 'weeks' ? (
+                <div className="space-y-2">
+                  <Label>Ogni quante settimane</Label>
+                  <Select
+                    value={recurringData.repeat_weeks.toString()}
+                    onValueChange={(val) => setRecurringData({ ...recurringData, repeat_weeks: parseInt(val) })}
+                  >
+                    <SelectTrigger data-testid="select-repeat-weeks">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 settimana</SelectItem>
+                      <SelectItem value="2">2 settimane</SelectItem>
+                      <SelectItem value="3">3 settimane</SelectItem>
+                      <SelectItem value="4">4 settimane</SelectItem>
+                      <SelectItem value="6">6 settimane</SelectItem>
+                      <SelectItem value="8">8 settimane</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label>Ogni quanti mesi</Label>
+                  <Select
+                    value={recurringData.repeat_months.toString()}
+                    onValueChange={(val) => setRecurringData({ ...recurringData, repeat_months: parseInt(val) })}
+                  >
+                    <SelectTrigger data-testid="select-repeat-months">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 mese</SelectItem>
+                      <SelectItem value="2">2 mesi</SelectItem>
+                      <SelectItem value="3">3 mesi</SelectItem>
+                      <SelectItem value="6">6 mesi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label>Numero di ripetizioni</Label>
