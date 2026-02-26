@@ -246,7 +246,8 @@ class CardTransaction(BaseModel):
 # Recurring Appointment Model
 class RecurringAppointmentCreate(BaseModel):
     appointment_id: str
-    repeat_weeks: int  # Every X weeks
+    repeat_weeks: int = 0  # Every X weeks (0 if using months)
+    repeat_months: int = 0  # Every X months (0 if using weeks)
     repeat_count: int  # How many times to repeat
 
 # Loyalty Program Models
