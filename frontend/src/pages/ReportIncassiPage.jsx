@@ -59,11 +59,9 @@ export default function ReportIncassiPage() {
       // Calculate stats
       const total = data.reduce((sum, p) => sum + p.total_paid, 0);
       const cash = data.filter(p => p.payment_method === 'cash').reduce((sum, p) => sum + p.total_paid, 0);
-      const card = data.filter(p => p.payment_method === 'card').reduce((sum, p) => sum + p.total_paid, 0);
-      const transfer = data.filter(p => p.payment_method === 'transfer').reduce((sum, p) => sum + p.total_paid, 0);
-      const prepaid = data.filter(p => p.payment_method === 'prepaid').reduce((sum, p) => sum + p.total_paid, 0);
+      const prepaid = data.filter(p => p.payment_method !== 'cash').reduce((sum, p) => sum + p.total_paid, 0);
       
-      setStats({ total, count: data.length, cash, card, transfer, prepaid });
+      setStats({ total, count: data.length, cash, prepaid });
     } catch (err) {
       console.error('Error fetching payments:', err);
     } finally {
