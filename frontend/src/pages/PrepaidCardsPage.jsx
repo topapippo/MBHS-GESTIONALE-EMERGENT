@@ -62,6 +62,9 @@ export default function PrepaidCardsPage() {
   const [expandedCard, setExpandedCard] = useState(null);
   const [rechargeAmount, setRechargeAmount] = useState('');
 
+  const [cardClientSearch, setCardClientSearch] = useState('');
+  const [showCardClientDropdown, setShowCardClientDropdown] = useState(false);
+
   const [formData, setFormData] = useState({
     client_id: '',
     card_type: 'prepaid',
