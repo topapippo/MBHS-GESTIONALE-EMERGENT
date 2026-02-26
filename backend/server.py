@@ -959,7 +959,20 @@ async def create_recurring_appointments(data: RecurringAppointmentCreate, curren
     original_date = datetime.strptime(original["date"], "%Y-%m-%d")
     
     for i in range(1, data.repeat_count + 1):
-        new_date = original_date + timedelta(weeks=data.repeat_weeks * i)
+        if data.repeat_months > 0:
+            # Monthly recurrence
+            new_month = original_date.month + (data.repeat_months * i)
+            new_year = original_date.year + (new_month - 1) // 12
+            new_month = ((new_month - 1) % 12) + 1
+            try:
+                new_date = original_date.replace(year=new_year, month=new_month)
+            except ValueError:
+                # Handle end-of-month (e.g., Jan 31 -> Feb 28)
+                import calendar
+                last_day = calendar.monthrange(new_year, new_month)[1]
+                new_date = original_date.replace(year=new_year, month=new_month, day=min(original_date.day, last_day))
+        else:
+            new_date = original_date + timedelta(weeks=data.repeat_weeks * i)
         
         appointment_id = str(uuid.uuid4())
         appointment_doc = {
