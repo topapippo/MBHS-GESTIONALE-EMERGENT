@@ -23,7 +23,7 @@ export default function ReportIncassiPage() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('today');
-  const [stats, setStats] = useState({ total: 0, count: 0, cash: 0, card: 0, transfer: 0, prepaid: 0 });
+  const [stats, setStats] = useState({ total: 0, count: 0, cash: 0, prepaid: 0 });
 
   useEffect(() => {
     fetchPayments();
