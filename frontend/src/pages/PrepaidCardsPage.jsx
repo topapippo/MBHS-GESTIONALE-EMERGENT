@@ -41,7 +41,9 @@ import {
   Loader2,
   Search,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Package,
+  Pencil
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
@@ -52,6 +54,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function PrepaidCardsPage() {
   const [cards, setCards] = useState([]);
   const [clients, setClients] = useState([]);
+  const [cardTemplates, setCardTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [rechargeDialogOpen, setRechargeDialogOpen] = useState(false);
@@ -64,6 +67,14 @@ export default function PrepaidCardsPage() {
 
   const [cardClientSearch, setCardClientSearch] = useState('');
   const [showCardClientDropdown, setShowCardClientDropdown] = useState(false);
+
+  // Template management
+  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateForm, setTemplateForm] = useState({
+    name: '', card_type: 'prepaid', total_value: '', total_services: '', duration_months: '', notes: ''
+  });
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   const [formData, setFormData] = useState({
     client_id: '',
