@@ -2085,6 +2085,90 @@ async def add_manual_points(client_id: str, points: int, description: str = "Pun
 
 # ============== REMINDERS / RICHIAMI ==============
 
+# --- Message Templates ---
+
+class MessageTemplateCreate(BaseModel):
+    name: str
+    text: str
+    template_type: str = "appointment"  # "appointment" or "recall"
+
+class MessageTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    text: Optional[str] = None
+
+@api_router.get("/reminders/templates")
+async def get_message_templates(current_user: dict = Depends(get_current_user)):
+    """Get all message templates for the user"""
+    templates = await db.message_templates.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0, "user_id": 0}
+    ).to_list(50)
+    
+    if not templates:
+        # Create defaults
+        defaults = [
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": current_user["id"],
+                "name": "Promemoria Appuntamento",
+                "text": "Ciao {nome}! Ti ricordiamo il tuo appuntamento domani alle {ora} presso MBHS SALON. Servizi: {servizi}. Ti aspettiamo!",
+                "template_type": "appointment",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "user_id": current_user["id"],
+                "name": "Richiamo Cliente Inattivo",
+                "text": "Ciao {nome}! Sono passati {giorni} giorni dalla tua ultima visita presso MBHS SALON. Torna a trovarci, ti aspettiamo!",
+                "template_type": "recall",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+        for d in defaults:
+            await db.message_templates.insert_one(d)
+        templates = [{k: v for k, v in d.items() if k not in ("_id", "user_id")} for d in defaults]
+    
+    return templates
+
+@api_router.post("/reminders/templates")
+async def create_message_template(data: MessageTemplateCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new message template"""
+    template = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "name": data.name,
+        "text": data.text,
+        "template_type": data.template_type,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.message_templates.insert_one(template)
+    return {k: v for k, v in template.items() if k not in ("_id", "user_id")}
+
+@api_router.put("/reminders/templates/{template_id}")
+async def update_message_template(template_id: str, data: MessageTemplateUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a message template"""
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Nessun dato da aggiornare")
+    result = await db.message_templates.update_one(
+        {"id": template_id, "user_id": current_user["id"]},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Template non trovato")
+    template = await db.message_templates.find_one({"id": template_id}, {"_id": 0, "user_id": 0})
+    return template
+
+@api_router.delete("/reminders/templates/{template_id}")
+async def delete_message_template(template_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a message template"""
+    result = await db.message_templates.delete_one({"id": template_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template non trovato")
+    return {"success": True}
+
+# --- Reminders ---
+
 @api_router.get("/reminders/tomorrow")
 async def get_tomorrow_reminders(current_user: dict = Depends(get_current_user)):
     """Get appointments for tomorrow that need a reminder"""
@@ -2106,14 +2190,22 @@ async def get_tomorrow_reminders(current_user: dict = Depends(get_current_user))
     
     results = []
     for apt in appointments:
+        # Get client phone from clients collection if not on appointment
+        client_phone = apt.get("client_phone", "")
+        if not client_phone and apt.get("client_id"):
+            cl = await db.clients.find_one({"id": apt["client_id"]}, {"_id": 0})
+            if cl:
+                client_phone = cl.get("phone", "")
+        
         results.append({
             "id": apt["id"],
             "client_name": apt.get("client_name", ""),
-            "client_phone": apt.get("client_phone", ""),
+            "client_phone": client_phone,
             "client_id": apt.get("client_id", ""),
             "date": apt["date"],
             "time": apt["time"],
             "services": apt.get("services", []),
+            "operator_name": apt.get("operator_name", ""),
             "reminded": apt["id"] in reminded_ids
         })
     
@@ -2141,11 +2233,18 @@ async def mark_reminder_sent(appointment_id: str, current_user: dict = Depends(g
     
     return {"success": True}
 
+@api_router.delete("/reminders/appointment/{appointment_id}/reset")
+async def reset_reminder(appointment_id: str, current_user: dict = Depends(get_current_user)):
+    """Reset (un-mark) an appointment reminder so it can be resent"""
+    result = await db.reminders_sent.delete_many(
+        {"user_id": current_user["id"], "type": "appointment", "appointment_id": appointment_id}
+    )
+    return {"success": True, "deleted": result.deleted_count}
+
 @api_router.get("/reminders/inactive-clients")
 async def get_inactive_clients(current_user: dict = Depends(get_current_user)):
     """Get clients who haven't visited in 60+ days"""
     cutoff_date = (datetime.now(timezone.utc) - timedelta(days=60)).strftime("%Y-%m-%d")
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     # Get all clients
     clients = await db.clients.find(
@@ -2211,6 +2310,81 @@ async def mark_inactive_recall_sent(client_id: str, current_user: dict = Depends
         "sent_at": datetime.now(timezone.utc).isoformat()
     })
     
+    return {"success": True}
+
+@api_router.delete("/reminders/inactive/{client_id}/reset")
+async def reset_inactive_recall(client_id: str, current_user: dict = Depends(get_current_user)):
+    """Reset an inactive recall so it can be resent"""
+    result = await db.reminders_sent.delete_many(
+        {"user_id": current_user["id"], "type": "inactive_recall", "client_id": client_id}
+    )
+    return {"success": True, "deleted": result.deleted_count}
+
+# ============== CARD TEMPLATES / PACCHETTI PREIMPOSTATI ==============
+
+class CardTemplateCreate(BaseModel):
+    name: str
+    card_type: str = "prepaid"  # "prepaid" or "subscription"
+    total_value: float
+    total_services: Optional[int] = None
+    duration_months: Optional[int] = None
+    notes: Optional[str] = ""
+
+class CardTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    card_type: Optional[str] = None
+    total_value: Optional[float] = None
+    total_services: Optional[int] = None
+    duration_months: Optional[int] = None
+    notes: Optional[str] = None
+
+@api_router.get("/card-templates")
+async def get_card_templates(current_user: dict = Depends(get_current_user)):
+    """Get all card/package templates"""
+    templates = await db.card_templates.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0, "user_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    return templates
+
+@api_router.post("/card-templates")
+async def create_card_template(data: CardTemplateCreate, current_user: dict = Depends(get_current_user)):
+    """Create a card/package template"""
+    template = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "name": data.name,
+        "card_type": data.card_type,
+        "total_value": data.total_value,
+        "total_services": data.total_services,
+        "duration_months": data.duration_months,
+        "notes": data.notes or "",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.card_templates.insert_one(template)
+    return {k: v for k, v in template.items() if k not in ("_id", "user_id")}
+
+@api_router.put("/card-templates/{template_id}")
+async def update_card_template(template_id: str, data: CardTemplateUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a card template"""
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Nessun dato da aggiornare")
+    result = await db.card_templates.update_one(
+        {"id": template_id, "user_id": current_user["id"]},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Template non trovato")
+    template = await db.card_templates.find_one({"id": template_id}, {"_id": 0, "user_id": 0})
+    return template
+
+@api_router.delete("/card-templates/{template_id}")
+async def delete_card_template(template_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a card template"""
+    result = await db.card_templates.delete_one({"id": template_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template non trovato")
     return {"success": True}
 
 # ============== HEALTH CHECK ==============
