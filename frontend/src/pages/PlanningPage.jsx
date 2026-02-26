@@ -1447,7 +1447,15 @@ export default function PlanningPage() {
                     </div>
                     <Button
                       type="button"
-                      onClick={() => setCheckoutMode(true)}
+                      onClick={() => {
+                        setCheckoutMode(true);
+                        // Fetch eligible promotions
+                        if (editingAppointment?.client_id) {
+                          axios.get(`${API}/promotions/check/${editingAppointment.client_id}`)
+                            .then(res => setEligiblePromos(res.data))
+                            .catch(() => {});
+                        }
+                      }}
                       className="bg-green-600 hover:bg-green-700 text-white font-bold px-6"
                       data-testid="open-checkout-btn"
                     >
