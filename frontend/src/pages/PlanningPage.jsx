@@ -973,6 +973,7 @@ export default function PlanningPage() {
                     </div>
                   )}
                 </div>
+                )}
               </div>
 
               {/* Client Info Card */}
