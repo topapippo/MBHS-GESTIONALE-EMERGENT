@@ -77,7 +77,7 @@ export default function PlanningPage() {
   // Recurring appointment state
   const [recurringDialogOpen, setRecurringDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [recurringData, setRecurringData] = useState({ repeat_weeks: 3, repeat_count: 4 });
+  const [recurringData, setRecurringData] = useState({ repeat_type: 'weeks', repeat_weeks: 3, repeat_months: 1, repeat_count: 4 });
   const [creatingRecurring, setCreatingRecurring] = useState(false);
 
   // Edit/Delete appointment state
