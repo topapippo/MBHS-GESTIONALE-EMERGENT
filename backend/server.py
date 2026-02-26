@@ -645,13 +645,43 @@ async def delete_service(service_id: str, current_user: dict = Depends(get_curre
 
 @api_router.post("/appointments", response_model=AppointmentResponse)
 async def create_appointment(data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
-    # Get client
-    client = await db.clients.find_one(
-        {"id": data.client_id, "user_id": current_user["id"]}, 
-        {"_id": 0}
-    )
-    if not client:
-        raise HTTPException(status_code=404, detail="Cliente non trovato")
+    # Get or create client
+    client_name = ""
+    client_phone = ""
+    client_id = data.client_id or ""
+    
+    if data.client_id:
+        client = await db.clients.find_one(
+            {"id": data.client_id, "user_id": current_user["id"]}, 
+            {"_id": 0}
+        )
+        if client:
+            client_name = client["name"]
+            client_phone = client.get("phone", "")
+        else:
+            raise HTTPException(status_code=404, detail="Cliente non trovato")
+    elif data.client_name:
+        # New client or generic - create on the fly
+        client_name = data.client_name
+        client_phone = data.client_phone or ""
+        if client_name.lower() != "cliente generico":
+            # Create new client in address book
+            new_client_id = str(uuid.uuid4())
+            new_client = {
+                "id": new_client_id,
+                "user_id": current_user["id"],
+                "name": client_name,
+                "phone": client_phone,
+                "notes": "",
+                "send_sms_reminders": False,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.clients.insert_one(new_client)
+            client_id = new_client_id
+        else:
+            client_id = "generic"
+    else:
+        raise HTTPException(status_code=400, detail="Specificare un cliente")
     
     # Get services
     services = await db.services.find(
