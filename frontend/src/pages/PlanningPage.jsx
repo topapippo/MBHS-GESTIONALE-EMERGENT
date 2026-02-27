@@ -595,9 +595,8 @@ export default function PlanningPage() {
     });
   };
 
-  // Create columns: one for unassigned + one per operator
+  // Create columns: one per operator (no unassigned)
   const columns = [
-    { id: null, name: 'Non assegnato', color: '#334155' },
     ...operators.map(op => ({ id: op.id, name: op.name, color: op.color }))
   ];
 
