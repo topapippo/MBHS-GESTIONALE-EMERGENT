@@ -43,6 +43,8 @@ export default function WebsitePage() {
   const servicesRef = useRef(null);
   const contactRef = useRef(null);
 
+  const [publicPromos, setPublicPromos] = useState([]);
+
   const [formData, setFormData] = useState({
     client_name: '', client_phone: '', service_ids: [], operator_id: '',
     date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', notes: ''
@@ -59,6 +61,10 @@ export default function WebsitePage() {
         setSiteData(siteRes.data);
         setOperators(opsRes.data);
         setBookingServices(svcRes.data);
+        try {
+          const promosRes = await axios.get(`${API}/public/promotions/all`);
+          setPublicPromos(promosRes.data);
+        } catch (e) { /* promos not critical */ }
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     };
