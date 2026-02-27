@@ -203,7 +203,7 @@ export default function WebsitePage() {
                   <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')} onChange={(e) => setFormData({...formData, date: e.target.value})} className="bg-[#242445] border-gray-800 text-white" /></div>
                 <div><label className="text-sm text-gray-400 font-semibold mb-1 block">Ora</label>
                   <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-[#242445] border border-gray-800 rounded-lg text-white">
-                    {TIME_SLOTS.map(t => <option key={t} value={t}>{t}</option>)}
+                    {getAvailableSlotsForDate(formData.date).map(t => <option key={t} value={t}>{t}</option>)}
                   </select></div>
                 {operators.length > 0 && (
                   <div><label className="text-sm text-gray-400 font-semibold mb-1 block">Operatore (opzionale)</label>
