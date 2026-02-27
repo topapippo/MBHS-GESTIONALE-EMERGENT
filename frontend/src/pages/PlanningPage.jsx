@@ -240,7 +240,7 @@ export default function PlanningPage() {
       };
       if (newClientMode && !formData.client_id) {
         payload.client_id = null;
-        payload.client_name = newClientName || 'Cliente Generico';
+        payload.client_name = newClientName || 'Cliente Occasionale';
         payload.client_phone = newClientPhone || '';
       }
       await axios.post(`${API}/appointments`, payload);
