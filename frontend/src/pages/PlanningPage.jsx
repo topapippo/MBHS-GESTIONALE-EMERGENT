@@ -42,6 +42,18 @@ const generateTimeSlots = () => {
 
 const TIME_SLOTS = generateTimeSlots();
 
+// Filter out past time slots for today
+const getAvailableTimeSlots = (dateStr) => {
+  const today = format(new Date(), 'yyyy-MM-dd');
+  if (dateStr !== today) return TIME_SLOTS;
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  return TIME_SLOTS.filter(slot => {
+    const [h, m] = slot.split(':').map(Number);
+    return h * 60 + m >= currentMinutes;
+  });
+};
+
 export default function PlanningPage() {
   const [appointments, setAppointments] = useState([]);
   const [operators, setOperators] = useState([]);
