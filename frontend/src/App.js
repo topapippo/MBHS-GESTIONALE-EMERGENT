@@ -64,12 +64,12 @@ function OfflineIndicator() {
   );
 }
 
-// Homepage: landing page for visitors, planning for logged-in users
+// Homepage: gestionale for logged-in users, login for visitors
 function HomePage() {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center"><div className="w-8 h-8 border-4 border-[#0EA5E9] border-t-transparent rounded-full animate-spin" /></div>;
   if (user) return <PlanningPage />;
-  return <BookingPage />;
+  return <LoginPage />;
 }
 
 export default function App() {
