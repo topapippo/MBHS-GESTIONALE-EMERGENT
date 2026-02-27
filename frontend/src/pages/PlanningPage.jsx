@@ -1357,7 +1357,18 @@ export default function PlanningPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-[#0F172A] font-semibold">Data</Label>
+                  <Input
+                    type="date"
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    className="border-2 border-[#E2E8F0]"
+                    data-testid="edit-appointment-date"
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label className="text-[#0F172A] font-semibold">Orario</Label>
                   <Select
@@ -1368,7 +1379,7 @@ export default function PlanningPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px]">
-                      {TIME_SLOTS.map((time) => (
+                      {getAvailableTimeSlots(editDate).map((time) => (
                         <SelectItem key={time} value={time}>
                           {time}
                         </SelectItem>
