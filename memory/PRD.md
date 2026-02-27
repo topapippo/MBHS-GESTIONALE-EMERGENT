@@ -14,53 +14,50 @@ Applicazione gestionale completa per un salone di parrucchiera.
 ### Core
 - Autenticazione JWT, Dashboard moduli, Planning giornaliero
 - Vista settimanale/mensile, Gestione Clienti/Servizi/Operatori
-- Checkout, Card Prepagate, Report Incassi, Backup dati
+- Checkout con auto-selezione card prepagate e promozioni
+- Card Prepagate, Report Incassi, Backup dati
 - PWA installabile, Riepilogo Giornaliero, Programma Fedelta
 
+### Planning Avanzato (27 Feb 2026)
+- Cambio data e ora nel dialog modifica appuntamento
+- Blocco orari passati (gestionale + pagina pubblica + sito)
+- Auto-selezione promo al checkout
+- Auto-selezione card prepagate al checkout
+
 ### CMS Sito Web
-- Pagina pubblica /sito con contenuti dinamici
+- Pagina pubblica /sito con contenuti dinamici e promozioni
 - Pagina admin /gestione-sito con 6 tab
 - Upload immagini con Object Storage
 
 ### Promemoria & Richiami
 - Template messaggi personalizzabili con variabili
 - Invio WhatsApp individuale e batch automatico
-- Reset/reinvio promemoria
 - Banner auto-reminder nel Planning
 
 ### Registro Uscite / Scadenziario
 - CRUD spese con 8 categorie
 - Pagamenti ricorrenti automatici
 - Banner scadenze evidenziato sul Planning
-- Filtri per stato e categoria
 
 ### Avviso Telefono Mancante
 - Badge nel dropdown clienti e nella lista
 - Card rossa nel Planning quando manca
-- Campo evidenziato nel form nuovo cliente
 
-### Pacchetti Preimpostati Card/Abbonamenti
-- Template pacchetti con assegnazione rapida
+### Sistema Promozioni
+- 7 tipi di regole con servizio in omaggio
+- 8 promozioni default auto-create
+- Suggerimento automatico al checkout
+- Visibili su pagina pubblica /prenota e /sito
 
-### Sistema Promozioni (26 Feb 2026)
-- Nuova pagina /promozioni per creare e gestire promozioni
-- 7 tipi di regole: Under 30, Prima Visita, Compleanno, Porta un'Amica, Recensione Google, Fidelity VIP, Codice Promo
-- Servizio extra in omaggio (non sconti!)
-- Codice promo copiabile per condivisione social
-- Toggle attiva/disattiva per ogni promo
-- Toggle "Mostra sulla prenotazione online"
-- Tracking utilizzi per ogni promozione
-- Suggerimento automatico promozioni al checkout
-- Promozioni visibili sulla pagina pubblica /prenota con design accattivante
-- 8 promozioni default create:
-  1. Speciale Under 30 (UNDER30) - Piega o Trattamento Lucidante
-  2. Recensione Google (REVIEW) - Maschera Ristrutturante o Olaplex
-  3. Porta un'Amica (AMICA) - Taglio Punte o Trattamento
-  4. Prima Visita (BENVENUTA) - Consulenza Colore + Trattamento
-  5. Buon Compleanno (AUGURI) - Piega o Trattamento
-  6. Fidelity VIP (VIP10) - Servizio a Scelta
-  7. Card Prepagata -15% (CARD15) - Sconto 15% su tutti i servizi
-  8. Abbonamento Mensile + Piega Omaggio (ABBO)
+### Navigazione
+- Root (/) apre login gestionale (non piu pagina web)
+- PWA start_url punta a /planning
+- Dashboard con pulsanti rapidi per Uscite e Promozioni
+
+## Link Principali
+- Gestionale: https://mbhssalon.onrender.com (login)
+- Sito pubblico: https://mbhssalon.onrender.com/sito
+- Prenotazioni: https://mbhssalon.onrender.com/prenota
 
 ## Credenziali Test
 - Email: melitobruno@gmail.com
