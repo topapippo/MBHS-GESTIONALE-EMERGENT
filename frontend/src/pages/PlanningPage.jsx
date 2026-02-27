@@ -303,6 +303,7 @@ export default function PlanningPage() {
   // Open edit dialog for appointment
   const openEditDialog = async (apt) => {
     setEditingAppointment(apt);
+    setEditDate(apt.date);
     setFormData({
       client_id: apt.client_id,
       service_ids: apt.services.map(s => s.id),
