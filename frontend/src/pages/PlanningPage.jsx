@@ -1215,7 +1215,7 @@ export default function PlanningPage() {
                     Servizi: {selectedAppointment.services.map(s => s.name).join(', ')}
                   </p>
                   <p className="text-xs text-[#334155] mt-1">
-                    {selectedAppointment.operator_name || 'Non assegnato'}
+                    {selectedAppointment.operator_name || operators[0]?.name || '-'}
                   </p>
                 </div>
               )}
