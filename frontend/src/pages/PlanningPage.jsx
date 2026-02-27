@@ -1118,8 +1118,8 @@ export default function PlanningPage() {
                 <div className="space-y-2">
                   <Label>Operatore</Label>
                   <Select
-                    value={formData.operator_id || "none"}
-                    onValueChange={(val) => setFormData({ ...formData, operator_id: val === "none" ? "" : val })}
+                    value={formData.operator_id || operators[0]?.id || ""}
+                    onValueChange={(val) => setFormData({ ...formData, operator_id: val })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleziona..." />
