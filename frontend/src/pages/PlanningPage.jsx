@@ -972,11 +972,11 @@ export default function PlanningPage() {
                         setNewClientMode(false);
                         setNewClientName('');
                         setFormData({ ...formData, client_id: 'generic' });
-                        setClientSearch('Cliente Generico');
+                        setClientSearch('Cliente Occasionale');
                         setSelectedClientInfo(null);
                       }}
                       data-testid="generic-client-btn">
-                      <User className="w-3 h-3 mr-1" /> Generico
+                      <User className="w-3 h-3 mr-1" /> Occasionale
                     </Button>
                     <Button type="button" variant="ghost" size="sm" className="text-xs h-7 text-emerald-600"
                       onClick={() => {
