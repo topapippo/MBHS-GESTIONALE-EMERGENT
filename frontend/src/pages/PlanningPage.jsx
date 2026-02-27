@@ -1107,7 +1107,7 @@ export default function PlanningPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px]">
-                      {TIME_SLOTS.map((time) => (
+                      {getAvailableTimeSlots(format(selectedDate, 'yyyy-MM-dd')).map((time) => (
                         <SelectItem key={time} value={time}>
                           {time}
                         </SelectItem>
