@@ -25,6 +25,17 @@ for (let h = 8; h <= 20; h++) {
   }
 }
 
+const getAvailableSlotsForDate = (dateStr) => {
+  const today = format(new Date(), 'yyyy-MM-dd');
+  if (dateStr !== today) return TIME_SLOTS;
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  return TIME_SLOTS.filter(slot => {
+    const [h, m] = slot.split(':').map(Number);
+    return h * 60 + m >= currentMinutes;
+  });
+};
+
 const BORDER_COLORS = ['border-amber-400/30', 'border-rose-400/30', 'border-teal-400/30', 'border-violet-400/30', 'border-sky-400/30', 'border-orange-400/30'];
 const GLOW_COLORS = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20', 'hover:shadow-sky-400/20', 'hover:shadow-orange-400/20'];
 const AVATAR_BGS = ['bg-amber-400/15', 'bg-rose-400/15', 'bg-teal-400/15', 'bg-violet-400/15'];
