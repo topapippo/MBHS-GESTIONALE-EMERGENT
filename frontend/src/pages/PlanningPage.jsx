@@ -1125,7 +1125,6 @@ export default function PlanningPage() {
                       <SelectValue placeholder="Seleziona..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Non assegnato</SelectItem>
                       {operators.map((op) => (
                         <SelectItem key={op.id} value={op.id}>
                           <div className="flex items-center gap-2">
