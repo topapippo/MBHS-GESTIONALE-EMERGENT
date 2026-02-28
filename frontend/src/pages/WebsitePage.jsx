@@ -583,7 +583,7 @@ export default function WebsitePage() {
           <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
             {SOCIAL_LINKS.map((link, i) => (
               <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                className={`flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#242445]/80 border border-white/10 text-gray-400 ${link.color} transition-all hover:bg-white/5 hover:scale-105 hover:border-white/20`}
+                className={`flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-gray-200 text-[#64748B] ${link.color} transition-all hover:shadow-md hover:scale-105`}
                 data-testid={`social-link-${i}`}>
                 <link.icon className="w-5 h-5" />
                 <span className="text-sm font-semibold">{link.label}</span>
@@ -592,7 +592,7 @@ export default function WebsitePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button onClick={() => setShowBooking(true)} className="bg-gradient-to-r from-amber-400 to-rose-400 text-[#1a1a2e] hover:from-amber-300 hover:to-rose-300 font-black text-base px-10 py-6 rounded-2xl w-full sm:w-auto shadow-lg shadow-amber-400/20" data-testid="website-contact-book-btn">
+            <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-black text-base px-10 py-6 rounded-2xl w-full sm:w-auto shadow-lg shadow-[#0EA5E9]/30" data-testid="website-contact-book-btn">
               <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
             </Button>
             <Button onClick={openWhatsApp} className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-base px-10 py-6 rounded-2xl w-full sm:w-auto shadow-lg shadow-green-400/20" data-testid="website-whatsapp-btn">
@@ -600,7 +600,7 @@ export default function WebsitePage() {
             </Button>
             {phones.length > 0 && (
               <a href={`tel:${phones[0].replace(/\s/g, '')}`} className="w-full sm:w-auto">
-                <Button variant="outline" className="border-rose-400/30 text-rose-300 hover:bg-rose-400/10 font-bold text-base px-10 py-6 rounded-2xl w-full" data-testid="website-call-btn">
+                <Button variant="outline" className="border-rose-300 text-rose-500 hover:bg-rose-50 font-bold text-base px-10 py-6 rounded-2xl w-full" data-testid="website-call-btn">
                   <Phone className="w-5 h-5 mr-2" /> CHIAMA
                 </Button>
               </a>
@@ -610,39 +610,36 @@ export default function WebsitePage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 border-t border-amber-400/10">
+      <footer className="py-12 border-t border-gray-200 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col items-center gap-6">
-            <img src="/logo.png?v=3" alt={config.salon_name} className="w-14 h-14 rounded-2xl border border-amber-400/20" />
-            <p className="text-gray-400 text-sm font-bold">{config.salon_name || 'BRUNO MELITO HAIR'}</p>
+            <img src="/logo.png?v=3" alt={config.salon_name} className="w-14 h-14 rounded-2xl border border-gray-200 shadow-sm" />
+            <p className="text-[#1e293b] text-sm font-bold">{config.salon_name || 'BRUNO MELITO HAIR'}</p>
             
-            {/* Social Links */}
             <div className="flex items-center gap-4">
               {SOCIAL_LINKS.map((link, i) => (
                 <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                  className={`w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 ${link.color} transition-all hover:bg-white/10 hover:scale-110`}
+                  className={`w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-[#64748B] ${link.color} transition-all hover:shadow-md hover:scale-110`}
                   title={link.label}>
                   <link.icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
 
-            {/* Links */}
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <a href="/prenota" className="hover:text-white transition-colors">Prenota Online</a>
-              <a href="/sito" className="hover:text-white transition-colors">Sito Web</a>
-              <a href={config.maps_url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Come Raggiungerci</a>
+            <div className="flex items-center gap-6 text-sm text-[#64748B]">
+              <a href="/prenota" className="hover:text-[#0EA5E9] transition-colors">Prenota Online</a>
+              <a href="/sito" className="hover:text-[#0EA5E9] transition-colors">Sito Web</a>
+              <a href={config.maps_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#0EA5E9] transition-colors">Come Raggiungerci</a>
             </div>
 
-            <p className="text-gray-700 text-xs">{config.address}</p>
-            <p className="text-gray-800 text-xs">&copy; {new Date().getFullYear()} {config.salon_name || 'Bruno Melito Hair'}. Tutti i diritti riservati.</p>
+            <p className="text-[#94A3B8] text-xs">{config.address}</p>
+            <p className="text-[#CBD5E1] text-xs">&copy; {new Date().getFullYear()} {config.salon_name || 'Bruno Melito Hair'}. Tutti i diritti riservati.</p>
           </div>
         </div>
       </footer>
 
-      {/* Fixed bottom CTA on mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-[#1a1a2e]/95 backdrop-blur-md border-t border-amber-400/10 sm:hidden z-50">
-        <Button onClick={() => setShowBooking(true)} className="w-full bg-gradient-to-r from-amber-400 to-rose-400 text-[#1a1a2e] hover:from-amber-300 hover:to-rose-300 font-black py-5 rounded-2xl shadow-lg" data-testid="website-mobile-book-btn">
+      <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-200 sm:hidden z-50">
+        <Button onClick={() => setShowBooking(true)} className="w-full bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-black py-5 rounded-2xl shadow-lg" data-testid="website-mobile-book-btn">
           <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
         </Button>
       </div>
