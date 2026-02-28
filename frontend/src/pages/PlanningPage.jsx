@@ -300,6 +300,16 @@ export default function PlanningPage() {
     setDialogOpen(true);
   };
 
+  const openNewAppointmentForDate = (date) => {
+    setSelectedDate(date);
+    setClientSearch('');
+    setShowClientDropdown(false);
+    setFormData({
+      client_id: '', service_ids: [], operator_id: '', time: '09:00', notes: ''
+    });
+    setDialogOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const hasClient = formData.client_id || newClientMode;
