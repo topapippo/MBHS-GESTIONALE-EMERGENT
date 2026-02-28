@@ -16,7 +16,7 @@ Applicazione gestionale completa per un salone di parrucchiera (MBHS SALON / Bru
 
 ### Planning (28 Feb 2026)
 - Vista Giorno/Settimana/Mese con toggle
-- Vista Settimana: 7 colonne con appuntamenti dettagliati
+- Vista Settimana: 7 colonne con appuntamenti dettagliati + pulsante "+" per aggiungere appuntamenti direttamente
 - Vista Mese: calendario con conteggio e anteprime
 - Clic su giorno per tornare alla vista giornaliera
 - Navigazione prev/next adattata per ogni vista
