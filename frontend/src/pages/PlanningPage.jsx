@@ -634,9 +634,11 @@ export default function PlanningPage() {
     });
   };
 
-  // Create columns: one per operator (no unassigned)
+  // Create columns: one per operator + unassigned if any
+  const hasUnassigned = appointments.some(apt => !apt.operator_id || !operators.find(op => op.id === apt.operator_id));
   const columns = [
-    ...operators.map(op => ({ id: op.id, name: op.name, color: op.color }))
+    ...operators.map(op => ({ id: op.id, name: op.name, color: op.color })),
+    ...(hasUnassigned ? [{ id: null, name: 'Non assegnato', color: '#94A3B8' }] : [])
   ];
 
   return (

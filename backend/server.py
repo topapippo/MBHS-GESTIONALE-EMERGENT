@@ -1800,14 +1800,23 @@ async def create_public_booking(data: PublicBookingRequest):
     end_minutes = start_hour * 60 + start_min + total_duration
     end_time = f"{end_minutes // 60:02d}:{end_minutes % 60:02d}"
     
-    # Get operator info
+    # Get operator info - auto-assign first active operator if none selected
+    assigned_operator_id = data.operator_id or None
     operator_name = None
     operator_color = None
-    if data.operator_id:
-        operator = await db.operators.find_one({"id": data.operator_id, "user_id": user_id}, {"_id": 0})
+    if assigned_operator_id:
+        operator = await db.operators.find_one({"id": assigned_operator_id, "user_id": user_id}, {"_id": 0})
         if operator:
             operator_name = operator["name"]
             operator_color = operator.get("color")
+    
+    if not assigned_operator_id:
+        # Auto-assign to first active operator so it shows in daily planning
+        first_op = await db.operators.find_one({"user_id": user_id, "active": True}, {"_id": 0})
+        if first_op:
+            assigned_operator_id = first_op["id"]
+            operator_name = first_op["name"]
+            operator_color = first_op.get("color")
     
     # Create appointment
     appointment_id = str(uuid.uuid4())
@@ -1818,7 +1827,7 @@ async def create_public_booking(data: PublicBookingRequest):
         "client_name": data.client_name,
         "service_ids": data.service_ids,
         "services": services,
-        "operator_id": data.operator_id,
+        "operator_id": assigned_operator_id,
         "operator_name": operator_name,
         "operator_color": operator_color,
         "date": data.date,
