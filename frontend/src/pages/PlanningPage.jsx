@@ -857,6 +857,14 @@ export default function PlanningPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            {/* New Appointment Button - always visible */}
+            <Button
+              onClick={() => openNewAppointmentForDate(selectedDate)}
+              className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-bold h-10 px-4"
+              data-testid="new-appointment-global-btn"
+            >
+              <Plus className="w-4 h-4 mr-1" /> Nuovo
+            </Button>
             {/* Search Bar */}
             <div className="relative">
               <div className="flex items-center">
