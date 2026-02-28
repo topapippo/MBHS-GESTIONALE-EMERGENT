@@ -1555,6 +1555,20 @@ export default function PlanningPage() {
                         data-testid="remove-points-btn">
                         <Trash2 className="w-3 h-3 mr-1" /> Rimuovi
                       </Button>
+                      <Button type="button" variant="outline" size="sm"
+                        className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
+                        onClick={async () => {
+                          if (!window.confirm('Azzerare tutti i punti di questo cliente?')) return;
+                          try {
+                            const currentPts = clientLoyalty.points;
+                            const res = await axios.put(`${API}/loyalty/${editingAppointment.client_id}/adjust-points`, { points: -currentPts, reason: 'Azzeramento manuale' });
+                            setClientLoyalty({ ...clientLoyalty, points: 0 });
+                            toast.success('Punti azzerati');
+                          } catch { toast.error('Errore'); }
+                        }}
+                        data-testid="reset-points-btn">
+                        <X className="w-3 h-3 mr-1" /> Azzera
+                      </Button>
                     </div>
                   </div>
                 </div>
