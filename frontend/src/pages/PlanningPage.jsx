@@ -156,6 +156,11 @@ export default function PlanningPage() {
   }, [selectedDate]);
 
   useEffect(() => {
+    if (viewMode === 'week') fetchWeekData();
+    if (viewMode === 'month') fetchMonthData();
+  }, [selectedDate, viewMode]);
+
+  useEffect(() => {
     // Scroll to 8:00 on load
     if (scrollRef.current) {
       const currentHour = new Date().getHours();
