@@ -265,19 +265,19 @@ export default function WebsitePage() {
             <img src="/logo.png?v=3" alt={config.salon_name} className="w-10 h-10 rounded-lg" />
             <span className="font-black text-sm sm:text-base tracking-tight">{config.salon_name || 'BRUNO MELITO HAIR'}</span>
           </div>
-          <div className="hidden sm:flex items-center gap-6 text-sm text-gray-400">
-            <button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} className="hover:text-white transition-colors">Servizi</button>
-            <button onClick={() => scrollTo(contactRef)} className="hover:text-white transition-colors">Contatti</button>
-            <div className="flex items-center gap-3 border-l border-gray-700 pl-4">
+          <div className="hidden sm:flex items-center gap-6 text-sm text-[#64748B]">
+            <button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} className="hover:text-[#0EA5E9] transition-colors font-semibold">Servizi</button>
+            <button onClick={() => scrollTo(contactRef)} className="hover:text-[#0EA5E9] transition-colors font-semibold">Contatti</button>
+            <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
               {SOCIAL_LINKS.map((link, i) => (
-                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className={`text-gray-500 ${link.color} transition-colors`} title={link.label}>
+                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className={`text-gray-400 ${link.color} transition-colors`} title={link.label}>
                   <link.icon className="w-4 h-4" />
                 </a>
               ))}
             </div>
-            <a href="/login" className="hover:text-white transition-colors">Area Riservata</a>
+            <a href="/login" className="hover:text-[#0EA5E9] transition-colors font-semibold">Area Riservata</a>
           </div>
-          <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="website-book-btn">
+          <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-bold text-sm px-4 sm:px-6" data-testid="website-book-btn">
             PRENOTA ORA
           </Button>
         </div>
