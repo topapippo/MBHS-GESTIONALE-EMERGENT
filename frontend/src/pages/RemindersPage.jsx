@@ -52,6 +52,7 @@ export default function RemindersPage() {
   // Auto-send batch state
   const [autoCheck, setAutoCheck] = useState(null);
   const [batchSending, setBatchSending] = useState(false);
+  const [colorReminders, setColorReminders] = useState([]);
 
   useEffect(() => {
     fetchData();
