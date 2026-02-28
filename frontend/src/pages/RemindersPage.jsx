@@ -568,13 +568,13 @@ export default function RemindersPage() {
                           size="sm"
                           onClick={() => resetReminder('appointment', apt.id)}
                           disabled={resettingId === apt.id}
-                          className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                          className="border-red-300 text-red-600 hover:bg-red-50"
                           data-testid={`reset-reminder-${apt.id}`}
                         >
                           {resettingId === apt.id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
-                            <><RotateCcw className="w-4 h-4 mr-1" /> Reinvia</>
+                            <><XCircle className="w-4 h-4 mr-1" /> Annulla</>
                           )}
                         </Button>
                       ) : (
