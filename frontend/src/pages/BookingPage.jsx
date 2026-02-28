@@ -324,6 +324,9 @@ export default function BookingPage() {
               <Button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} variant="outline" className="border-white/20 text-white hover:bg-white/10 font-bold text-base px-8 py-6 rounded-xl">
                 Scopri i Servizi <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
+              <Button onClick={() => setShowManage(true)} variant="outline" className="border-amber-400/30 text-amber-400 hover:bg-amber-400/10 font-bold text-base px-8 py-6 rounded-xl">
+                <Calendar className="w-5 h-5 mr-2" /> Gestisci Appuntamento
+              </Button>
             </div>
             {/* Contact quick links */}
             <div className="flex flex-col sm:flex-row gap-4 text-sm justify-center">
