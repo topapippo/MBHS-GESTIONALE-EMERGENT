@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /sito
+Allow: /prenota
+
+Disallow: /login
+Disallow: /api/
+
+Sitemap: https://mbhssalon.onrender.com/sitemap.xml
