@@ -194,7 +194,7 @@ export default function BookingPage() {
           <p className="text-gray-300 mb-2">Ti aspettiamo il <span className="text-[#1e293b] font-bold">{format(new Date(formData.date), 'd MMMM yyyy', { locale: it })}</span> alle <span className="text-[#1e293b] font-bold">{formData.time}</span></p>
           <p className="text-sm text-[#94A3B8] mb-8">Riceverai un promemoria prima dell'appuntamento.</p>
           <Button onClick={() => { setSuccess(false); setShowBooking(false); setStep(1); setFormData({ client_name: '', client_phone: '', service_ids: [], operator_id: '', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', notes: '' }); }}
-            className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8" data-testid="booking-back-home-btn">Torna alla Home</Button>
+            className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold px-8" data-testid="booking-back-home-btn">Torna alla Home</Button>
         </div>
       </div>
     );
@@ -222,8 +222,8 @@ export default function BookingPage() {
               <label className="text-sm text-[#64748B] font-semibold mb-2 block">Il tuo numero di telefono</label>
               <div className="flex gap-2">
                 <Input value={managePhone} onChange={(e) => setManagePhone(e.target.value)}
-                  placeholder="Es: 339 1234567" className="bg-[#242445] border-gray-200 text-[#1e293b] flex-1" data-testid="manage-phone-input" />
-                <Button onClick={lookupAppointments} disabled={lookingUp} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold" data-testid="lookup-btn">
+                  placeholder="Es: 339 1234567" className="bg-gray-50 border-gray-200 text-[#1e293b] flex-1" data-testid="manage-phone-input" />
+                <Button onClick={lookupAppointments} disabled={lookingUp} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold" data-testid="lookup-btn">
                   {lookingUp ? <Clock className="w-4 h-4 animate-spin" /> : 'Cerca'}
                 </Button>
               </div>
@@ -313,7 +313,7 @@ export default function BookingPage() {
           <div className="flex items-center justify-center gap-2 mb-6">
             {[1, 2, 3].map(s => (
               <div key={s} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-white text-[#1a1a2e]' : 'bg-gray-800 text-[#94A3B8]'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-[#0EA5E9] text-white' : 'bg-gray-100 text-[#94A3B8]'}`}>
                   {step > s ? <CheckCircle className="w-4 h-4" /> : s}
                 </div>
                 {s < 3 && <div className={`w-12 h-0.5 ${step > s ? 'bg-white' : 'bg-gray-800'}`} />}
@@ -327,7 +327,7 @@ export default function BookingPage() {
                 <div className="space-y-2">
                   {services.map(service => (
                     <div key={service.id} onClick={() => toggleService(service.id)}
-                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.service_ids.includes(service.id) ? 'border-white bg-white/10' : 'border-gray-200 bg-[#242445] hover:border-gray-600'}`}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.service_ids.includes(service.id) ? 'border-[#0EA5E9] bg-[#0EA5E9]/10' : 'border-gray-200 bg-white hover:border-gray-300'}`}
                       data-testid={`service-item-${service.id}`}>
                       <div className="flex justify-between items-center">
                         <div><p className="font-bold text-[#1e293b]">{service.name}</p><p className="text-sm text-[#94A3B8]">{service.duration} min</p></div>
@@ -338,11 +338,11 @@ export default function BookingPage() {
                 </div>
               )}
               {formData.service_ids.length > 0 && (
-                <div className="bg-[#242445] p-4 rounded-xl border border-gray-200">
+                <div className="bg-white p-4 rounded-xl border border-gray-200">
                   <p className="font-bold text-[#1e293b]">Riepilogo: {totalDuration} min - {'\u20AC'}{totalPrice}</p>
                 </div>
               )}
-              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0} className="w-full bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold py-6" data-testid="booking-step1-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
+              <Button onClick={() => setStep(2)} disabled={formData.service_ids.length === 0} className="w-full bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold py-6" data-testid="booking-step1-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
             </div>
           )}
           {step === 2 && (
@@ -350,7 +350,7 @@ export default function BookingPage() {
               <h2 className="text-xl font-black text-[#1e293b]">Data e Ora</h2>
               <div className="space-y-3">
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Data</label>
-                  <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')} onChange={(e) => setFormData({...formData, date: e.target.value})} className="bg-[#242445] border-gray-200 text-[#1e293b]" /></div>
+                  <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')} onChange={(e) => setFormData({...formData, date: e.target.value})} className="bg-gray-50 border-gray-200 text-[#1e293b]" /></div>
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Ora</label>
                   <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-[#1e293b]">
                     {getAvailableSlotsForDate(formData.date).map(t => <option key={t} value={t}>{t}</option>)}
@@ -365,7 +365,7 @@ export default function BookingPage() {
               </div>
               <div className="flex gap-3">
                 <Button onClick={() => setStep(1)} variant="outline" className="flex-1 border-gray-700 text-gray-300 hover:bg-white/10">Indietro</Button>
-                <Button onClick={() => setStep(3)} className="flex-1 bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold" data-testid="booking-step2-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
+                <Button onClick={() => setStep(3)} className="flex-1 bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold" data-testid="booking-step2-next">Continua <ArrowRight className="w-4 h-4 ml-2" /></Button>
               </div>
             </div>
           )}
@@ -374,11 +374,11 @@ export default function BookingPage() {
               <h2 className="text-xl font-black text-[#1e293b]">I Tuoi Dati</h2>
               <div className="space-y-3">
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Nome e Cognome *</label>
-                  <Input value={formData.client_name} onChange={(e) => setFormData({...formData, client_name: e.target.value})} placeholder="Es. Maria Rossi" className="bg-[#242445] border-gray-200 text-[#1e293b] placeholder:text-gray-600" data-testid="booking-name-input" /></div>
+                  <Input value={formData.client_name} onChange={(e) => setFormData({...formData, client_name: e.target.value})} placeholder="Es. Maria Rossi" className="bg-gray-50 border-gray-200 text-[#1e293b] placeholder:text-gray-600" data-testid="booking-name-input" /></div>
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Telefono *</label>
-                  <Input value={formData.client_phone} onChange={(e) => setFormData({...formData, client_phone: e.target.value})} placeholder="Es. 339 123 4567" className="bg-[#242445] border-gray-200 text-[#1e293b] placeholder:text-gray-600" data-testid="booking-phone-input" /></div>
+                  <Input value={formData.client_phone} onChange={(e) => setFormData({...formData, client_phone: e.target.value})} placeholder="Es. 339 123 4567" className="bg-gray-50 border-gray-200 text-[#1e293b] placeholder:text-gray-600" data-testid="booking-phone-input" /></div>
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Note (opzionale)</label>
-                  <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Richieste particolari..." className="bg-[#242445] border-gray-200 text-[#1e293b] placeholder:text-gray-600" rows={3} /></div>
+                  <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Richieste particolari..." className="bg-gray-50 border-gray-200 text-[#1e293b] placeholder:text-gray-600" rows={3} /></div>
               </div>
               <div className="bg-[#242445] p-4 rounded-xl border border-gray-200 space-y-2">
                 <p className="text-sm text-[#64748B]">Riepilogo:</p>
@@ -388,7 +388,7 @@ export default function BookingPage() {
               </div>
               <div className="flex gap-3">
                 <Button onClick={() => setStep(2)} variant="outline" className="flex-1 border-gray-700 text-gray-300 hover:bg-white/10">Indietro</Button>
-                <Button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold" data-testid="booking-submit-btn">
+                <Button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold" data-testid="booking-submit-btn">
                   {submitting ? <Clock className="w-4 h-4 animate-spin" /> : 'Conferma Prenotazione'}
                 </Button>
               </div>
@@ -422,7 +422,7 @@ export default function BookingPage() {
               ))}
             </div>
           </div>
-          <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="booking-start-btn">
+          <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold text-sm px-4 sm:px-6" data-testid="booking-start-btn">
             PRENOTA ORA
           </Button>
         </div>
@@ -447,7 +447,7 @@ export default function BookingPage() {
               Scopri l'eccellenza dell'hair styling al Bruno Melito Hair. Dove ogni taglio è un'opera d'arte e ogni cliente è unica.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-black text-base px-8 py-6 rounded-xl">
+              <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-black text-base px-8 py-6 rounded-xl">
                 <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
               </Button>
               <Button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} variant="outline" className="border-white/20 text-[#1e293b] hover:bg-white/10 font-bold text-base px-8 py-6 rounded-xl">
@@ -514,7 +514,7 @@ export default function BookingPage() {
               })}
               <div className="text-center">
                 <p className="text-gray-600 text-sm mb-6">Tutti i servizi includono consulenza personalizzata e prodotti professionali.</p>
-                <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+                <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
                   <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
                 </Button>
               </div>
@@ -688,7 +688,7 @@ export default function BookingPage() {
             })}
           </div>
           <div className="text-center mt-8">
-            <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+            <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
               <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
             </Button>
           </div>
