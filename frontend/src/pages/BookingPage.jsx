@@ -352,12 +352,12 @@ export default function BookingPage() {
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Data</label>
                   <Input type="date" value={formData.date} min={format(new Date(), 'yyyy-MM-dd')} onChange={(e) => setFormData({...formData, date: e.target.value})} className="bg-[#242445] border-gray-200 text-[#1e293b]" /></div>
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Ora</label>
-                  <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-white border border-gray-200 rounded-lg text-[#1e293b]">
+                  <select value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-[#1e293b]">
                     {getAvailableSlotsForDate(formData.date).map(t => <option key={t} value={t}>{t}</option>)}
                   </select></div>
                 {operators.length > 0 && (
                   <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Operatore (opzionale)</label>
-                    <select value={formData.operator_id} onChange={(e) => setFormData({...formData, operator_id: e.target.value})} className="w-full p-3 bg-white border border-gray-200 rounded-lg text-[#1e293b]">
+                    <select value={formData.operator_id} onChange={(e) => setFormData({...formData, operator_id: e.target.value})} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-[#1e293b]">
                       <option value="">Nessuna preferenza</option>
                       {operators.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                     </select></div>
