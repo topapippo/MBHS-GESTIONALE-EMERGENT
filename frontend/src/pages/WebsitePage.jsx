@@ -560,21 +560,21 @@ export default function WebsitePage() {
                 <p className="text-[#64748B] text-xs">{config.email}</p>
               </a>
             )}
-            <div className="bg-[#242445]/80 border border-violet-400/25 rounded-3xl p-5 text-center hover:shadow-lg hover:shadow-violet-400/20 transition-all duration-300">
-              <Clock className="w-6 h-6 text-violet-400 mx-auto mb-3" />
-              <h3 className="font-bold text-white text-sm mb-1">Orari</h3>
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 text-center hover:shadow-lg transition-all duration-300">
+              <Clock className="w-6 h-6 text-violet-500 mx-auto mb-3" />
+              <h3 className="font-bold text-[#1e293b] text-sm mb-1">Orari</h3>
               {Object.entries(hours).filter(([, v]) => v !== 'Chiuso').length > 0 ? (
                 <>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-[#64748B] text-xs">
                     {Object.entries(hours).filter(([, v]) => v !== 'Chiuso').map(([d]) => d.charAt(0).toUpperCase() + d.slice(1)).join(' - ')}
                   </p>
-                  <p className="text-gray-400 text-xs">{Object.values(hours).find(v => v !== 'Chiuso')}</p>
-                  <p className="text-gray-600 text-xs mt-1">
+                  <p className="text-[#64748B] text-xs">{Object.values(hours).find(v => v !== 'Chiuso')}</p>
+                  <p className="text-[#94A3B8] text-xs mt-1">
                     {Object.entries(hours).filter(([, v]) => v === 'Chiuso').map(([d]) => d.charAt(0).toUpperCase() + d.slice(1)).join(', ')}: Chiuso
                   </p>
                 </>
               ) : (
-                <p className="text-gray-400 text-xs">Mar - Sab: 08:00 - 19:00</p>
+                <p className="text-[#64748B] text-xs">Mar - Sab: 08:00 - 19:00</p>
               )}
             </div>
           </div>
