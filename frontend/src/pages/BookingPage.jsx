@@ -153,6 +153,36 @@ export default function BookingPage() {
   const scrollTo = (ref) => { ref.current?.scrollIntoView({ behavior: 'smooth' }); };
   const openWhatsApp = () => { window.open('https://wa.me/393397833526?text=Ciao, vorrei prenotare un appuntamento!', '_blank'); };
 
+  const lookupAppointments = async () => {
+    if (!managePhone) { toast.error('Inserisci il tuo numero di telefono'); return; }
+    setLookingUp(true);
+    try {
+      const res = await axios.get(`${API}/public/my-appointments?phone=${encodeURIComponent(managePhone)}`);
+      setMyAppointments(res.data);
+      if (res.data.length === 0) toast.info('Nessun appuntamento trovato con questo numero');
+    } catch { toast.error('Errore nella ricerca'); }
+    finally { setLookingUp(false); }
+  };
+
+  const cancelAppointment = async (aptId) => {
+    if (!window.confirm('Sei sicura di voler cancellare questo appuntamento?')) return;
+    try {
+      await axios.delete(`${API}/public/appointments/${aptId}?phone=${encodeURIComponent(managePhone)}`);
+      setMyAppointments(prev => prev.filter(a => a.id !== aptId));
+      toast.success('Appuntamento cancellato');
+    } catch (err) { toast.error(err.response?.data?.detail || 'Errore'); }
+  };
+
+  const updateAppointment = async () => {
+    if (!editingApt) return;
+    try {
+      await axios.put(`${API}/public/appointments/${editingApt.id}`, { phone: managePhone, date: editDate, time: editTime });
+      setMyAppointments(prev => prev.map(a => a.id === editingApt.id ? { ...a, date: editDate, time: editTime } : a));
+      setEditingApt(null);
+      toast.success('Appuntamento modificato!');
+    } catch (err) { toast.error(err.response?.data?.detail || 'Errore'); }
+  };
+
   // SUCCESS PAGE
   if (success) {
     return (
