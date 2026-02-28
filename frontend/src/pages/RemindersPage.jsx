@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import {
   Bell, MessageSquare, Clock, UserX, Check, Phone, Calendar,
-  RotateCcw, Pencil, Trash2, Plus, FileText, Send, Loader2
+  RotateCcw, Pencil, Trash2, Plus, FileText, Send, Loader2, XCircle, Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
 
