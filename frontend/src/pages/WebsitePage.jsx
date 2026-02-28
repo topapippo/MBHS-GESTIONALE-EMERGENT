@@ -375,11 +375,11 @@ export default function WebsitePage() {
 
       {/* SALON GALLERY */}
       {salonPhotos.length > 0 && (
-        <section className="py-20 sm:py-28 bg-[#242445]">
+        <section className="py-20 sm:py-28 bg-white/60">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
-              <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Il Nostro Salone</p>
-              <h2 className="text-3xl sm:text-4xl font-black">Dove Nasce la Bellezza</h2>
+              <p className="text-[#0EA5E9] font-bold text-sm tracking-widest uppercase mb-3">Il Nostro Salone</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b]">Dove Nasce la Bellezza</h2>
             </div>
             <div className={`grid gap-4 ${salonPhotos.length === 1 ? 'grid-cols-1 max-w-lg mx-auto' : salonPhotos.length === 2 ? 'grid-cols-2' : salonPhotos.length === 3 ? 'grid-cols-3' : 'grid-cols-2 lg:grid-cols-4'}`}>
               {salonPhotos.map((item, idx) => (
