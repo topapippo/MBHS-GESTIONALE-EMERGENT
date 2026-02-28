@@ -437,6 +437,20 @@ export default function ExpensesPage() {
               </div>
               <div className="space-y-2">
                 <Label>Data Scadenza *</Label>
+                <div className="flex gap-1 mb-2">
+                  {[{label: '15gg', days: 15}, {label: '30gg', days: 30}, {label: '60gg', days: 60}, {label: 'Annuale', days: 365}].map(preset => (
+                    <Button key={preset.days} type="button" variant="outline" size="sm"
+                      className="text-xs flex-1"
+                      onClick={() => {
+                        const d = new Date();
+                        d.setDate(d.getDate() + preset.days);
+                        setFormData({ ...formData, due_date: d.toISOString().split('T')[0] });
+                      }}
+                      data-testid={`preset-${preset.days}`}>
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
                 <Input
                   type="date"
                   value={formData.due_date}
