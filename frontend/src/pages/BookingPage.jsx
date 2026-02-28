@@ -380,7 +380,7 @@ export default function BookingPage() {
                 <div><label className="text-sm text-[#64748B] font-semibold mb-1 block">Note (opzionale)</label>
                   <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Richieste particolari..." className="bg-gray-50 border-gray-200 text-[#1e293b] placeholder:text-gray-600" rows={3} /></div>
               </div>
-              <div className="bg-[#242445] p-4 rounded-xl border border-gray-200 space-y-2">
+              <div className="bg-white p-4 rounded-xl border border-gray-200 space-y-2">
                 <p className="text-sm text-[#64748B]">Riepilogo:</p>
                 {selectedServices.map(s => (<div key={s.id} className="flex justify-between text-sm"><span className="text-gray-300">{s.name}</span><span className="text-[#1e293b] font-bold">{'\u20AC'}{s.price}</span></div>))}
                 <div className="border-t border-gray-200 pt-2 flex justify-between"><span className="text-[#1e293b] font-bold">Totale</span><span className="text-[#1e293b] font-black text-lg">{'\u20AC'}{totalPrice}</span></div>
@@ -432,7 +432,7 @@ export default function BookingPage() {
       <section className="relative min-h-screen flex items-center pt-16">
         <div className="absolute inset-0">
           <img src={HERO_BG} alt="Bruno Melito Hair" className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e]/60 via-[#1a1a2e]/40 to-[#1a1a2e]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-[#FFF8F0]" />
         </div>
         <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32 w-full">
           <div className="text-center max-w-3xl mx-auto">
@@ -498,7 +498,7 @@ export default function BookingPage() {
                 const borderColors = ['border-amber-400/30', 'border-rose-400/30', 'border-teal-400/30'];
                 const glowColors = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20'];
                 return (
-                <div key={idx} className={`bg-[#242445]/80 border ${borderColors[idx % 3]} rounded-3xl p-6 transition-all duration-300 hover:shadow-lg ${glowColors[idx % 3]} hover:border-opacity-60 hover:scale-[1.01]`}>
+                <div key={idx} className={`bg-white border border-gray-200 rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}>
                   <h3 className="text-xl font-black text-[#1e293b] mb-1">{cat.title}</h3>
                   {cat.desc && <p className="text-sm text-[#64748B] mb-4">{cat.desc}</p>}
                   <div className="space-y-3">
@@ -643,7 +643,7 @@ export default function BookingPage() {
               const avatarBgs = ['bg-amber-400/15', 'bg-rose-400/15', 'bg-teal-400/15', 'bg-violet-400/15'];
               const avatarTexts = ['text-amber-400', 'text-rose-400', 'text-teal-400', 'text-violet-400'];
               return (
-              <div key={idx} className={`bg-[#242445]/80 border ${borders[idx % 4]} rounded-3xl p-5 transition-all duration-300 hover:shadow-lg ${glows[idx % 4]} hover:border-opacity-60 hover:scale-[1.02]`}>
+              <div key={idx} className={`bg-white border border-gray-200 rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}>
                 <div className="flex gap-0.5 mb-3">
                   {[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />))}
                 </div>
