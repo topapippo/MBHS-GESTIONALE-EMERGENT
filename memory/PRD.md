@@ -47,9 +47,14 @@ Applicazione gestionale completa per un salone di parrucchiera (MBHS SALON / Bru
 - Galleria foto salone popolata con 8 immagini reali (4 salone + 4 lavori)
 - Foto caricate da CDN customer-assets (funzionano ovunque, anche su Render)
 
+### Refactoring (28 Feb 2026)
+- server.py monolitico (3314 righe) suddiviso in 19 file modulari
+- Struttura: server.py (53), database.py, auth.py, models.py, utils.py, 14 route files
+- 44/44 test API passati, frontend 100% verificato
+- Zero regressioni
+
 ## Backlog
 - (P1) Attivare Twilio SMS/WhatsApp Reminders automatici
 - (P2) Stampa ricevuta dopo checkout
 - (P2) Blocco fasce orarie per pause/ferie
-- (P2) Refactoring server.py (>3000 righe)
 - (P2) Programma fedelta avanzato
