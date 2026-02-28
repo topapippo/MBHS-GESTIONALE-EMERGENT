@@ -497,20 +497,20 @@ export default function WebsitePage() {
 
       {/* HAIRSTYLE GALLERY */}
       {hairstylePhotos.length > 0 && (
-        <section className="py-20 sm:py-28 bg-[#242445]">
+        <section className="py-20 sm:py-28 bg-white/60">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
-              <p className="text-rose-400 font-bold text-sm tracking-widest uppercase mb-3">{config.gallery_title || 'I Nostri Lavori'}</p>
-              <h2 className="text-3xl sm:text-4xl font-black">I Nostri Lavori</h2>
-              {config.gallery_subtitle && <p className="text-gray-500 mt-3 max-w-xl mx-auto">{config.gallery_subtitle}</p>}
+              <p className="text-rose-500 font-bold text-sm tracking-widest uppercase mb-3">{config.gallery_title || 'I Nostri Lavori'}</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b]">I Nostri Lavori</h2>
+              {config.gallery_subtitle && <p className="text-[#64748B] mt-3 max-w-xl mx-auto">{config.gallery_subtitle}</p>}
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {hairstylePhotos.map((item, idx) => (
-                <div key={item.id} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${BORDER_COLORS[idx % 6]} transition-all duration-300 hover:shadow-xl ${GLOW_COLORS[idx % 6]} hover:border-opacity-60`}>
+                <div key={item.id} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-[#0EA5E9]/30`}>
                   <img src={getImageUrl(item)} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {item.tag && (
-                    <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-[#1e293b] text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
                       {item.tag}
                     </div>
                   )}
@@ -521,7 +521,7 @@ export default function WebsitePage() {
               ))}
             </div>
             <div className="text-center mt-8">
-              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+              <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-bold px-8 py-6 rounded-xl shadow-lg shadow-[#0EA5E9]/30">
                 <Scissors className="w-4 h-4 mr-2" /> PRENOTA ORA
               </Button>
             </div>
