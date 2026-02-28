@@ -287,25 +287,25 @@ export default function WebsitePage() {
       <section className="relative min-h-screen flex items-center pt-16">
         <div className="absolute inset-0">
           {salonPhotos.length > 0 ? (
-            <img src={getImageUrl(salonPhotos[0])} alt={config.salon_name} className="w-full h-full object-cover opacity-30" />
+            <img src={getImageUrl(salonPhotos[0])} alt={config.salon_name} className="w-full h-full object-cover opacity-20" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#242445]" />
+            <div className="w-full h-full bg-gradient-to-br from-[#0EA5E9]/10 via-[#FFF8F0] to-amber-100/30" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e]/60 via-[#1a1a2e]/40 to-[#1a1a2e]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-[#FFF8F0]" />
         </div>
         <div className="relative max-w-6xl mx-auto px-4 py-20 sm:py-32 w-full">
           <div className="text-center max-w-3xl mx-auto">
             <div className="flex justify-center mb-8">
               <img src="/logo.png?v=3" alt={config.salon_name} className="w-48 h-48 sm:w-64 sm:h-64 object-contain drop-shadow-2xl rounded-2xl" />
             </div>
-            <div className="inline-block bg-white/10 backdrop-blur-sm text-white text-xs font-bold px-4 py-2 rounded-full border border-amber-400/20 mb-6">
+            <div className="inline-block bg-[#0EA5E9]/10 backdrop-blur-sm text-[#0EA5E9] text-xs font-bold px-4 py-2 rounded-full border border-[#0EA5E9]/30 mb-6">
               {config.subtitle || 'SOLO PER APPUNTAMENTO'}
             </div>
-            <p className="text-base sm:text-lg text-gray-300 max-w-lg mx-auto mb-8 leading-relaxed">
+            <p className="text-base sm:text-lg text-[#475569] max-w-lg mx-auto mb-8 leading-relaxed">
               {config.hero_description || ''}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-black text-base px-8 py-6 rounded-xl" data-testid="website-hero-book-btn">
+              <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-black text-base px-8 py-6 rounded-xl shadow-lg shadow-[#0EA5E9]/30" data-testid="website-hero-book-btn">
                 <Scissors className="w-5 h-5 mr-2" /> PRENOTA ORA
               </Button>
               <Button onClick={() => { setShowServices(true); setTimeout(() => scrollTo(servicesRef), 100); }} variant="outline" className="border-white/20 text-white hover:bg-white/10 font-bold text-base px-8 py-6 rounded-xl">
