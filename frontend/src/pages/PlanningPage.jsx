@@ -334,7 +334,7 @@ export default function PlanningPage() {
       await axios.post(`${API}/appointments`, payload);
       toast.success('Appuntamento creato!');
       setDialogOpen(false);
-      setFormData({ client_id: '', service_ids: [], operator_id: '', time: '09:00', notes: '' });
+      setFormData({ client_id: '', service_ids: [], operator_id: '', time: '09:00', notes: '', date: '' });
       setNewClientMode(false);
       setNewClientName('');
       setNewClientPhone('');
