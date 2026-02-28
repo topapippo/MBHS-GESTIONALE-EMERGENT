@@ -427,31 +427,31 @@ export default function WebsitePage() {
 
       {/* PROMOTIONS */}
       {publicPromos.length > 0 && (
-        <section className="py-20 sm:py-28 bg-[#242445]">
+        <section className="py-20 sm:py-28 bg-gradient-to-br from-[#0EA5E9]/5 via-white to-amber-50/30">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
-              <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">Offerte Speciali</p>
-              <h2 className="text-3xl sm:text-4xl font-black">Promozioni Attive</h2>
+              <p className="text-[#0EA5E9] font-bold text-sm tracking-widest uppercase mb-3">Offerte Speciali</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b]">Promozioni Attive</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {publicPromos.map((promo, idx) => {
-                const gradients = ['from-amber-500/20 to-orange-600/20', 'from-rose-500/20 to-pink-600/20', 'from-teal-500/20 to-emerald-600/20', 'from-violet-500/20 to-purple-600/20', 'from-sky-500/20 to-blue-600/20'];
+                const gradients = ['from-amber-50 to-orange-50', 'from-rose-50 to-pink-50', 'from-teal-50 to-emerald-50', 'from-violet-50 to-purple-50', 'from-sky-50 to-blue-50'];
                 const g = gradients[idx % gradients.length];
                 return (
-                  <div key={promo.id || idx} className={`bg-gradient-to-br ${g} border ${BORDER_COLORS[idx % BORDER_COLORS.length]} rounded-3xl p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
+                  <div key={promo.id || idx} className={`bg-gradient-to-br ${g} border border-gray-200 rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}
                     data-testid={`website-promo-${promo.id || idx}`}>
                     <div className="mb-3">
-                      <h3 className="text-lg font-black text-white">{promo.name}</h3>
+                      <h3 className="text-lg font-black text-[#1e293b]">{promo.name}</h3>
                     </div>
-                    <p className="text-gray-300 text-sm mb-4">{promo.description}</p>
+                    <p className="text-[#64748B] text-sm mb-4">{promo.description}</p>
                     {promo.free_service_name && (
-                      <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold mb-3">
+                      <div className="flex items-center gap-2 text-emerald-600 text-sm font-bold mb-3">
                         <Gift className="w-4 h-4" /> IN OMAGGIO: {promo.free_service_name}
                       </div>
                     )}
                     {promo.promo_code && (
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        Codice: <span className="font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded text-sm">{promo.promo_code}</span>
+                      <div className="flex items-center gap-2 text-xs text-[#64748B]">
+                        Codice: <span className="font-mono font-bold text-[#0EA5E9] bg-[#0EA5E9]/10 px-2 py-0.5 rounded text-sm">{promo.promo_code}</span>
                       </div>
                     )}
                   </div>
@@ -459,7 +459,7 @@ export default function WebsitePage() {
               })}
             </div>
             <div className="text-center mt-8">
-              <Button onClick={() => setShowBooking(true)} className="bg-white text-[#1a1a2e] hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
+              <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-[#0284C7] font-bold px-8 py-6 rounded-xl shadow-lg shadow-[#0EA5E9]/30">
                 <Scissors className="w-4 h-4 mr-2" /> APPROFITTA ORA
               </Button>
             </div>
