@@ -61,6 +61,9 @@ export default function PlanningPage() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState('day'); // day, week, month
+  const [weekAppointments, setWeekAppointments] = useState({});
+  const [monthAppointments, setMonthAppointments] = useState({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
