@@ -295,7 +295,8 @@ export default function PlanningPage() {
       ...formData,
       client_id: '',
       time: time,
-      operator_id: operatorId || ''
+      operator_id: operatorId || '',
+      date: format(selectedDate, 'yyyy-MM-dd')
     });
     setDialogOpen(true);
   };
