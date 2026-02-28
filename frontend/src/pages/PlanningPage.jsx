@@ -217,6 +217,37 @@ export default function PlanningPage() {
     }
   };
 
+  const fetchWeekData = async () => {
+    const ws = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    const we = endOfWeek(selectedDate, { weekStartsOn: 1 });
+    const days = eachDayOfInterval({ start: ws, end: we });
+    const results = {};
+    await Promise.all(days.map(async (day) => {
+      const dateStr = format(day, 'yyyy-MM-dd');
+      try {
+        const res = await axios.get(`${API}/appointments?date=${dateStr}`);
+        results[dateStr] = res.data;
+      } catch { results[dateStr] = []; }
+    }));
+    setWeekAppointments(results);
+  };
+
+  const fetchMonthData = async () => {
+    const ms = startOfMonth(selectedDate);
+    const me = endOfMonth(selectedDate);
+    const days = eachDayOfInterval({ start: ms, end: me });
+    const results = {};
+    await Promise.all(days.map(async (day) => {
+      const dateStr = format(day, 'yyyy-MM-dd');
+      try {
+        const res = await axios.get(`${API}/appointments?date=${dateStr}`);
+        results[dateStr] = res.data;
+      } catch { results[dateStr] = []; }
+    }));
+    setMonthAppointments(results);
+  };
+
+
   const handleSlotClick = (time, operatorId) => {
     setSelectedSlot(time);
     setSelectedOperator(operatorId);
