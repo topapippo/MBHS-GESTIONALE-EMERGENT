@@ -168,15 +168,9 @@ export default function PlanningPage() {
   useEffect(() => {
     const checkNewBookings = async () => {
       try {
-        const res = await axios.get(`${API}/notifications/new-bookings?since=${encodeURIComponent(lastCheckRef.current)}`);
+        const res = await axios.get(`${API}/notifications/new-bookings`);
         const unseen = res.data.filter(b => !b.seen_at);
-        if (unseen.length > 0) {
-          setNewOnlineBookings(prev => {
-            const existingIds = prev.map(b => b.id);
-            const newOnes = unseen.filter(b => !existingIds.includes(b.id));
-            return [...newOnes, ...prev];
-          });
-        }
+        setNewOnlineBookings(unseen);
       } catch { /* silent */ }
     };
     checkNewBookings();
