@@ -323,7 +323,7 @@ export default function PlanningPage() {
     try {
       const payload = {
         ...formData,
-        date: format(selectedDate, 'yyyy-MM-dd'),
+        date: formData.date || format(selectedDate, 'yyyy-MM-dd'),
         operator_id: formData.operator_id || null
       };
       if (newClientMode && !formData.client_id) {
