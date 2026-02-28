@@ -3049,6 +3049,34 @@ async def get_public_promotions(user_id: str):
     ).to_list(20)
     return promos
 
+
+# ============== NOTIFICATIONS ==============
+
+@api_router.get("/notifications/new-bookings")
+async def get_new_online_bookings(since: str = None, current_user: dict = Depends(get_current_user)):
+    """Get online bookings created after a given timestamp"""
+    query = {"user_id": current_user["id"], "source": "online"}
+    if since:
+        query["created_at"] = {"$gt": since}
+    
+    bookings = await db.appointments.find(
+        query,
+        {"_id": 0, "user_id": 0}
+    ).sort("created_at", -1).to_list(20)
+    
+    return bookings
+
+@api_router.post("/notifications/mark-seen")
+async def mark_bookings_seen(data: dict, current_user: dict = Depends(get_current_user)):
+    """Mark online bookings as seen by adding seen_at field"""
+    apt_ids = data.get("appointment_ids", [])
+    if apt_ids:
+        await db.appointments.update_many(
+            {"id": {"$in": apt_ids}, "user_id": current_user["id"]},
+            {"$set": {"seen_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    return {"marked": len(apt_ids)}
+
 # ============== WEBSITE CMS ==============
 
 # Object Storage config
