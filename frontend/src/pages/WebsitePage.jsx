@@ -255,11 +255,11 @@ export default function WebsitePage() {
   const phones = config.phones || [];
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] text-white" data-testid="website-landing">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#FEF3E2] to-[#F0F4FF] text-[#1e293b]" data-testid="website-landing">
       <Toaster position="top-center" />
 
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e]/90 backdrop-blur-md border-b border-amber-400/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo.png?v=3" alt={config.salon_name} className="w-10 h-10 rounded-lg" />
