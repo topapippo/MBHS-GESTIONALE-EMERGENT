@@ -530,6 +530,50 @@ export default function WebsitePage() {
         </section>
       )}
 
+      {/* LOYALTY PROGRAM */}
+      {siteData?.loyalty && (
+      <section className="py-20 sm:py-28 bg-gradient-to-br from-amber-50 via-white to-amber-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-amber-500 font-bold text-sm tracking-widest uppercase mb-3">Programma Fedeltà</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b]">Ogni Visita Vale di Più</h2>
+            <p className="text-[#94A3B8] mt-3 max-w-xl mx-auto">Accumula punti ad ogni appuntamento e sblocca premi esclusivi. <strong>1 punto ogni €{siteData.loyalty.points_per_euro || 10} spesi</strong>.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {Object.entries(siteData.loyalty.rewards || {}).map(([key, reward], idx) => {
+              const icons = [Gift, Star, Scissors];
+              const colors = ['from-amber-400 to-orange-400', 'from-rose-400 to-pink-400', 'from-teal-400 to-emerald-400'];
+              const bgColors = ['bg-amber-100', 'bg-rose-100', 'bg-teal-100'];
+              const textColors = ['text-amber-600', 'text-rose-600', 'text-teal-600'];
+              const Icon = icons[idx % 3];
+              return (
+                <div key={key} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.03] text-center">
+                  <div className={`w-16 h-16 ${bgColors[idx % 3]} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                    <Icon className={`w-8 h-8 ${textColors[idx % 3]}`} />
+                  </div>
+                  <h3 className="font-bold text-lg text-[#1e293b] mb-2">{reward.name}</h3>
+                  <div className={`inline-block bg-gradient-to-r ${colors[idx % 3]} text-white text-sm font-bold px-4 py-1.5 rounded-full mb-3`}>
+                    {reward.points_required} punti
+                  </div>
+                  <p className="text-[#64748B] text-sm">
+                    {reward.discount_percent === 100 ? 'Un servizio completamente gratuito!' : 
+                     reward.discount_percent ? `Sconto del ${reward.discount_percent}% sul prossimo servizio` :
+                     reward.name}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="text-center mt-10">
+            <Button onClick={() => setShowBooking(true)} className="bg-gradient-to-r from-amber-400 to-orange-400 text-white hover:from-amber-500 hover:to-orange-500 font-bold px-8 py-6 rounded-xl shadow-lg">
+              <Gift className="w-4 h-4 mr-2" /> INIZIA A RACCOGLIERE PUNTI
+            </Button>
+          </div>
+        </div>
+      </section>
+      )}
+
+
       {/* CONTACT */}
       <section ref={contactRef} className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
