@@ -20,53 +20,6 @@ const SOCIAL_LINKS = [
 
 // Logo as hero image
 const HERO_LOGO = "/logo.png?v=4";
-// Salon gallery photos (user approved)
-const SALON_EXTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/dadmar03_image.png";
-const SALON_RECEPTION = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/snwuwd2g_image.png";
-const SALON_INTERIOR = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/owkrsi8u_image.png";
-const SALON_WORKSTATIONS = "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/t15b4lty_image.png";
-
-const GALLERY = [
-  { img: "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/7i4kwza6_image.png", label: "Balayage Dorato", tag: "Capelli Lunghi" },
-  { img: "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/zjh4hvlw_image.png", label: "Bob Mosso", tag: "Capelli Corti" },
-  { img: "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/krhax3qv_image.png", label: "Onde Ramate", tag: "Colorazione" },
-  { img: "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/0w1uwqaq_image.png", label: "Sfumature Calde", tag: "Balayage" },
-  { img: "https://customer-assets.emergentagent.com/job_a05a9fc6-c017-4f4a-aee2-38e140acfa26/artifacts/r41kjm40_image.png", label: "Styling in Salone", tag: "Taglio" },
-  { img: "https://customer-assets.emergentagent.com/job_ac0aaacf-8266-485a-8bab-9e57ed904c7a/artifacts/0inxpacz_517029262_10231563813060391_9151321643853820111_n.jpg", label: "Onde Naturali", tag: "Piega" },
-];
-
-const SERVICE_CATEGORIES = [
-  {
-    title: "Taglio & Piega",
-    items: [
-      { name: "Taglio", price: "€ 10" },
-      { name: "Piega Corti", price: "€ 10" },
-      { name: "Piega Lunghi", price: "€ 12" },
-      { name: "Piega Fantasy", price: "€ 15" },
-      { name: "Piastra/Ferro", price: "+ € 3" },
-    ]
-  },
-  {
-    title: "Colorazione",
-    desc: "Tutte le colorazioni sono senza ammoniaca, con cheratina e olio di argan",
-    items: [
-      { name: "Colorazione Parziale / Completa / Cuffia / Cartine / Balayage / Giochi di Colore", price: "Da € 30" },
-    ]
-  },
-  {
-    title: "Modellanti",
-    items: [
-      { name: "Permanente / Ondulazione / Anticrespo / Stiratura Classica", price: "Da € 40" },
-    ]
-  },
-];
-
-const REVIEWS = [
-  { name: "Maria R.", text: "Bruno è un vero professionista! Sono anni che vengo da lui e sono sempre soddisfatta. Consiglio vivamente!", rating: 5 },
-  { name: "Laura B.", text: "Ambiente elegante e accogliente, personale gentilissimo. Il taglio è perfetto, proprio come lo volevo!", rating: 5 },
-  { name: "Anna V.", text: "Finalmente ho trovato un parrucchiere che capisce cosa voglio! Colore stupendo e piega perfetta.", rating: 5 },
-  { name: "Francesca N.", text: "Professionalità e cortesia. I miei capelli non sono mai stati così belli. Grazie Bruno!", rating: 5 },
-];
 
 const TIME_SLOTS = [];
 for (let h = 8; h <= 20; h++) {
@@ -99,6 +52,9 @@ export default function BookingPage() {
   const servicesRef = useRef(null);
   const contactRef = useRef(null);
 
+  // CMS data
+  const [siteData, setSiteData] = useState(null);
+
   // Manage appointment state
   const [showManage, setShowManage] = useState(false);
   const [managePhone, setManagePhone] = useState('');
@@ -117,17 +73,32 @@ export default function BookingPage() {
 
   const fetchData = async () => {
     try {
-      const [servicesRes, operatorsRes] = await Promise.all([
-        axios.get(`${API}/public/services`), axios.get(`${API}/public/operators`)
+      const [servicesRes, operatorsRes, siteRes] = await Promise.all([
+        axios.get(`${API}/public/services`), 
+        axios.get(`${API}/public/operators`),
+        axios.get(`${API}/public/website`)
       ]);
       setServices(servicesRes.data); setOperators(operatorsRes.data);
-      // Fetch public promotions (need user_id from services endpoint context)
+      setSiteData(siteRes.data);
       try {
         const promosRes = await axios.get(`${API}/public/promotions/all`);
         setPublicPromos(promosRes.data);
       } catch (e) { /* promos not critical */ }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
+  };
+
+  const config = siteData?.config || {};
+  const cmsReviews = siteData?.reviews || [];
+  const cmsGallery = siteData?.gallery || [];
+  const salonPhotos = cmsGallery.filter(g => g.section === 'salon');
+  const hairstylePhotos = cmsGallery.filter(g => g.section === 'gallery');
+  const serviceCategories = config.service_categories || [];
+
+  const getImageUrl = (item) => {
+    if (!item?.image_url) return '';
+    if (item.image_url.startsWith('http')) return item.image_url;
+    return `${process.env.REACT_APP_BACKEND_URL}${item.image_url}`;
   };
 
   const toggleService = (id) => {
@@ -149,7 +120,10 @@ export default function BookingPage() {
   };
 
   const scrollTo = (ref) => { ref.current?.scrollIntoView({ behavior: 'smooth' }); };
-  const openWhatsApp = () => { window.open('https://wa.me/393397833526?text=Ciao, vorrei prenotare un appuntamento!', '_blank'); };
+  const openWhatsApp = () => { 
+    const num = config.whatsapp || '393397833526';
+    window.open(`https://wa.me/${num}?text=Ciao, vorrei prenotare un appuntamento!`, '_blank'); 
+  };
 
   const lookupAppointments = async () => {
     if (!managePhone) { toast.error('Inserisci il tuo numero di telefono'); return; }
@@ -490,17 +464,14 @@ export default function BookingPage() {
             </div>
           </button>
 
-          {showServices && (
+          {showServices && serviceCategories.length > 0 && (
             <div className="space-y-6 mt-8 animate-in fade-in duration-300">
-              {SERVICE_CATEGORIES.map((cat, idx) => {
-                const borderColors = ['border-amber-400/30', 'border-rose-400/30', 'border-teal-400/30'];
-                const glowColors = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20'];
-                return (
+              {serviceCategories.map((cat, idx) => (
                 <div key={idx} className={`bg-white border border-gray-200 rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}>
                   <h3 className="text-xl font-black text-[#1e293b] mb-1">{cat.title}</h3>
                   {cat.desc && <p className="text-sm text-[#64748B] mb-4">{cat.desc}</p>}
                   <div className="space-y-3">
-                    {cat.items.map((item, i) => (
+                    {(cat.items || []).map((item, i) => (
                       <div key={i} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
                         <span className="font-bold text-gray-300">{item.name}</span>
                         <span className="font-black text-amber-400 text-lg shrink-0 ml-4">{item.price}</span>
@@ -508,8 +479,7 @@ export default function BookingPage() {
                     ))}
                   </div>
                 </div>
-                );
-              })}
+              ))}
               <div className="text-center">
                 <p className="text-gray-600 text-sm mb-6">Tutti i servizi includono consulenza personalizzata e prodotti professionali.</p>
                 <Button onClick={() => setShowBooking(true)} className="bg-[#0EA5E9] text-white hover:bg-gray-200 font-bold px-8 py-6 rounded-xl">
@@ -575,6 +545,7 @@ export default function BookingPage() {
       )}
 
       {/* SALON GALLERY */}
+      {salonPhotos.length > 0 && (
       <section className="py-20 sm:py-28 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -582,40 +553,44 @@ export default function BookingPage() {
             <h2 className="text-3xl sm:text-4xl font-black">Dove Nasce la Bellezza</h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { img: SALON_EXTERIOR, label: "Esterno", border: "border-amber-400/30", glow: "hover:shadow-amber-400/25" },
-              { img: SALON_RECEPTION, label: "Reception", border: "border-rose-400/30", glow: "hover:shadow-rose-400/25" },
-              { img: SALON_INTERIOR, label: "Area Colore", border: "border-teal-400/30", glow: "hover:shadow-teal-400/25" },
-              { img: SALON_WORKSTATIONS, label: "Postazioni", border: "border-violet-400/30", glow: "hover:shadow-violet-400/25" },
-            ].map((item, idx) => (
-              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-square group border-2 ${item.border} transition-all duration-300 hover:shadow-xl ${item.glow} hover:border-opacity-60`}>
-                <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+            {salonPhotos.slice(0, 4).map((item, idx) => {
+              const borders = ['border-amber-400/30', 'border-rose-400/30', 'border-teal-400/30', 'border-violet-400/30'];
+              const glows = ['hover:shadow-amber-400/25', 'hover:shadow-rose-400/25', 'hover:shadow-teal-400/25', 'hover:shadow-violet-400/25'];
+              return (
+              <div key={item.id || idx} className={`relative rounded-3xl overflow-hidden aspect-square group border-2 ${borders[idx % 4]} transition-all duration-300 hover:shadow-xl ${glows[idx % 4]} hover:border-opacity-60`}>
+                <img src={getImageUrl(item)} alt={item.label || 'Salone'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <p className="absolute bottom-3 left-3 text-[#1e293b] font-bold text-sm">{item.label}</p>
+                <p className="absolute bottom-3 left-3 text-white font-bold text-sm">{item.label}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
+      )}
 
       {/* ABOUT SECTION */}
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="rounded-3xl overflow-hidden h-80 lg:h-96 border-2 border-rose-400/20 hover:shadow-xl hover:shadow-rose-400/20 transition-all duration-300">
-              <img src={SALON_RECEPTION} alt="Il nostro salone" className="w-full h-full object-cover" />
+              {salonPhotos.length > 1 ? (
+                <img src={getImageUrl(salonPhotos[1])} alt="Il nostro salone" className="w-full h-full object-cover" />
+              ) : (
+                <img src={HERO_LOGO} alt="Il nostro salone" className="w-full h-full object-cover" />
+              )}
             </div>
             <div>
               <p className="text-rose-400 font-bold text-sm tracking-widest uppercase mb-3">Chi Siamo</p>
-              <h2 className="text-3xl sm:text-4xl font-black mb-6">Dal 1983<br />con Passione</h2>
+              <h2 className="text-3xl sm:text-4xl font-black mb-6">{config.about_title || 'Dal 1983'}<br />con Passione</h2>
               <p className="text-[#64748B] leading-relaxed mb-6">
-                Dal 1983 con grande soddisfazione nostra e delle clienti che ci seguono, siamo un punto di riferimento per chi cerca qualità e professionalità nell'hair styling.
+                {config.about_text || 'Dal 1983 con grande soddisfazione nostra e delle clienti che ci seguono, siamo un punto di riferimento per chi cerca qualità e professionalità nell\'hair styling.'}
               </p>
-              <p className="text-[#64748B] leading-relaxed mb-8">
-                Abbiamo introdotto una nuova linea di prodotti altamente curativi, di ultima generazione: shampoo, maschere e finishing, senza parabeni, solfati e sale. Le colorazioni e le schiariture sono senza ammoniaca, ma con cheratina, olio di semi di lino, proteine della seta e olio di argan.
-              </p>
+              {config.about_text_2 && (
+                <p className="text-[#64748B] leading-relaxed mb-8">{config.about_text_2}</p>
+              )}
               <div className="grid grid-cols-2 gap-3">
-                {["Dal 1983 nel settore", "Senza parabeni e solfati", "Colorazioni senza ammoniaca", "Cheratina e olio di argan"].map((item, idx) => (
+                {(config.about_features || ["Dal 1983 nel settore", "Senza parabeni e solfati", "Colorazioni senza ammoniaca", "Cheratina e olio di argan"]).map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-teal-400 shrink-0" />
                     <span className="text-sm text-gray-300">{item}</span>
@@ -628,6 +603,7 @@ export default function BookingPage() {
       </section>
 
       {/* REVIEWS */}
+      {cmsReviews.length > 0 && (
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -635,20 +611,18 @@ export default function BookingPage() {
             <h2 className="text-3xl sm:text-4xl font-black">Cosa Dicono di Noi</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {REVIEWS.map((review, idx) => {
-              const borders = ['border-amber-400/25', 'border-rose-400/25', 'border-teal-400/25', 'border-violet-400/25'];
-              const glows = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20'];
+            {cmsReviews.map((review, idx) => {
               const avatarBgs = ['bg-amber-400/15', 'bg-rose-400/15', 'bg-teal-400/15', 'bg-violet-400/15'];
               const avatarTexts = ['text-amber-400', 'text-rose-400', 'text-teal-400', 'text-violet-400'];
               return (
-              <div key={idx} className={`bg-white border border-gray-200 rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}>
+              <div key={review.id || idx} className={`bg-white border border-gray-200 rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]`}>
                 <div className="flex gap-0.5 mb-3">
-                  {[...Array(review.rating)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />))}
+                  {[...Array(review.rating || 5)].map((_, i) => (<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />))}
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed mb-4">"{review.text}"</p>
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 ${avatarBgs[idx % 4]} rounded-full flex items-center justify-center`}>
-                    <span className={`${avatarTexts[idx % 4]} font-bold text-sm`}>{review.name[0]}</span>
+                    <span className={`${avatarTexts[idx % 4]} font-bold text-sm`}>{(review.name || 'A')[0]}</span>
                   </div>
                   <span className="text-sm text-[#64748B] font-semibold">{review.name}</span>
                 </div>
@@ -658,28 +632,32 @@ export default function BookingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* HAIRSTYLE GALLERY */}
+      {hairstylePhotos.length > 0 && (
       <section className="py-20 sm:py-28 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-rose-400 font-bold text-sm tracking-widest uppercase mb-3">Tendenze P/E 2026</p>
-            <h2 className="text-3xl sm:text-4xl font-black">I Nostri Lavori</h2>
-            <p className="text-[#94A3B8] mt-3 max-w-xl mx-auto">Lasciati ispirare dalle ultime tendenze Primavera Estate 2026.</p>
+            <p className="text-rose-400 font-bold text-sm tracking-widest uppercase mb-3">{config.gallery_title || 'I Nostri Lavori'}</p>
+            <h2 className="text-3xl sm:text-4xl font-black">{config.gallery_subtitle || 'Gallery Acconciature'}</h2>
+            <p className="text-[#94A3B8] mt-3 max-w-xl mx-auto">Lasciati ispirare dai nostri lavori.</p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {GALLERY.map((item, idx) => {
+            {hairstylePhotos.map((item, idx) => {
               const borders = ['border-amber-400/25', 'border-rose-400/25', 'border-teal-400/25', 'border-violet-400/25', 'border-sky-400/25', 'border-orange-400/25'];
               const glows = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20', 'hover:shadow-sky-400/20', 'hover:shadow-orange-400/20'];
               return (
-              <div key={idx} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${borders[idx % 6]} transition-all duration-300 hover:shadow-xl ${glows[idx % 6]} hover:border-opacity-60`}>
-                <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div key={item.id || idx} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${borders[idx % 6]} transition-all duration-300 hover:shadow-xl ${glows[idx % 6]} hover:border-opacity-60`}>
+                <img src={getImageUrl(item)} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md text-[#1e293b] text-xs font-bold px-3 py-1 rounded-full border border-white/10">
-                  {item.tag}
-                </div>
+                {item.tag && (
+                  <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">
+                    {item.tag}
+                  </div>
+                )}
                 <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                  <p className="text-[#1e293b] font-bold">{item.label}</p>
+                  <p className="text-white font-bold">{item.label}</p>
                 </div>
               </div>
               );
@@ -692,6 +670,7 @@ export default function BookingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* CONTACT SECTION */}
       <section ref={contactRef} className="py-20 sm:py-28">
@@ -702,28 +681,37 @@ export default function BookingPage() {
             <p className="text-[#94A3B8] mt-3">Siamo pronti ad accoglierti nel nostro salone.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            <a href="https://maps.google.com/?q=Via+Vito+Nicola+Melorio+101+Santa+Maria+Capua+Vetere" target="_blank" rel="noopener noreferrer"
+            <a href={`https://maps.google.com/?q=${encodeURIComponent(config.address || 'Via Vito Nicola Melorio 101 Santa Maria Capua Vetere')}`} target="_blank" rel="noopener noreferrer"
               className="bg-white/60/80 border border-amber-400/25 rounded-3xl p-5 hover:border-amber-400/50 hover:shadow-lg hover:shadow-amber-400/20 transition-all duration-300 text-center" data-testid="contact-address">
               <MapPin className="w-6 h-6 text-amber-400 mx-auto mb-3" />
               <h3 className="font-bold text-[#1e293b] text-sm mb-1">Indirizzo</h3>
-              <p className="text-[#64748B] text-xs leading-relaxed">Via Vito Nicola Melorio 101<br />Santa Maria Capua Vetere (CE)</p>
+              <p className="text-[#64748B] text-xs leading-relaxed">{config.address || 'Via Vito Nicola Melorio 101'}<br />{config.city || 'Santa Maria Capua Vetere (CE)'}</p>
             </a>
             <div className="bg-white/60/80 border border-rose-400/25 rounded-3xl p-5 text-center hover:shadow-lg hover:shadow-rose-400/20 transition-all duration-300">
               <Phone className="w-6 h-6 text-rose-400 mx-auto mb-3" />
               <h3 className="font-bold text-[#1e293b] text-sm mb-1">Telefono</h3>
-              <a href="tel:08231878320" className="text-[#64748B] text-xs hover:text-[#1e293b] transition-colors block">0823 18 78 320</a>
-              <a href="tel:3397833526" className="text-[#64748B] text-xs hover:text-[#1e293b] transition-colors block mt-1">339 78 33 526</a>
+              {(config.phones || ['0823 18 78 320', '339 78 33 526']).map((phone, i) => (
+                <a key={i} href={`tel:${phone.replace(/\s/g, '')}`} className="text-[#64748B] text-xs hover:text-[#1e293b] transition-colors block mt-1">{phone}</a>
+              ))}
             </div>
-            <a href="mailto:melitobruno@gmail.com" className="bg-white/60/80 border border-teal-400/25 rounded-3xl p-5 hover:border-teal-400/50 hover:shadow-lg hover:shadow-teal-400/20 transition-all duration-300 text-center">
+            <a href={`mailto:${config.email || 'melitobruno@gmail.com'}`} className="bg-white/60/80 border border-teal-400/25 rounded-3xl p-5 hover:border-teal-400/50 hover:shadow-lg hover:shadow-teal-400/20 transition-all duration-300 text-center">
               <Mail className="w-6 h-6 text-teal-400 mx-auto mb-3" />
               <h3 className="font-bold text-[#1e293b] text-sm mb-1">Email</h3>
-              <p className="text-[#64748B] text-xs">melitobruno@gmail.com</p>
+              <p className="text-[#64748B] text-xs">{config.email || 'melitobruno@gmail.com'}</p>
             </a>
             <div className="bg-white/60/80 border border-violet-400/25 rounded-3xl p-5 text-center hover:shadow-lg hover:shadow-violet-400/20 transition-all duration-300">
               <Clock className="w-6 h-6 text-violet-400 mx-auto mb-3" />
               <h3 className="font-bold text-[#1e293b] text-sm mb-1">Orari</h3>
-              <p className="text-[#64748B] text-xs">Mar - Sab: 08:00 - 19:00</p>
-              <p className="text-gray-600 text-xs mt-1">Dom - Lun: Chiuso</p>
+              {config.hours ? (
+                Object.entries(config.hours).map(([day, time], i) => (
+                  <p key={i} className="text-[#64748B] text-xs">{day}: {time}</p>
+                ))
+              ) : (
+                <>
+                  <p className="text-[#64748B] text-xs">Mar - Sab: 08:00 - 19:00</p>
+                  <p className="text-gray-600 text-xs mt-1">Dom - Lun: Chiuso</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -778,7 +766,7 @@ export default function BookingPage() {
               <a href="/sito" className="hover:text-[#1e293b] transition-colors">Sito Web</a>
             </div>
 
-            <p className="text-gray-700 text-xs">Via Vito Nicola Melorio 101, Santa Maria Capua Vetere (CE)</p>
+            <p className="text-gray-700 text-xs">{config.address || 'Via Vito Nicola Melorio 101'}, {config.city || 'Santa Maria Capua Vetere (CE)'}</p>
             <p className="text-gray-800 text-xs">&copy; {new Date().getFullYear()} Bruno Melito Hair. Tutti i diritti riservati.</p>
           </div>
         </div>

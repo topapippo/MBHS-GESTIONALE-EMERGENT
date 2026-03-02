@@ -1,0 +1,84 @@
+{
+  "summary": "Iteration 16 - BookingPage CMS Integration and WebsiteAdminPage Upload Button Fix Tests. All 17 backend API tests passed (100%). All frontend features verified working correctly via Playwright UI tests.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "BookingPage services section",
+        "issues": ["Service categories (service_categories) array is empty in CMS - 'Mostra listino' section shows no categories. This may be intentional or needs CMS data to be populated."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration16_cms_booking.py",
+    "/app/test_reports/pytest/pytest_iteration16.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "BookingPage correctly fetches CMS data from /api/public/website in fetchData()",
+    "getImageUrl helper properly handles both absolute URLs and relative paths",
+    "Gallery filtering by section (salon/gallery) works correctly: salonPhotos and hairstylePhotos derived from siteData.gallery",
+    "Contact info reads from CMS config (address, phones, email, hours) with fallback defaults",
+    "WebsiteAdminPage upload button z-index fix verified: z-10 class present on file inputs",
+    "Upload button in Foto Salone and Gallery Lavori tabs is visible and positioned correctly"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration16_cms_booking.py"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 tests passed)",
+    "frontend": "100% - All UI flows verified working"
+  },
+  "test_credentials": {
+    "email": "melitobruno@gmail.com",
+    "password": "password123"
+  },
+  "seed_data_creation": "No new seed data created. Used existing CMS data.",
+  "retest_needed": false,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "BookingPage (/prenota) now dynamically loads CMS data from /api/public/website. Key data sources: config (service_categories, contact info, about text), reviews, gallery (filtered by section). WebsiteAdminPage upload button z-index fix verified - z-10 class on file inputs makes them clickable. Current CMS state: 4 salon photos exist, service_categories array is empty, reviews array is empty.",
+  "features_tested": {
+    "booking_page_cms_integration": {
+      "public_website_api": "PASS - Returns config, reviews, gallery, services",
+      "logo_display": "PASS - Logo shown in hero section (/logo.png?v=4)",
+      "salon_gallery_section": "PASS - Shows 4 salon photos from CMS gallery (section='salon')",
+      "contact_info": "PASS - Address, phones, email, hours from CMS config",
+      "services_section": "INFO - service_categories empty in CMS, shows 'Nascondi listino' toggle",
+      "reviews_section": "INFO - No reviews in CMS, section hidden when empty",
+      "booking_flow": "PASS - Services from API (20 services), step navigation works"
+    },
+    "website_admin_page": {
+      "page_loads": "PASS - /gestione-sito loads after authentication",
+      "tabs": "PASS - 6 tabs: Generale, Servizi, Foto Salone, Gallery Lavori, Recensioni, Orari & Contatti",
+      "foto_salone_upload": "PASS - 'Carica Foto' button visible, z-10 class confirmed on file input",
+      "gallery_lavori_upload": "PASS - 'Carica Foto' button visible, z-10 class confirmed",
+      "recensioni_tab": "PASS - Shows empty state with '+ Aggiungi' button"
+    },
+    "backend_apis": {
+      "public_website": "PASS - GET /api/public/website returns full CMS data",
+      "public_services": "PASS - GET /api/public/services returns 20 services",
+      "public_operators": "PASS - GET /api/public/operators returns 2 operators",
+      "website_config_auth": "PASS - GET /api/website/config (authenticated)",
+      "website_reviews_auth": "PASS - GET /api/website/reviews (authenticated)",
+      "website_gallery_auth": "PASS - GET /api/website/gallery (authenticated)",
+      "website_upload": "PASS - POST /api/website/upload requires auth (401 without token)"
+    }
+  },
+  "screenshots": [
+    ".screenshots/iteration16_booking_landing.png",
+    ".screenshots/iteration16_services_expanded.png",
+    ".screenshots/iteration16_salon_gallery.png",
+    ".screenshots/iteration16_contact_section.png",
+    ".screenshots/iteration16_booking_step1.png",
+    ".screenshots/iteration16_booking_step2.png",
+    ".screenshots/iteration16_gestione_sito.png",
+    ".screenshots/iteration16_foto_salone.png",
+    ".screenshots/iteration16_gallery_lavori.png",
+    ".screenshots/iteration16_recensioni.png"
+  ]
+}

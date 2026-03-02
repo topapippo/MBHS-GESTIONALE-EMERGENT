@@ -315,7 +315,7 @@ export default function WebsiteAdminPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Foto del Salone</CardTitle>
                   <div className="relative">
-                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'salon')} className="absolute inset-0 opacity-0 cursor-pointer" disabled={uploading} />
+                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'salon')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
                     <Button variant="outline" disabled={uploading}>
                       {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
                       Carica Foto
@@ -358,7 +358,7 @@ export default function WebsiteAdminPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Gallery Lavori / Acconciature</CardTitle>
                   <div className="relative">
-                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'gallery')} className="absolute inset-0 opacity-0 cursor-pointer" disabled={uploading} />
+                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'gallery')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
                     <Button variant="outline" disabled={uploading}>
                       {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
                       Carica Foto
