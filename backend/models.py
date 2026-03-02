@@ -122,6 +122,8 @@ class AppointmentCreate(BaseModel):
     date: str
     time: str
     notes: Optional[str] = ""
+    promo_id: Optional[str] = None
+    card_id: Optional[str] = None
 
 class AppointmentResponse(BaseModel):
     id: str
@@ -143,6 +145,10 @@ class AppointmentResponse(BaseModel):
     sms_sent: Optional[bool] = False
     source: Optional[str] = "manual"
     paid: Optional[bool] = False
+    promo_id: Optional[str] = None
+    promo_name: Optional[str] = None
+    card_id: Optional[str] = None
+    card_name: Optional[str] = None
     created_at: str
 
 class AppointmentUpdate(BaseModel):

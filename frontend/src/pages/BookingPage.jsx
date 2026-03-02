@@ -558,7 +558,11 @@ export default function BookingPage() {
               const glows = ['hover:shadow-amber-400/25', 'hover:shadow-rose-400/25', 'hover:shadow-teal-400/25', 'hover:shadow-violet-400/25'];
               return (
               <div key={item.id || idx} className={`relative rounded-3xl overflow-hidden aspect-square group border-2 ${borders[idx % 4]} transition-all duration-300 hover:shadow-xl ${glows[idx % 4]} hover:border-opacity-60`}>
-                <img src={getImageUrl(item)} alt={item.label || 'Salone'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                {item.file_type === 'video' ? (
+                  <video src={getImageUrl(item)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" muted loop playsInline onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} />
+                ) : (
+                  <img src={getImageUrl(item)} alt={item.label || 'Salone'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <p className="absolute bottom-3 left-3 text-white font-bold text-sm">{item.label}</p>
               </div>
@@ -649,7 +653,11 @@ export default function BookingPage() {
               const glows = ['hover:shadow-amber-400/20', 'hover:shadow-rose-400/20', 'hover:shadow-teal-400/20', 'hover:shadow-violet-400/20', 'hover:shadow-sky-400/20', 'hover:shadow-orange-400/20'];
               return (
               <div key={item.id || idx} className={`relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer border-2 ${borders[idx % 6]} transition-all duration-300 hover:shadow-xl ${glows[idx % 6]} hover:border-opacity-60`}>
-                <img src={getImageUrl(item)} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                {item.file_type === 'video' ? (
+                  <video src={getImageUrl(item)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" muted loop playsInline onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} />
+                ) : (
+                  <img src={getImageUrl(item)} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {item.tag && (
                   <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/10">

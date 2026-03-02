@@ -363,6 +363,9 @@ export default function PlanningPage() {
         if (notes.length > 0) {
           payload.notes = (payload.notes ? payload.notes + ' ' : '') + notes.join(' ');
         }
+        // Save promo_id/card_id on the appointment for checkout pre-selection
+        payload.promo_id = preSelectedPromoId || null;
+        payload.card_id = preSelectedCardId || null;
       }
       await axios.post(`${API}/appointments`, payload);
       toast.success('Appuntamento creato!' + (preSelectedCardId || preSelectedPromoId ? ' Card/Promo salvate nelle note.' : ''));
@@ -1970,17 +1973,30 @@ export default function PlanningPage() {
                       type="button"
                       onClick={() => {
                         setCheckoutMode(true);
-                        // Fetch eligible promotions and auto-select first
+                        // Fetch eligible promotions
                         if (editingAppointment?.client_id) {
                           axios.get(`${API}/promotions/check/${editingAppointment.client_id}`)
                             .then(res => {
                               setEligiblePromos(res.data);
-                              if (res.data.length > 0) setSelectedPromo(res.data[0]);
+                              // Pre-select saved promo from appointment, or first eligible
+                              if (editingAppointment.promo_id) {
+                                const savedPromo = res.data.find(p => p.id === editingAppointment.promo_id);
+                                if (savedPromo) setSelectedPromo(savedPromo);
+                                else if (res.data.length > 0) setSelectedPromo(res.data[0]);
+                              } else if (res.data.length > 0) {
+                                setSelectedPromo(res.data[0]);
+                              }
                             })
                             .catch(() => {});
                         }
-                        // Auto-select prepaid card if client has one
-                        if (clientCards.length > 0) {
+                        // Pre-select saved card from appointment, or first active card
+                        if (editingAppointment?.card_id) {
+                          const savedCard = clientCards.find(c => c.id === editingAppointment.card_id && c.remaining_value > 0);
+                          if (savedCard) {
+                            setPaymentMethod('prepaid');
+                            setSelectedCardId(savedCard.id);
+                          }
+                        } else if (clientCards.length > 0) {
                           const activeCard = clientCards.find(c => c.remaining_value > 0);
                           if (activeCard) {
                             setPaymentMethod('prepaid');

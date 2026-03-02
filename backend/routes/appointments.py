@@ -99,6 +99,17 @@ async def create_appointment(data: AppointmentCreate, current_user: dict = Depen
     end_time = calculate_end_time(data.time, total_duration)
 
     appointment_id = str(uuid.uuid4())
+    
+    # Resolve promo and card names
+    promo_name = None
+    card_name = None
+    if data.promo_id:
+        promo = await db.promotions.find_one({"id": data.promo_id}, {"_id": 0, "name": 1})
+        promo_name = promo["name"] if promo else None
+    if data.card_id:
+        card = await db.cards.find_one({"id": data.card_id}, {"_id": 0, "name": 1})
+        card_name = card["name"] if card else None
+    
     appointment_doc = {
         "id": appointment_id, "user_id": current_user["id"],
         "client_id": client_id, "client_name": client_name, "client_phone": client_phone,
@@ -108,6 +119,8 @@ async def create_appointment(data: AppointmentCreate, current_user: dict = Depen
         "date": data.date, "time": data.time, "end_time": end_time,
         "total_duration": total_duration, "total_price": total_price,
         "status": "scheduled", "notes": data.notes or "", "sms_sent": False,
+        "promo_id": data.promo_id, "promo_name": promo_name,
+        "card_id": data.card_id, "card_name": card_name,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.appointments.insert_one(appointment_doc)

@@ -295,25 +295,36 @@ async def public_cancel_appointment(appointment_id: str, phone: str):
 # ============== WEBSITE CMS ==============
 
 @router.post("/website/upload")
-async def website_upload_image(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+async def website_upload_file(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
     ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
-    if ext not in ("jpg", "jpeg", "png", "gif", "webp"):
-        raise HTTPException(status_code=400, detail="Formato non supportato. Usa JPG, PNG, GIF o WebP.")
-    mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}
+    image_exts = ("jpg", "jpeg", "png", "gif", "webp")
+    video_exts = ("mp4", "webm", "mov")
+    allowed = image_exts + video_exts
+    if ext not in allowed:
+        raise HTTPException(status_code=400, detail="Formato non supportato. Usa JPG, PNG, GIF, WebP, MP4, WebM o MOV.")
+    
+    mime_map = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", 
+        "gif": "image/gif", "webp": "image/webp",
+        "mp4": "video/mp4", "webm": "video/webm", "mov": "video/quicktime"
+    }
+    file_type = "video" if ext in video_exts else "image"
+    max_size = 50 * 1024 * 1024 if file_type == "video" else 10 * 1024 * 1024
+    
     file_id = str(uuid.uuid4())
     path = f"{APP_NAME}/uploads/{file_id}.{ext}"
     data = await file.read()
-    if len(data) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File troppo grande. Max 10MB.")
-    result = put_object(path, data, mime_map.get(ext, "image/jpeg"))
+    if len(data) > max_size:
+        raise HTTPException(status_code=400, detail=f"File troppo grande. Max {'50MB' if file_type == 'video' else '10MB'}.")
+    result = put_object(path, data, mime_map.get(ext, "application/octet-stream"))
     doc = {
         "id": file_id, "storage_path": result["path"], "original_filename": file.filename,
-        "content_type": mime_map.get(ext, "image/jpeg"), "size": result.get("size", len(data)),
-        "is_deleted": False, "user_id": current_user["id"],
+        "content_type": mime_map.get(ext, "application/octet-stream"), "size": result.get("size", len(data)),
+        "file_type": file_type, "is_deleted": False, "user_id": current_user["id"],
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.website_files.insert_one(doc)
-    return {"id": file_id, "path": result["path"], "url": f"/api/website/files/{file_id}"}
+    return {"id": file_id, "path": result["path"], "url": f"/api/website/files/{file_id}", "file_type": file_type}
 
 
 @router.get("/website/files/{file_id}")
@@ -386,6 +397,7 @@ async def create_website_gallery_item(data: dict, current_user: dict = Depends(g
         "id": str(uuid.uuid4()), "user_id": current_user["id"],
         "image_url": data.get("image_url", ""), "label": data.get("label", ""),
         "tag": data.get("tag", ""), "section": data.get("section", "gallery"),
+        "file_type": data.get("file_type", "image"),
         "sort_order": count, "is_deleted": False,
         "created_at": datetime.now(timezone.utc).isoformat()
     }

@@ -90,8 +90,8 @@ export default function WebsiteAdminPage() {
     } catch (err) { toast.error('Errore'); }
   };
 
-  // Gallery upload
-  const handleImageUpload = async (e, section) => {
+  // Gallery upload (images + videos)
+  const handleMediaUpload = async (e, section) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
     setUploading(true);
@@ -102,16 +102,23 @@ export default function WebsiteAdminPage() {
         const uploadRes = await axios.post(`${API}/website/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+        const fileType = uploadRes.data.file_type || (file.type.startsWith('video') ? 'video' : 'image');
         await axios.post(`${API}/website/gallery`, {
           image_url: uploadRes.data.url,
           label: file.name.split('.')[0],
           tag: '',
-          section: section
+          section: section,
+          file_type: fileType
         });
       }
       const res = await axios.get(`${API}/website/gallery`);
       setGallery(res.data);
-      toast.success(`${files.length} foto caricata/e!`);
+      const videoCount = files.filter(f => f.type.startsWith('video')).length;
+      const imageCount = files.length - videoCount;
+      const msg = [];
+      if (imageCount > 0) msg.push(`${imageCount} foto`);
+      if (videoCount > 0) msg.push(`${videoCount} video`);
+      toast.success(`${msg.join(' e ')} caricati!`);
     } catch (err) { toast.error('Errore upload: ' + (err.response?.data?.detail || err.message)); }
     finally { setUploading(false); e.target.value = ''; }
   };
@@ -313,12 +320,12 @@ export default function WebsiteAdminPage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Foto del Salone</CardTitle>
+                  <CardTitle>Foto e Video del Salone</CardTitle>
                   <div className="relative">
-                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'salon')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
+                    <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" multiple onChange={(e) => handleMediaUpload(e, 'salon')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
                     <Button variant="outline" disabled={uploading}>
                       {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                      Carica Foto
+                      Carica Foto/Video
                     </Button>
                   </div>
                 </div>
@@ -333,12 +340,19 @@ export default function WebsiteAdminPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {salonPhotos.map((item) => (
                       <div key={item.id} className="relative group rounded-xl overflow-hidden border">
-                        <img src={getImageUrl(item)} alt={item.label} className="w-full aspect-square object-cover" />
+                        {item.file_type === 'video' ? (
+                          <video src={getImageUrl(item)} className="w-full aspect-square object-cover" muted playsInline />
+                        ) : (
+                          <img src={getImageUrl(item)} alt={item.label} className="w-full aspect-square object-cover" />
+                        )}
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <Button variant="ghost" size="icon" onClick={() => deleteGalleryItem(item.id)} className="text-white hover:text-red-400 hover:bg-red-400/20">
                             <Trash2 className="w-5 h-5" />
                           </Button>
                         </div>
+                        {item.file_type === 'video' && (
+                          <div className="absolute top-2 left-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded">VIDEO</div>
+                        )}
                         <div className="p-2">
                           <Input value={item.label || ''} onChange={e => updateGalleryItem(item.id, 'label', e.target.value)} placeholder="Etichetta" className="text-xs h-8" />
                         </div>
@@ -358,10 +372,10 @@ export default function WebsiteAdminPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Gallery Lavori / Acconciature</CardTitle>
                   <div className="relative">
-                    <input type="file" accept="image/*" multiple onChange={(e) => handleImageUpload(e, 'gallery')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
+                    <input type="file" accept="image/*,video/mp4,video/webm,video/quicktime" multiple onChange={(e) => handleMediaUpload(e, 'gallery')} className="absolute inset-0 opacity-0 cursor-pointer z-10" disabled={uploading} />
                     <Button variant="outline" disabled={uploading}>
                       {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                      Carica Foto
+                      Carica Foto/Video
                     </Button>
                   </div>
                 </div>
@@ -370,18 +384,25 @@ export default function WebsiteAdminPage() {
                 {galleryPhotos.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Image className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>Nessuna foto nella gallery. Carica i tuoi lavori!</p>
+                    <p>Nessuna foto/video nella gallery. Carica i tuoi lavori!</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {galleryPhotos.map((item) => (
                       <div key={item.id} className="relative group rounded-xl overflow-hidden border">
-                        <img src={getImageUrl(item)} alt={item.label} className="w-full aspect-[3/4] object-cover" />
+                        {item.file_type === 'video' ? (
+                          <video src={getImageUrl(item)} className="w-full aspect-[3/4] object-cover" muted playsInline />
+                        ) : (
+                          <img src={getImageUrl(item)} alt={item.label} className="w-full aspect-[3/4] object-cover" />
+                        )}
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <Button variant="ghost" size="icon" onClick={() => deleteGalleryItem(item.id)} className="text-white hover:text-red-400 hover:bg-red-400/20">
                             <Trash2 className="w-5 h-5" />
                           </Button>
                         </div>
+                        {item.file_type === 'video' && (
+                          <div className="absolute top-2 left-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded">VIDEO</div>
+                        )}
                         <div className="p-2 space-y-1">
                           <Input value={item.label || ''} onChange={e => updateGalleryItem(item.id, 'label', e.target.value)} placeholder="Nome" className="text-xs h-8" />
                           <Input value={item.tag || ''} onChange={e => updateGalleryItem(item.id, 'tag', e.target.value)} placeholder="Tag (es. Balayage)" className="text-xs h-8" />

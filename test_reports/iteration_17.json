@@ -1,0 +1,100 @@
+{
+  "summary": "Iteration 17 - Video Upload Support & Promo/Card Selection on Appointments. All 15 backend API tests passed (100%). Frontend video upload support, promo/card selection in appointment dialog, and video rendering code verified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration17_video_promo_card.py",
+    "/app/test_reports/pytest/pytest_iteration17.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Video upload support: POST /api/website/upload correctly accepts mp4, webm, mov files and returns file_type='video'",
+    "Gallery storage: POST /api/website/gallery correctly stores file_type field",
+    "Appointment promo/card: POST /api/appointments correctly accepts and stores promo_id, card_id fields",
+    "Appointment response: GET /api/appointments returns promo_id, promo_name, card_id, card_name fields",
+    "WebsiteAdminPage: Upload buttons accept video types (accept='image/*,video/mp4,video/webm,video/quicktime')",
+    "WebsiteAdminPage: VIDEO badge shown on video items (file_type === 'video')",
+    "PlanningPage: 'Card & Promozioni Disponibili' section shows client's eligible promos and cards when selecting a client",
+    "PlanningPage: preSelectedCardId and preSelectedPromoId saved to appointment payload (promo_id, card_id)",
+    "BookingPage/WebsitePage: Video rendering code implemented with <video> tag for file_type='video' items",
+    "No video files currently in gallery database, but code correctly implements video support"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration17_video_promo_card.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "100% - All UI flows verified working"
+  },
+  "test_credentials": {
+    "email": "melitobruno@gmail.com",
+    "password": "password123"
+  },
+  "seed_data_creation": "No new seed data created. Test appointments cleaned up after tests.",
+  "retest_needed": false,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Video upload support fully implemented in backend and frontend. Upload endpoint returns file_type='video' for mp4/webm/mov files. Gallery items store file_type field. Appointment model has promo_id, card_id fields that resolve to promo_name, card_name. PlanningPage shows 'Card & Promozioni Disponibili' section when selecting a client with eligible promos. Current gallery has 8 image items (4 salon photos, 4 works photos) - no video files uploaded yet.",
+  "features_tested": {
+    "backend_video_upload": {
+      "mp4_upload": "PASS - Returns file_type='video'",
+      "webm_upload": "PASS - Returns file_type='video'",
+      "mov_upload": "PASS - Returns file_type='video'",
+      "image_upload": "PASS - Returns file_type='image'"
+    },
+    "backend_gallery": {
+      "post_with_file_type": "PASS - Stores file_type='video'",
+      "get_returns_file_type": "PASS - Gallery items include file_type field"
+    },
+    "backend_appointments": {
+      "create_with_promo_id": "PASS - promo_id saved, promo_name resolved",
+      "create_with_card_id": "PASS - card_id saved, card_name resolved",
+      "create_with_both": "PASS - Both promo_id and card_id saved with names",
+      "get_returns_all_fields": "PASS - promo_id, promo_name, card_id, card_name returned"
+    },
+    "backend_promotions": {
+      "get_list": "PASS - Returns 8 promotions",
+      "check_client_promos": "PASS - Returns eligible promos for client"
+    },
+    "backend_cards": {
+      "get_client_cards": "PASS - Returns cards for client"
+    },
+    "frontend_website_admin": {
+      "page_loads": "PASS",
+      "foto_salone_upload_accepts_video": "PASS - accept='image/*,video/mp4,video/webm,video/quicktime'",
+      "gallery_lavori_upload_accepts_video": "PASS - accept='image/*,video/mp4,video/webm,video/quicktime'",
+      "video_badge_shown": "PASS - VIDEO badge code present for file_type='video'"
+    },
+    "frontend_planning": {
+      "page_loads": "PASS",
+      "new_appointment_dialog": "PASS",
+      "client_search": "PASS",
+      "card_promo_section_appears": "PASS - 'Card & Promozioni Disponibili' shown with promos"
+    },
+    "frontend_public_pages": {
+      "booking_page_loads": "PASS",
+      "website_page_loads": "PASS",
+      "video_rendering_code": "PASS - <video> tag used for file_type='video' items"
+    },
+    "login_flow": {
+      "valid_credentials": "PASS",
+      "invalid_credentials": "PASS - Correctly fails"
+    }
+  },
+  "screenshots": [
+    ".screenshots/iteration17_login_success.png",
+    ".screenshots/iteration17_gestione_sito.png",
+    ".screenshots/iteration17_foto_salone_tab.png",
+    ".screenshots/iteration17_gallery_lavori_tab.png",
+    ".screenshots/iteration17_new_appointment_dialog.png",
+    ".screenshots/iteration17_client_selected_with_cards.png",
+    ".screenshots/iteration17_booking_landing.png",
+    ".screenshots/iteration17_website_landing.png"
+  ]
+}
