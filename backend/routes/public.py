@@ -21,9 +21,13 @@ APP_NAME = "mbhssalon"
 _storage_key = None
 _use_local_storage = False
 
-# Local upload directory
+# Local upload directory (use /tmp on platforms where /app is read-only)
 LOCAL_UPLOAD_DIR = "/app/backend/uploads"
-os.makedirs(LOCAL_UPLOAD_DIR, exist_ok=True)
+try:
+    os.makedirs(LOCAL_UPLOAD_DIR, exist_ok=True)
+except PermissionError:
+    LOCAL_UPLOAD_DIR = "/tmp/uploads"
+    os.makedirs(LOCAL_UPLOAD_DIR, exist_ok=True)
 
 
 def init_storage():
