@@ -66,10 +66,13 @@ export default function AppointmentsPage() {
   });
 
   const [smsMessage, setSmsMessage] = useState('');
+  const [cardAlerts, setCardAlerts] = useState({ expiring_cards: [], low_balance_cards: [], total_alerts: 0 });
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
   useEffect(() => {
     fetchData();
     checkSmsStatus();
+    fetchAlerts();
   }, [selectedDate]);
 
   const fetchData = async () => {
@@ -86,12 +89,34 @@ export default function AppointmentsPage() {
       setClients(clientsRes.data);
       setServices(servicesRes.data);
       setOperators(operatorsRes.data.filter(op => op.active));
+      
+      // Fetch upcoming 7 days of appointments
+      const upcoming = [];
+      for (let i = 1; i <= 7; i++) {
+        const d = new Date(selectedDate);
+        d.setDate(d.getDate() + i);
+        const ds = format(d, 'yyyy-MM-dd');
+        try {
+          const res = await axios.get(`${API}/appointments?date=${ds}`);
+          if (res.data.length > 0) {
+            upcoming.push({ date: ds, dateObj: d, appointments: res.data });
+          }
+        } catch (e) { /* skip */ }
+      }
+      setUpcomingAppointments(upcoming);
     } catch (err) {
       console.error('Error fetching data:', err);
       toast.error('Errore nel caricamento dei dati');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchAlerts = async () => {
+    try {
+      const res = await axios.get(`${API}/cards/alerts/all?days=30&threshold_percent=20`);
+      setCardAlerts(res.data);
+    } catch (e) { /* alerts not critical */ }
   };
 
   const checkSmsStatus = async () => {
@@ -368,6 +393,83 @@ export default function AppointmentsPage() {
             </Dialog>
           </div>
         </div>
+
+        {/* Card Alerts / Scadenze */}
+        {cardAlerts.total_alerts > 0 && (
+          <Card className="bg-amber-50 border-amber-200 shadow-sm" data-testid="card-alerts-section">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-amber-800">Scadenze Card ({cardAlerts.total_alerts})</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {cardAlerts.expiring_cards.map((card) => (
+                  <div key={card.id} className="flex items-center justify-between p-2 bg-white rounded-lg border border-amber-100">
+                    <div>
+                      <p className="font-medium text-sm text-[#0F172A]">{card.client_name}</p>
+                      <p className="text-xs text-amber-700">{card.name} — scade {card.expiry_date ? new Date(card.expiry_date).toLocaleDateString('it-IT') : 'presto'}</p>
+                    </div>
+                    <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-semibold">
+                      {card.days_until_expiry != null ? `${card.days_until_expiry}g` : '!'}
+                    </span>
+                  </div>
+                ))}
+                {cardAlerts.low_balance_cards.map((card) => (
+                  <div key={card.id} className="flex items-center justify-between p-2 bg-white rounded-lg border border-red-100">
+                    <div>
+                      <p className="font-medium text-sm text-[#0F172A]">{card.client_name}</p>
+                      <p className="text-xs text-red-600">{card.name} — credito basso: €{card.remaining_value?.toFixed(2)}</p>
+                    </div>
+                    <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-semibold">
+                      {card.usage_percent != null ? `${Math.round(card.usage_percent)}%` : '!'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Upcoming Appointments / Prossimi giorni */}
+        {upcomingAppointments.length > 0 && (
+          <Card className="bg-blue-50/50 border-blue-100 shadow-sm" data-testid="upcoming-section">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-blue-800">Prossimi Appuntamenti (7 giorni)</h3>
+              </div>
+              <div className="space-y-2">
+                {upcomingAppointments.map((day) => (
+                  <div key={day.date} className="p-2 bg-white rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-50 transition-colors"
+                    onClick={() => setSelectedDate(day.dateObj)}>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm text-[#0F172A]">
+                        {format(day.dateObj, "EEEE d MMMM", { locale: it })}
+                      </p>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">
+                        {day.appointments.length} appuntament{day.appointments.length === 1 ? 'o' : 'i'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {day.appointments.slice(0, 4).map((a) => (
+                        <span key={a.id} className="text-xs text-[#334155] bg-gray-100 px-2 py-0.5 rounded">
+                          {a.time} {a.client_name}
+                        </span>
+                      ))}
+                      {day.appointments.length > 4 && (
+                        <span className="text-xs text-[#334155]">+{day.appointments.length - 4} altri</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Appointments List */}
         <Card className="bg-white border-[#E2E8F0]/30 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]">
