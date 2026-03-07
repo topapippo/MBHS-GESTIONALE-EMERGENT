@@ -1,6 +1,5 @@
 [build]
-builder = "dockerfile"
-dockerfilePath = "fine frontale/Dockerfile"
+builder = "nixpacks"
 
 [deploy]
-restartPolicyType = "on_failure"
+startCommand = "npx serve -s build -l $PORT"
