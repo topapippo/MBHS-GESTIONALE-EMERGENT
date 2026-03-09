@@ -1,6 +1,5 @@
 [build]
-  base = "fine frontale"
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "cd 'fine frontale' && npm install --legacy-peer-deps && npm run build"
   publish = "fine frontale/build"
 
 [build.environment]
