@@ -1,6 +1,7 @@
 [build]
-  command = "cd fine\\ frontale && npm install --legacy-peer-deps && npm run build"
-  publish = "fine frontale/build"
+  base = "frontend"
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = "frontend/build"
 
 [build.environment]
   NODE_VERSION = "18"
