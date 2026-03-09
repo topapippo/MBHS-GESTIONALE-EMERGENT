@@ -1,1 +1,14 @@
+[build]
+  base = "fine frontale"
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = "fine frontale/build"
 
+[build.environment]
+  NODE_VERSION = "18"
+  DISABLE_ESLINT_PLUGIN = "true"
+  CI = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
