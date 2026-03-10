@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
+  "overrides": {
+    "ajv": "6.12.6"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "ajv": "6.12.6",
