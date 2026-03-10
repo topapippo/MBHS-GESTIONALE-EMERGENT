@@ -61,10 +61,10 @@
     "xlsx": "^0.18.5",
     "zod": "^3.24.4"
   },
-  "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
+ "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
     "serve": "serve -s build"
   },
   "browserslist": {
